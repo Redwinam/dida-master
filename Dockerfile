@@ -10,6 +10,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     rm -rf /var/lib/apt/lists/*
 
 ENV TZ=Asia/Shanghai
+# 允许通过环境变量配置 cron 表达式，默认每天 05:30
+ENV CRON_SCHEDULE="30 5 * * *"
 
 WORKDIR /app
 
@@ -30,9 +32,8 @@ RUN curl -fsSLO "$SUPERCRONIC_URL" \
     && mv "$SUPERCRONIC" "/usr/local/bin/${SUPERCRONIC}" \
     && ln -s "/usr/local/bin/${SUPERCRONIC}" /usr/local/bin/supercronic
 
-# 写入每日 05:30 触发的 crontab（使用容器本地时区 TZ）
-# 直接让 supercronic 捕获脚本的 stdout/stderr（无需重定向）
-RUN echo '30 5 * * * /usr/local/bin/python3 -u /app/ai_daily_note.py' > /crontab
-
-# 入口：启动 supercronic 管理定时任务
-CMD ["supercronic", "-json", "/crontab"]
+# 启动时：
+# 1) 根据 CRON_SCHEDULE 生成 /crontab（在运行时才能读取到平台注入的环境变量）
+# 2) 先执行一次脚本，便于部署后立即验证
+# 3) 再以 supercronic 常驻，按计划执行
+CMD ["sh", "-c", "echo \"$CRON_SCHEDULE /usr/local/bin/python3 -u /app/ai_daily_note.py\" > /crontab; /usr/local/bin/python3 -u /app/ai_daily_note.py || true; exec supercronic -json /crontab"]
