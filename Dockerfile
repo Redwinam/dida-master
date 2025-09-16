@@ -31,8 +31,8 @@ RUN curl -fsSLO "$SUPERCRONIC_URL" \
     && ln -s "/usr/local/bin/${SUPERCRONIC}" /usr/local/bin/supercronic
 
 # 写入每日 05:30 触发的 crontab（使用容器本地时区 TZ）
-# 将日志输出重定向到容器 stdout/stderr，便于 Dokploy/平台收集
-RUN echo "30 5 * * * python -u /app/ai_daily_note.py >> /proc/1/fd/1 2>&1" > /crontab
+# 直接让 supercronic 捕获脚本的 stdout/stderr（无需重定向）
+RUN echo '30 5 * * * /usr/local/bin/python -u /app/ai_daily_note.py' > /crontab
 
 # 入口：启动 supercronic 管理定时任务
 CMD ["supercronic", "-json", "/crontab"]
