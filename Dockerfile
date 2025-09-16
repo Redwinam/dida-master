@@ -36,4 +36,4 @@ RUN curl -fsSLO "$SUPERCRONIC_URL" \
 # 1) 根据 CRON_SCHEDULE 生成 /crontab（在运行时才能读取到平台注入的环境变量）
 # 2) 先执行一次脚本，便于部署后立即验证
 # 3) 再以 supercronic 常驻，按计划执行
-CMD ["sh", "-c", "echo \"$CRON_SCHEDULE sh -c '/usr/local/bin/python3 -u /app/ai_daily_note.py'\" > /crontab; /usr/local/bin/python3 -u /app/ai_daily_note.py || true; exec supercronic -json /crontab"]
+CMD ["sh", "-c", "echo \"$CRON_SCHEDULE /usr/local/bin/python3 -u /app/ai_daily_note.py\" > /crontab; /usr/local/bin/python3 -u /app/ai_daily_note.py || true; exec supercronic -json /crontab"]
