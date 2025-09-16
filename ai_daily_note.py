@@ -12,7 +12,15 @@
 - EXCLUDE_PROJECT_NAME  需要过滤掉的项目名（默认：日记）
 - LLM_API_KEY           大模型服务API密钥（必需）
 - LLM_MODEL             模型名称（默认：deepseek-ai/DeepSeek-V3.1）
-- LLM_API_URL           大模型服务URL（默认：https://api.siliconflow.cn/v1/chat/completions）
+- LLM_API_URL           大模型服务URL（默认https://api.siliconflow.cn/v1/chat/completions）
+- CAL_ENABLE            是否启用日历（默认false，不启用时不拉取）
+- CAL_PROVIDER          日历提供方（目前只支持 icloud）
+- ICLOUD_USERNAME       iCloud 邮箱（CalDAV）
+- ICLOUD_APP_PASSWORD   iCloud 应用专用密码（CalDAV）
+- CALENDAR_NAME         指定某个日历名（留空表示全部）
+- CAL_LOOKAHEAD_DAYS    向后查看的天数（默认0，仅今天）
+- CAL_MAX_EVENTS        最多注入事件条数（默认50）
+- CAL_TIMEZONE          解析与展示时区（默认 Asia/Shanghai）
 """
 import os
 import sys
@@ -24,6 +32,15 @@ import requests
 
 # 复用快速获取脚本中的工具函数
 import quick_fetch_tasks as qft
+
+# 可选导入 caldav
+try:
+    import caldav
+    from caldav.elements import dav, cdav
+    import vobject
+except Exception:
+    caldav = None
+    vobject = None
 
 LLM_API_URL = os.getenv("LLM_API_URL", "https://api.siliconflow.cn/v1/chat/completions")
 
@@ -70,10 +87,30 @@ def fetch_all_tasks_filtered(token: str, exclude_project_name: str) -> tuple[lis
     return all_tasks, filtered_projects
 
 
-def build_ai_messages(tasks_markdown: str) -> list[Dict]:
+def format_events_markdown(events: List[Dict], tz: ZoneInfo) -> str:
+    if not events:
+        return "今日行程：无"
+    lines = ["今日行程（按开始时间排序）："]
+    for e in events:
+        start: datetime = e.get("start")
+        end: datetime = e.get("end")
+        title = e.get("title") or "(无标题)"
+        location = e.get("location")
+        all_day = e.get("all_day", False)
+        if all_day:
+            lines.append(f"- 全天：{title}{'（'+location+'）' if location else ''}")
+        else:
+            lines.append(
+                f"- {start.astimezone(tz).strftime('%H:%M')} - {end.astimezone(tz).strftime('%H:%M')} {title}{'（'+location+'）' if location else ''}"
+            )
+    return "\n".join(lines)
+
+
+def build_ai_messages(tasks_markdown: str, schedule_md: Optional[str]) -> list[Dict]:
+    prefix = (schedule_md + "\n\n") if schedule_md else ""
     return [
         {"role": "system", "content": "You are an expert time management assistant."},
-        {"role": "user", "content": USER_PROMPT + "\n\n以下是今天的任务列表：\n\n" + tasks_markdown},
+        {"role": "user", "content": prefix + USER_PROMPT + "\n\n以下是今天的任务列表：\n\n" + tasks_markdown},
     ]
 
 
@@ -141,6 +178,130 @@ def create_dida_note(token: str, project_id: str, title: str, content: str) -> b
         return False
 
 
+def get_env_bool(name: str, default: bool = False) -> bool:
+    val = os.getenv(name)
+    if val is None:
+        return default
+    return str(val).strip().lower() in ("1", "true", "yes", "y", "on")
+
+
+def fetch_calendar_events() -> Optional[List[Dict]]:
+    """拉取 iCloud CalDAV 日历事件（若启用）。返回标准化事件列表。"""
+    if not get_env_bool("CAL_ENABLE", False):
+        return None
+    provider = os.getenv("CAL_PROVIDER", "icloud").strip().lower()
+    if provider != "icloud":
+        print(f"⚠️ 暂不支持的 CAL_PROVIDER: {provider}")
+        return None
+    if caldav is None:
+        print("⚠️ 未安装 caldav/vobject 库，无法启用日历功能")
+        return None
+
+    username = os.getenv("ICLOUD_USERNAME", "").strip()
+    password = os.getenv("ICLOUD_APP_PASSWORD", "").strip()
+    cal_name = os.getenv("CALENDAR_NAME", "").strip()
+    tz_name = os.getenv("CAL_TIMEZONE", os.getenv("TZ", "Asia/Shanghai")).strip()
+    lookahead = int(os.getenv("CAL_LOOKAHEAD_DAYS", "0").strip() or 0)
+    max_events = int(os.getenv("CAL_MAX_EVENTS", "50").strip() or 50)
+
+    if not username or not password:
+        print("⚠️ 缺少 ICLOUD_USERNAME/ICLOUD_APP_PASSWORD，跳过日历拉取")
+        return None
+
+    try:
+        tz = ZoneInfo(tz_name)
+    except Exception:
+        tz = ZoneInfo("Asia/Shanghai")
+
+    # 计算时间范围：今天 00:00 到 今天+lookahead 23:59
+    now = datetime.now(tz)
+    start = datetime(now.year, now.month, now.day, 0, 0, 0, tzinfo=tz)
+    end_day = now + timedelta(days=lookahead)
+    end = datetime(end_day.year, end_day.month, end_day.day, 23, 59, 59, tzinfo=tz)
+
+    try:
+        # iCloud CalDAV 根 URL 通常为 https://caldav.icloud.com/
+        client = caldav.DAVClient(url="https://caldav.icloud.com/", username=username, password=password)
+        principal = client.principal()
+        calendars = principal.calendars()
+        if not calendars:
+            print("⚠️ 未发现任何日历")
+            return []
+
+        selected = []
+        for c in calendars:
+            try:
+                props = c.get_properties([dav.DisplayName()])
+                display = str(props.get(dav.DisplayName, "")).strip()
+            except Exception:
+                display = ""
+            if (not cal_name) or (display == cal_name):
+                selected.append((c, display))
+
+        if not selected:
+            print(f"⚠️ 未匹配到日历名称：{cal_name}，将读取全部日历")
+            selected = [(c, None) for c in calendars]
+
+        results: List[Dict] = []
+        for c, display in selected:
+            try:
+                events = c.date_search(start, end)
+            except Exception as e:
+                print(f"⚠️ 搜索日历事件失败（{display or '未命名'}）：{e}")
+                continue
+            for ev in events:
+                try:
+                    raw = ev.vobject_instance
+                    if not raw:
+                        # 兜底：有些实现需自己解析
+                        data = ev.data
+                        raw = vobject.readOne(data) if data else None
+                    if not raw or not hasattr(raw, 'vevent'):
+                        continue
+                    ve = raw.vevent
+                    summary = str(getattr(ve, 'summary', None) and ve.summary.value) if hasattr(ve, 'summary') else None
+                    location = str(getattr(ve, 'location', None) and ve.location.value) if hasattr(ve, 'location') else None
+                    # 处理 DTSTART/DTEND，可能是 date 或 datetime
+                    dtstart = getattr(ve, 'dtstart', None)
+                    dtend = getattr(ve, 'dtend', None)
+                    if not dtstart:
+                        continue
+                    start_val = dtstart.value
+                    end_val = dtend.value if dtend else start_val
+                    all_day = False
+                    if isinstance(start_val, datetime):
+                        sdt = start_val
+                    else:
+                        # date -> 全天
+                        sdt = datetime(start_val.year, start_val.month, start_val.day, 0, 0, 0, tzinfo=tz)
+                        all_day = True
+                    if isinstance(end_val, datetime):
+                        edt = end_val
+                    else:
+                        edt = datetime(end_val.year, end_val.month, end_val.day, 23, 59, 59, tzinfo=tz)
+                        all_day = True
+                    results.append({
+                        "title": summary or "(无标题)",
+                        "location": location,
+                        "start": sdt,
+                        "end": edt,
+                        "all_day": all_day,
+                        "calendar": display or "(未命名)"
+                    })
+                except Exception as e:
+                    print(f"⚠️ 解析事件失败：{e}")
+                    continue
+
+        # 排序并截断
+        results.sort(key=lambda x: (x.get("all_day", False), x.get("start")))
+        if len(results) > max_events:
+            results = results[:max_events]
+        return results
+    except Exception as e:
+        print(f"⚠️ CalDAV 读取失败：{e}")
+        return None
+
+
 def main():
     dida_token = os.getenv("DIDA_TOKEN", "").strip()
     if not dida_token:
@@ -163,6 +324,20 @@ def main():
     print("🚀 开始生成每日AI日程并创建滴答清单笔记")
     print("=" * 50)
 
+    # 0) 可选：拉取 iCloud 日历
+    schedule_md: Optional[str] = None
+    events = fetch_calendar_events()
+    if events is not None:
+        try:
+            tz = ZoneInfo(os.getenv("CAL_TIMEZONE", os.getenv("TZ", "Asia/Shanghai")))
+        except Exception:
+            tz = ZoneInfo("Asia/Shanghai")
+        schedule_md = format_events_markdown(events, tz)
+        print("🗓️  已获取日历事件：")
+        print(schedule_md)
+    else:
+        print("🗓️  未启用或未获取日历事件")
+
     # 1) 获取任务（过滤“日记”项目）
     print("📁 正在获取任务数据...")
     tasks, projects = fetch_all_tasks_filtered(dida_token, exclude_project)
@@ -174,9 +349,9 @@ def main():
     print("📝 正在生成任务列表...（供AI参考）")
     tasks_markdown = qft.format_tasks_for_ai(tasks, projects)
 
-    # 3) 调用大模型生成当日计划
+    # 3) 调用大模型生成当日计划（把“今日行程”放在用户提示词最顶部）
     print("🤖 正在调用大模型生成当日计划...")
-    messages = build_ai_messages(tasks_markdown)
+    messages = build_ai_messages(tasks_markdown, schedule_md)
     ai_plan = call_llm(llm_api_key, model, messages)
     if not ai_plan:
         print("❌ AI生成失败，流程结束")
