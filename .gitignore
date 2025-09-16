@@ -1,0 +1,51 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
+
+# Environment files (do not commit secrets)
+.env
+.env.*
+.envrc
+.python-version
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+.eggs/
+*.egg
+wheels/
+
+# Caches & tooling
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+.cache/
+
+# IDE & OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.log
+
+# Docker & misc
+*.pid
+
+# Project generated files
+ai_daily_plan_*.md
+dida_tasks*.md
+dida_tasks_new_format_*.md
+
+# Local scripts or configs
+run_task_fetcher.sh

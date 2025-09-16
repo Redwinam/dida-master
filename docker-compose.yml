@@ -1,0 +1,20 @@
+version: "3.8"
+services:
+  ai-daily-note:
+    build: .
+    image: ai-daily-note:latest
+    container_name: ai-daily-note
+    environment:
+      - DIDA_TOKEN=${DIDA_TOKEN}
+      - DIDA_PROJECT_ID=${DIDA_PROJECT_ID}
+      - EXCLUDE_PROJECT_NAME=${EXCLUDE_PROJECT_NAME:-日记}
+      - LLM_API_KEY=${LLM_API_KEY}
+      - LLM_MODEL=${LLM_MODEL:-deepseek-ai/DeepSeek-V3.1}
+      - LLM_API_URL=${LLM_API_URL:-https://api.siliconflow.cn/v1/chat/completions}
+      - TZ=Asia/Shanghai
+    working_dir: /app
+    command: ["python", "ai_daily_note.py"]
+    restart: "no"
+
+  # 可选：使用一个轻量级的调度器容器来在宿主机时间5:30触发
+  # 这里提供方案二（推荐在宿主机用crontab调度），容器内调度可能因宿主时区导致偏差
