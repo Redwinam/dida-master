@@ -13,8 +13,8 @@ services:
       - LLM_API_URL=${LLM_API_URL:-https://api.siliconflow.cn/v1/chat/completions}
       - TZ=Asia/Shanghai
     working_dir: /app
-    command: ["python", "ai_daily_note.py"]
-    restart: "no"
+    # 使用 Dockerfile 的 CMD（supercronic）以启用定时
+    restart: always
 
   # 可选：使用一个轻量级的调度器容器来在宿主机时间5:30触发
   # 这里提供方案二（推荐在宿主机用crontab调度），容器内调度可能因宿主时区导致偏差

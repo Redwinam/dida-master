@@ -77,7 +77,7 @@ def build_ai_messages(tasks_markdown: str) -> list[Dict]:
     ]
 
 
-def call_siliconflow(api_key: str, model: str, messages: list[Dict]) -> Optional[str]:
+def call_llm(api_key: str, model: str, messages: list[Dict]) -> Optional[str]:
     headers = {
         "Authorization": f"Bearer {api_key}",
         "Content-Type": "application/json",
@@ -177,7 +177,7 @@ def main():
     # 3) 调用大模型生成当日计划
     print("🤖 正在调用大模型生成当日计划...")
     messages = build_ai_messages(tasks_markdown)
-    ai_plan = call_siliconflow(llm_api_key, model, messages)
+    ai_plan = call_llm(llm_api_key, model, messages)
     if not ai_plan:
         print("❌ AI生成失败，流程结束")
         sys.exit(1)
