@@ -29,6 +29,8 @@ from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 from typing import List, Dict, Optional
 import requests
+import csv
+import re
 
 # 复用快速获取脚本中的工具函数
 import quick_fetch_tasks as qft
@@ -67,14 +69,32 @@ def iso_datetime(date_only: bool = False, start_of_day: bool = True) -> str:
 
 
 def fetch_all_tasks_filtered(token: str, exclude_project_name: str) -> tuple[list[Dict], list[Dict]]:
-    """获取所有项目与任务，并过滤掉指定项目名的任务。返回 (tasks, projects)"""
+    """获取所有项目与任务，并过滤掉指定项目名的任务。返回 (tasks, projects)
+    - 现在强制格式：英文逗号分隔，且每个项目名必须用双引号包裹。
+    - 示例：EXCLUDE_PROJECT_NAME='"日记","杂物"'
+    - 若项目名本身包含英文逗号、空格或其他标点，也请用双引号包裹即可。
+    """
     projects = qft.get_projects(token) or []
     if not projects:
         print("❌ 无法获取项目列表")
         return [], []
 
+    # 严格校验：必须为 "name","name2" 这样的双引号包裹 + 英文逗号分隔格式
+    pattern = r'^\s*"[^"]*"(?:\s*,\s*"[^"]*")*\s*$'
+    if exclude_project_name.strip() and not re.match(pattern, exclude_project_name):
+        print("❌ 环境变量 EXCLUDE_PROJECT_NAME 格式不正确。请使用英文逗号分隔，且每个项目名必须用双引号包裹。")
+        print("   示例：EXCLUDE_PROJECT_NAME='\"日记\",\"杂物\"'")
+        sys.exit(1)
+
+    # 使用 CSV 解析器解析（会自动移除双引号包裹）
+    try:
+        items = next(csv.reader([exclude_project_name or ""], skipinitialspace=True))
+    except StopIteration:
+        items = []
+    excludes = set(n.strip() for n in items if n and n.strip())
+
     # 过滤需要排除的项目
-    filtered_projects = [p for p in projects if p.get('name') != exclude_project_name]
+    filtered_projects = [p for p in projects if p.get('name') not in excludes]
 
     all_tasks: list[Dict] = []
     for p in filtered_projects:
@@ -88,22 +108,42 @@ def fetch_all_tasks_filtered(token: str, exclude_project_name: str) -> tuple[lis
 
 
 def format_events_markdown(events: List[Dict], tz: ZoneInfo) -> str:
-    if not events:
-        return "今日行程：无"
-    lines = ["今日行程（按开始时间排序）："]
-    for e in events:
-        start: datetime = e.get("start")
-        end: datetime = e.get("end")
-        title = e.get("title") or "(无标题)"
-        location = e.get("location")
-        all_day = e.get("all_day", False)
-        if all_day:
-            lines.append(f"- 全天：{title}{'（'+location+'）' if location else ''}")
+    # 按天分组展示（支持 CAL_LOOKAHEAD_DAYS），若某天无事件则明确标注“无”
+    lookahead = int(os.getenv("CAL_LOOKAHEAD_DAYS", "0").strip() or 0)
+    today = datetime.now(tz).date()
+    days = [today + timedelta(days=i) for i in range(lookahead + 1)]
+
+    lines: List[str] = []
+    for day in days:
+        lines.append(f"{day.year}年{day.month}月{day.day}日行程：")
+        # 找出与该天有时间交集的事件（考虑跨天）
+        day_events: List[Dict] = []
+        for e in (events or []):
+            start: datetime = e.get("start")
+            end: datetime = e.get("end")
+            if not start or not end:
+                continue
+            s_local = start.astimezone(tz)
+            e_local = end.astimezone(tz)
+            if s_local.date() <= day <= e_local.date():
+                day_events.append({**e, "start": s_local, "end": e_local})
+
+        if not day_events:
+            lines.append("- 无")
         else:
-            lines.append(
-                f"- {start.astimezone(tz).strftime('%H:%M')} - {end.astimezone(tz).strftime('%H:%M')} {title}{'（'+location+'）' if location else ''}"
-            )
-    return "\n".join(lines)
+            # 与原逻辑保持一致：先按是否全天，再按开始时间
+            day_events.sort(key=lambda x: (x.get("all_day", False), x.get("start")))
+            for ev in day_events:
+                title = ev.get("title") or "(无标题)"
+                location = ev.get("location")
+                all_day = ev.get("all_day", False)
+                if all_day:
+                    lines.append(f"- 全天：{title}{'（'+location+'）' if location else ''}")
+                else:
+                    lines.append(f"- {ev['start'].strftime('%H:%M')} - {ev['end'].strftime('%H:%M')} {title}{'（'+location+'）' if location else ''}")
+        lines.append("")  # 空行分隔
+
+    return "\n".join(lines).strip()
 
 
 def build_ai_messages(tasks_markdown: str, schedule_md: Optional[str]) -> list[Dict]:
