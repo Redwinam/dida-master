@@ -108,14 +108,14 @@ def fetch_all_tasks_filtered(token: str, exclude_project_name: str) -> tuple[lis
 
 
 def format_events_markdown(events: List[Dict], tz: ZoneInfo) -> str:
-    # 按天分组展示（支持 CAL_LOOKAHEAD_DAYS），若某天无事件则明确标注“无”
+    # 按天分组展示（支持 CAL_LOOKAHEAD_DAYS），若某天无事件则在同一行标注“无”；地点信息去除换行并压缩空白
     lookahead = int(os.getenv("CAL_LOOKAHEAD_DAYS", "0").strip() or 0)
     today = datetime.now(tz).date()
     days = [today + timedelta(days=i) for i in range(lookahead + 1)]
 
     lines: List[str] = []
     for day in days:
-        lines.append(f"{day.year}年{day.month}月{day.day}日行程：")
+        date_title = f"{day.year}年{day.month}月{day.day}日行程："
         # 找出与该天有时间交集的事件（考虑跨天）
         day_events: List[Dict] = []
         for e in (events or []):
@@ -129,18 +129,22 @@ def format_events_markdown(events: List[Dict], tz: ZoneInfo) -> str:
                 day_events.append({**e, "start": s_local, "end": e_local})
 
         if not day_events:
-            lines.append("- 无")
+            # 日期与“无”在同一行
+            lines.append(f"{date_title}无")
         else:
+            lines.append(date_title)
             # 与原逻辑保持一致：先按是否全天，再按开始时间
             day_events.sort(key=lambda x: (x.get("all_day", False), x.get("start")))
             for ev in day_events:
                 title = ev.get("title") or "(无标题)"
                 location = ev.get("location")
+                # 地点去除换行并压缩空白为单个空格
+                location_clean = re.sub(r"\s+", " ", location).strip() if location else None
                 all_day = ev.get("all_day", False)
                 if all_day:
-                    lines.append(f"- 全天：{title}{'（'+location+'）' if location else ''}")
+                    lines.append(f"- 全天：{title}{'（'+location_clean+'）' if location_clean else ''}")
                 else:
-                    lines.append(f"- {ev['start'].strftime('%H:%M')} - {ev['end'].strftime('%H:%M')} {title}{'（'+location+'）' if location else ''}")
+                    lines.append(f"- {ev['start'].strftime('%H:%M')} - {ev['end'].strftime('%H:%M')} {title}{'（'+location_clean+'）' if location_clean else ''}")
         lines.append("")  # 空行分隔
 
     return "\n".join(lines).strip()
