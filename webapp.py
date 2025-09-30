@@ -113,27 +113,7 @@ def render_page(title: str, body_html: str) -> str:
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>%%TITLE%%</title>
-  <style>
-    :root { --primary:#3b82f6; --bg:#f7f9fc; --card:#ffffff; --text:#111827; --muted:#6b7280; --border:#e5e7eb; --danger:#ef4444; }
-    html,body { height: 100%; }
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', 'PingFang SC', 'Microsoft YaHei', sans-serif; margin:0; background: var(--bg); color: var(--text); }
-    header { background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%); color: #fff; padding: 18px 24px; }
-    header h2 { margin:0; font-weight:700; }
-    nav a { margin-right: 14px; text-decoration: none; color: #e5e7eb; }
-    .container { max-width: 980px; margin: 24px auto; padding: 0 16px; }
-    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
-    .card { background: var(--card); border: 1px solid var(--border); box-shadow: 0 1px 2px rgba(0,0,0,0.04); border-radius: 12px; padding: 16px; }
-    .btn { display: inline-block; padding: 8px 14px; background: var(--primary); color: #fff; border-radius: 8px; text-decoration: none; border: none; cursor: pointer; }
-    .btn.gray { background: #6b7280; }
-    .btn.red { background: var(--danger); }
-    .btn.outline { background: transparent; color: var(--primary); border: 1px solid var(--primary); }
-    input[type=text], input[type=password] { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px; margin: 6px 0 14px; }
-    label { font-weight: 600; display: block; margin-top: 8px; }
-    table { width: 100%; border-collapse: collapse; }
-    th, td { border-bottom: 1px solid var(--border); padding: 10px; text-align: left; }
-    pre { background: #0b1021; color: #e5e7eb; padding: 12px; border-radius: 8px; overflow: auto; }
-    .muted { color: var(--muted); }
-  </style>
+  <link rel="stylesheet" href="/static/style.css">
   <script>
     function post(url, formId) {
       const form = document.getElementById(formId);
