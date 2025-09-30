@@ -14,6 +14,11 @@ ENV TZ=Asia/Shanghai
 ENV CRON_SCHEDULE="30 5 * * *"
 # 允许配置是否在启动时先执行一次脚本（默认 true）
 ENV RUN_ON_START="true"
+# Web 前端默认绑定与模式（在 Dokploy 中建议使用 web 模式）
+ENV HOST=0.0.0.0 \
+    PORT=5000 \
+    FLASK_DEBUG=0 \
+    APP_MODE=web
 
 WORKDIR /app
 
@@ -34,9 +39,11 @@ RUN curl -fsSLO "$SUPERCRONIC_URL" \
     && mv "$SUPERCRONIC" "/usr/local/bin/${SUPERCRONIC}" \
     && ln -s "/usr/local/bin/${SUPERCRONIC}" /usr/local/bin/supercronic
 
-# 启动时：
-# 1) 根据 CRON_SCHEDULE 生成 /crontab（运行时读取平台注入的环境变量）
-# 2) 打印 /crontab 并做语法校验，便于排查
-# 3) 若 RUN_ON_START=true 则先执行一次脚本
-# 4) 再以 supercronic 常驻（debug + json），按计划执行
-CMD ["sh", "-c", "echo \"$CRON_SCHEDULE /bin/sh -c '/usr/local/bin/python3 -u /app/ai_daily_note.py'\" > /crontab; echo '--- /crontab ---'; cat /crontab; supercronic -test /crontab || true; if [ \"${RUN_ON_START:-true}\" = \"true\" ]; then /usr/local/bin/python3 -u /app/ai_daily_note.py || true; fi; exec /usr/local/bin/supercronic -debug -json /crontab"]
+# 暴露 Web 端口，便于平台识别
+EXPOSE 5000
+
+# 入口脚本：根据 APP_MODE 决定运行 Web 或 Cron
+COPY entry.sh /entry.sh
+RUN chmod +x /entry.sh
+
+CMD ["/bin/sh", "/entry.sh"]
