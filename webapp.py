@@ -6,11 +6,13 @@ import sys
 import json
 import glob
 import shlex
+import re
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Optional
 from flask import Flask, request, redirect, url_for, Response
 import markdown2
+import html as htmlmod
 
 BASE_DIR = Path(__file__).resolve().parent
 CONFIG_PATH = BASE_DIR / "config.json"
@@ -60,6 +62,26 @@ def get_effective_env() -> Dict[str, str]:
     env = dict(os.environ)
     cfg = load_config()
     env.update({k: v for k, v in cfg.items() if v is not None})
+    # 兼容 EXCLUDE_PROJECT_NAME 多格式输入：
+    # - 已是严格格式："A","B" -> 原样保留
+    # - 宽松格式：A,B 或 A，B 或以空格分隔 -> 规范化为严格格式
+    try:
+        v = env.get("EXCLUDE_PROJECT_NAME", "")
+        if v:
+            strict = r'^\s*"[^"]*"(?:\s*,\s*"[^"]*")*\s*$'
+            if not re.match(strict, v):
+                parts = re.split(r'[\s,，]+', v)
+                cleaned = []
+                for p in parts:
+                    p = p.strip()
+                    if not p:
+                        continue
+                    # 将内部双引号转义为两个双引号
+                    p = p.replace('"', '""')
+                    cleaned.append(f'"{p}"')
+                env["EXCLUDE_PROJECT_NAME"] = ",".join(cleaned)
+    except Exception:
+        pass
     # 默认值
     env.setdefault("LLM_API_URL", "https://api.siliconflow.cn/v1/chat/completions")
     env.setdefault("LLM_MODEL", "deepseek-ai/DeepSeek-V3.1")
@@ -199,8 +221,14 @@ def config_page():
     inputs = []
     for key in DEFAULT_KEYS:
         val = cfg.get(key, env.get(key, ""))
+        safe_val = htmlmod.escape(val, quote=True)
         t = "password" if "KEY" in key or "PASSWORD" in key or key.endswith("TOKEN") else "text"
-        inputs.append(f"<label>{key}</label><input name=\"{key}\" type=\"{t}\" value=\"{val}\">")
+        if key == "EXCLUDE_PROJECT_NAME":
+            inputs.append(
+                f"<label>{key}</label><input name=\"{key}\" type=\"{t}\" value=\"{safe_val}\" placeholder='例如：\"日记\",\"杂役\"'>"
+            )
+        else:
+            inputs.append(f"<label>{key}</label><input name=\"{key}\" type=\"{t}\" value=\"{safe_val}\">")
     body = """
     <form class=card method=post action=/config>
       <h3>配置管理（保存到 config.json，优先于环境变量）</h3>
