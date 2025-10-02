@@ -289,7 +289,12 @@ def fetch_calendar_events() -> Optional[List[Dict]]:
         results: List[Dict] = []
         for c, display in selected:
             try:
-                events = c.date_search(start, end)
+                if hasattr(c, "search"):
+                    # caldav 新版建议使用 Calendar.search(start=..., end=...)
+                    events = c.search(start=start, end=end)
+                else:
+                    # 兼容旧版库：fallback 到 date_search
+                    events = c.date_search(start, end)
             except Exception as e:
                 print(f"⚠️ 搜索日历事件失败（{display or '未命名'}）：{e}")
                 continue
