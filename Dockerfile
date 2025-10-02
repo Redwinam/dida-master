@@ -14,11 +14,11 @@ ENV TZ=Asia/Shanghai
 ENV CRON_SCHEDULE="30 5 * * *"
 # 允许配置是否在启动时先执行一次脚本（默认 true）
 ENV RUN_ON_START="true"
-# Web 前端默认绑定与模式（在 Dokploy 中建议使用 web 模式）
+# Web 前端默认绑定与模式（支持 web / cron / both）
 ENV HOST=0.0.0.0 \
     PORT=5000 \
     FLASK_DEBUG=0 \
-    APP_MODE=web
+    APP_MODE=both
 
 WORKDIR /app
 
