@@ -48,7 +48,7 @@ export default defineEventHandler(async (event) => {
   }
 
   // Format tasks for AI
-  const tasksContext = allTasks.map(t => `- ${t.title} (Status: ${t.status === 0 ? 'Pending' : 'Done'})`).join('\n')
+  const tasksContext = formatTasksForAI(allTasks, allProjects as any[])
 
   // 2. Fetch Calendar
   let calendarContext = '无'
