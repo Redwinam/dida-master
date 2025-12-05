@@ -1,9 +1,24 @@
 import OpenAI from 'openai'
 
 export const createLLMClient = (apiKey: string, baseURL: string) => {
+  // Ensure baseURL doesn't end with /chat/completions if the SDK adds it automatically
+  // OpenAI SDK usually appends /chat/completions to the baseURL
+  // But it depends on how the user provided it.
+  // If user provided full URL like https://api.siliconflow.cn/v1/chat/completions
+  // we should probably trim it to base URL https://api.siliconflow.cn/v1
+  
+  let finalBaseURL = baseURL
+  if (finalBaseURL.endsWith('/chat/completions')) {
+      finalBaseURL = finalBaseURL.replace('/chat/completions', '')
+  }
+  // Also remove trailing slash if present
+  if (finalBaseURL.endsWith('/')) {
+      finalBaseURL = finalBaseURL.slice(0, -1)
+  }
+
   return new OpenAI({
     apiKey,
-    baseURL
+    baseURL: finalBaseURL
   })
 }
 
@@ -55,12 +70,14 @@ export const parseImageToCalendar = async (client: OpenAI, model: string, imageB
           {
             type: 'image_url',
             image_url: {
-              url: `data:image/jpeg;base64,${imageBase64}`
+              url: `data:image/jpeg;base64,${imageBase64}`,
+              detail: 'auto'
             }
           }
         ]
       }
-    ]
+    ],
+    max_tokens: 1000 // Ensure we have enough tokens for JSON response
   })
 
   const content = completion.choices[0]?.message?.content || '[]'

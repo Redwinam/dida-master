@@ -274,9 +274,14 @@ watch(fetchedConfig, (val) => {
 async function saveConfig() {
   loading.value = true
   try {
+    const client = useSupabaseClient()
+    const { data: { session } } = await client.auth.getSession()
     await $fetch('/api/config', {
       method: 'POST',
-      body: config.value
+      body: config.value,
+      headers: {
+        Authorization: session?.access_token ? `Bearer ${session.access_token}` : ''
+      }
     })
     toast.add({ title: '配置已保存', color: 'success' })
   } catch (e: any) {
