@@ -1,51 +1,24 @@
-# Python
-__pycache__/
-*.py[cod]
-*$py.class
+# Nuxt dev/build outputs
+.output
+.data
+.nuxt
+.nitro
+.cache
+dist
 
-# Virtual environments
-venv/
-.venv/
-env/
-ENV/
+# Node dependencies
+node_modules
 
-# Environment files (do not commit secrets)
-.env
-.env.*
-.envrc
-.python-version
-
-# Build artifacts
-build/
-dist/
-*.egg-info/
-.eggs/
-*.egg
-wheels/
-
-# Caches & tooling
-.mypy_cache/
-.pytest_cache/
-.ruff_cache/
-.coverage
-.coverage.*
-htmlcov/
-.cache/
-
-# IDE & OS
-.vscode/
-.idea/
-.DS_Store
-Thumbs.db
+# Logs
+logs
 *.log
 
-# Docker & misc
-*.pid
+# Misc
+.DS_Store
+.fleet
+.idea
 
-# Project generated files
-ai_daily_plan_*.md
-dida_tasks*.md
-dida_tasks_new_format_*.md
-
-# Local scripts or configs
-run_task_fetcher.sh
+# Local env files
+.env
+.env.*
+!.env.example
