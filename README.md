@@ -53,10 +53,8 @@ create table public.dida_master_user_config (
   icloud_app_password text,
   cal_lookahead_days integer default 2,
   calendar_target text,
-  access_token text default encode(gen_random_bytes(16), 'hex'),
   updated_at timestamptz default now()
 );
-create unique index on public.dida_master_user_config (access_token);
 
 alter table public.dida_master_user_config enable row level security;
 
@@ -113,12 +111,12 @@ npm run dev
 
 ### 鉴权方式
 
-所有 API 均支持通过 `Access Token` 进行鉴权。您可以在系统配置页面的“API 访问凭证”区域获取您的 Token。
+所有 API 均支持通过 `API Key` 进行鉴权。您可以在系统配置页面的“API 访问凭证”区域获取您的 Key。
 
 鉴权方式二选一：
 
-1.  **Header**: `x-api-key: YOUR_ACCESS_TOKEN`
-2.  **Query Param**: `?api_key=YOUR_ACCESS_TOKEN`
+1.  **Header**: `x-api-key: YOUR_API_KEY`
+2.  **Query Param**: `?api_key=YOUR_API_KEY`
 
 ### 1. 触发每日笔记生成
 

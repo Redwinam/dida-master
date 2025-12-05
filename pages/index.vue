@@ -569,7 +569,7 @@ async function triggerImageToCalendar() {
                    </div>
 
                    <div v-else class="space-y-3">
-                    <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Access Token</label>
+                    <label class="text-sm font-medium text-gray-700 dark:text-gray-300">API Key</label>
                     <div class="flex gap-2">
                         <div class="relative flex-1">
                             <input 
