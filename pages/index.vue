@@ -193,10 +193,16 @@ async function triggerImageToCalendar() {
               <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-8">
                 <!-- 滴答清单 -->
                 <div class="space-y-5">
-                  <h4 class="font-medium text-gray-900 dark:text-white pb-2 border-b border-gray-100 dark:border-gray-700 flex items-center gap-2">
-                    <Icon icon="heroicons:list-bullet" class="w-5 h-5 text-indigo-500" />
-                    滴答清单 (Dida/TickTick)
-                  </h4>
+                  <div class="flex justify-between items-center pb-2 border-b border-gray-100 dark:border-gray-700">
+                    <h4 class="font-medium text-gray-900 dark:text-white flex items-center gap-2">
+                      <Icon icon="heroicons:list-bullet" class="w-5 h-5 text-indigo-500" />
+                      滴答清单 (Dida/TickTick)
+                    </h4>
+                    <NuxtLink to="/auth/dida" class="text-xs font-medium text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1">
+                      <Icon icon="heroicons:link" class="w-3 h-3" />
+                      Connect OAuth
+                    </NuxtLink>
+                  </div>
                   
                   <div class="space-y-1.5">
                     <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Access Token</label>

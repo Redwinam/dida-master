@@ -38,6 +38,8 @@ export default defineNuxtConfig({
     openaiApiKey: process.env.LLM_API_KEY,
     didaToken: process.env.DIDA_TOKEN,
     didaProjectId: process.env.DIDA_PROJECT_ID,
+    didaClientId: process.env.Dida_Client_ID,
+    didaClientSecret: process.env.Dida_Client_Secret,
     icloudUsername: process.env.ICLOUD_USERNAME,
     icloudAppPassword: process.env.ICLOUD_APP_PASSWORD,
     
