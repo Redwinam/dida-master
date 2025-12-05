@@ -13,8 +13,8 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  const clientId = config.didaClientId
-  const clientSecret = config.didaClientSecret
+  const clientId = config.didaClientId?.trim()
+  const clientSecret = config.didaClientSecret?.trim()
   const reqURL = getRequestURL(event)
   const redirectUri = `${reqURL.protocol}//${reqURL.host}/api/auth/dida/callback`
 
@@ -40,13 +40,15 @@ export default defineEventHandler(async (event) => {
     params.append('client_secret', clientSecret as string)
 
     console.log('Exchanging token with code:', code)
+    console.log('Using redirect_uri:', redirectUri)
+    console.log('Client ID:', clientId)
+    console.log('Client Secret Length:', clientSecret?.length)
     
     const response: any = await $fetch('https://dida365.com/oauth/token', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
-        'Accept': 'application/json',
-        'Authorization': `Basic ${authBase64}`
+        'Accept': 'application/json'
       },
       body: params
     })
