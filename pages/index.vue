@@ -110,6 +110,75 @@ function toggleExcludedProject(name: string) {
   }
 }
 
+// Calendar logic
+const calendars = ref<any[]>([])
+const fetchingCalendars = ref(false)
+
+async function fetchCalendars() {
+  if (!config.value.icloud_username || !config.value.icloud_app_password) return
+  
+  fetchingCalendars.value = true
+  try {
+    // Pass credentials if needed, but usually they are saved in backend. 
+    // However, if user just typed them, they might not be saved yet if they haven't clicked save.
+    // So we pass them in query to be safe and support "Test Connection" style immediately.
+    const data: any = await $fetch('/api/cal/calendars', {
+        params: {
+            username: config.value.icloud_username,
+            password: config.value.icloud_app_password
+        }
+    })
+    calendars.value = data || []
+    
+    // If we have calendars but no target selected, select the first one by default if empty
+    // But user might want multiple.
+  } catch (e: any) {
+    console.error('Failed to fetch calendars', e)
+    toast.add({ title: '获取日历列表失败', description: e.message, color: 'error' })
+  } finally {
+    fetchingCalendars.value = false
+  }
+}
+
+// Computed for calendar target (comma separated string <-> array)
+const targetCalendars = computed({
+    get: () => {
+        if (!config.value.calendar_target) return []
+        return config.value.calendar_target.split(',').map(s => s.trim()).filter(Boolean)
+    },
+    set: (val) => {
+        config.value.calendar_target = val.join(',')
+    }
+})
+
+function toggleTargetCalendar(name: string) {
+    const list = targetCalendars.value
+    const index = list.indexOf(name)
+    if (index === -1) {
+        targetCalendars.value = [...list, name]
+    } else {
+        targetCalendars.value = list.filter(n => n !== name)
+    }
+}
+
+// Auto fetch calendars if enabled and credentials exist on load
+watch(() => [config.value.cal_enable, config.value.icloud_username, config.value.icloud_app_password], ([enable, user, pass]) => {
+    if (enable && user && pass && calendars.value.length === 0 && !fetchingCalendars.value) {
+        // Debounce slightly or just call it
+        // We can check if we already have data or if fetchedConfig is true
+        if (fetchedConfig.value) {
+             // Avoid auto-fetch on every keystroke, maybe add a button instead or debounce
+             // For now, let's rely on the button, or fetch once on mount if credentials exist.
+        }
+    }
+})
+// Actually, better to fetch once when config is loaded if enabled
+watch(fetchedConfig, (val) => {
+    if (val && config.value.cal_enable && config.value.icloud_username) {
+        fetchCalendars()
+    }
+})
+
 async function saveConfig() {
   loading.value = true
   try {
@@ -410,14 +479,35 @@ async function triggerImageToCalendar() {
                     <p class="text-xs text-gray-500">读取未来几天的日历</p>
                   </div>
                   <div class="space-y-1.5">
-                    <label class="text-sm font-medium text-gray-700 dark:text-gray-300">目标日历 (图片识别)</label>
-                    <div class="relative">
+                    <label class="text-sm font-medium text-gray-700 dark:text-gray-300 flex justify-between">
+                        <span>目标日历 (图片识别)</span>
+                        <button @click.prevent="fetchCalendars" class="text-xs text-blue-600 hover:text-blue-500 flex items-center gap-1">
+                            <Icon :icon="fetchingCalendars ? 'line-md:loading-twotone-loop' : 'heroicons:arrow-path'" class="w-3 h-3" />
+                            刷新日历列表
+                        </button>
+                    </label>
+                    
+                    <div v-if="calendars.length > 0 || fetchingCalendars" class="border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700/50 p-3 max-h-48 overflow-y-auto space-y-2">
+                        <div v-if="fetchingCalendars" class="flex justify-center py-2">
+                            <Icon icon="line-md:loading-twotone-loop" class="w-5 h-5 text-gray-400" />
+                        </div>
+                        <label v-for="c in calendars" :key="c.name" class="flex items-center gap-2 cursor-pointer group">
+                            <input 
+                                type="checkbox" 
+                                :checked="targetCalendars.includes(c.name)"
+                                @change="toggleTargetCalendar(c.name)"
+                                class="rounded border-gray-300 text-blue-600 focus:ring-blue-500 transition-colors"
+                            >
+                            <span class="text-sm text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white transition-colors">{{ c.name }}</span>
+                        </label>
+                    </div>
+                    <div v-else class="relative">
                       <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                         <Icon icon="heroicons:calendar-days" class="w-5 h-5 text-gray-400" />
                       </div>
                       <input v-model="config.calendar_target" type="text" placeholder="个人,工作" class="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700/50 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
                     </div>
-                    <p class="text-xs text-gray-500">允许写入的日历名称，逗号分隔</p>
+                    <p class="text-xs text-gray-500">允许写入的日历名称 (LLM 将从中选择最合适的)</p>
                   </div>
                 </div>
               </div>
