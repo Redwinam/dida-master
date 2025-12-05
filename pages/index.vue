@@ -32,6 +32,7 @@ const loading = ref(false)
 const loadingAction = ref(false)
 const activeTab = ref<'config' | 'actions'>('config')
 const fetchedConfig = ref(false)
+const configLoadError = ref<string | null>(null)
 
 const apiKey = ref('')
  const loadingApiKey = ref(false)
@@ -39,6 +40,40 @@ const apiKey = ref('')
  const editingApiKey = ref(false)
  const newApiKeyInput = ref('')
  
+ async function loadConfig() {
+   configLoadError.value = null
+   try {
+     const data = await $fetch('/api/config')
+     console.log('Frontend: Fetched config data:', data)
+     if (data) {
+       config.value = { ...config.value, ...data }
+       console.log('Frontend: Updated config value:', config.value)
+     }
+     fetchedConfig.value = true
+     
+     // Check for token in query param (from OAuth callback)
+     const route = useRoute()
+     const tokenFromQuery = route.query.dida_token as string
+     if (tokenFromQuery) {
+       config.value.dida_token = tokenFromQuery
+       // Auto save if we got a token
+       await saveConfig()
+       // Remove query param
+       const router = useRouter()
+       router.replace({ query: { ...route.query, dida_token: undefined } })
+     }
+
+     // If we have a token, fetch projects
+     if (config.value.dida_token) {
+       fetchProjects()
+     }
+
+   } catch (e: any) {
+     console.error('Failed to fetch config', e)
+     configLoadError.value = e.message || '加载配置失败'
+   }
+ }
+
  // Fetch config on mount
  watch(user, async (u) => {
    if (u) {
@@ -64,35 +99,7 @@ const apiKey = ref('')
      }
     
     if (!fetchedConfig.value) {
-      try {
-        const data = await $fetch('/api/config')
-        console.log('Frontend: Fetched config data:', data)
-        if (data) {
-          config.value = { ...config.value, ...data }
-          console.log('Frontend: Updated config value:', config.value)
-        }
-        fetchedConfig.value = true
-        
-        // Check for token in query param (from OAuth callback)
-        const route = useRoute()
-        const tokenFromQuery = route.query.dida_token as string
-        if (tokenFromQuery) {
-          config.value.dida_token = tokenFromQuery
-          // Auto save if we got a token
-          await saveConfig()
-          // Remove query param
-          const router = useRouter()
-          router.replace({ query: { ...route.query, dida_token: undefined } })
-        }
-  
-        // If we have a token, fetch projects
-        if (config.value.dida_token) {
-          fetchProjects()
-        }
-  
-      } catch (e) {
-        console.error('Failed to fetch config', e)
-      }
+      await loadConfig()
     }
   }
 }, { immediate: true })
@@ -413,7 +420,32 @@ async function triggerImageToCalendar() {
 
       <!-- Config Tab -->
       <div v-if="activeTab === 'config'" class="space-y-6">
-        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+        <!-- Loading State -->
+        <div v-if="!fetchedConfig && !configLoadError" class="flex flex-col items-center justify-center py-20 animate-fade-in">
+          <div class="p-4 bg-indigo-50 dark:bg-indigo-900/20 rounded-full mb-4">
+            <Icon icon="line-md:loading-twotone-loop" class="w-8 h-8 text-indigo-600 dark:text-indigo-400" />
+          </div>
+          <p class="text-gray-500 dark:text-gray-400 font-medium">正在加载配置信息...</p>
+          <p class="text-sm text-gray-400 dark:text-gray-500 mt-2">请稍候，正在从服务器获取最新数据</p>
+        </div>
+
+        <!-- Error State -->
+        <div v-else-if="configLoadError" class="flex flex-col items-center justify-center py-20 animate-fade-in">
+           <div class="p-4 bg-red-50 dark:bg-red-900/20 rounded-full mb-4">
+             <Icon icon="heroicons:exclamation-triangle" class="w-8 h-8 text-red-500" />
+           </div>
+           <p class="text-gray-900 dark:text-white font-medium text-lg">加载配置失败</p>
+           <p class="text-gray-500 dark:text-gray-400 mt-2 mb-6 max-w-md text-center">{{ configLoadError }}</p>
+           <button 
+             @click="loadConfig" 
+             class="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors shadow-sm"
+           >
+             <Icon icon="heroicons:arrow-path" class="w-4 h-4" />
+             重试
+           </button>
+        </div>
+
+        <div v-else class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden animate-fade-in">
           <div class="p-6 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center">
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
               <Icon icon="heroicons:adjustments-horizontal" class="w-5 h-5 text-gray-400" />
