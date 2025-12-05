@@ -12,7 +12,8 @@ export default defineEventHandler(async (event) => {
   }
 
   const reqURL = getRequestURL(event)
-  const redirectUri = `${reqURL.protocol}//${reqURL.host}/api/auth/dida/callback`
+  const siteUrl = config.siteUrl || `${reqURL.protocol}//${reqURL.host}`
+  const redirectUri = `${siteUrl}/api/auth/dida/callback`
   const state = Math.random().toString(36).substring(7)
   const scope = 'tasks:write tasks:read'
   

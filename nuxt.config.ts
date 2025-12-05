@@ -43,6 +43,7 @@ export default defineNuxtConfig({
     icloudUsername: process.env.ICLOUD_USERNAME,
     icloudAppPassword: process.env.ICLOUD_APP_PASSWORD,
     supabaseServiceKey: process.env.NUXT_SUPABASE_SERVICE_ROLE_KEY,
+    siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'http://localhost:3000',
     
     public: {
       supabaseUrl: process.env.NUXT_PUBLIC_SUPABASE_URL,
