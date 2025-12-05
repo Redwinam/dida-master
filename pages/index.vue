@@ -538,53 +538,17 @@ async function triggerImageToCalendar() {
                      使用此 Token 可以通过外部工具（如快捷指令、Cron Job）调用 API，无需登录。
                    </p>
                    
-                   <div v-if="!apiKey && !editingApiKey" class="flex flex-col items-center justify-center py-4 border-2 border-dashed border-gray-200 dark:border-gray-600 rounded-lg">
+                   <div v-if="!apiKey" class="flex flex-col items-center justify-center py-4 border-2 border-dashed border-gray-200 dark:border-gray-600 rounded-lg">
                       <p class="text-sm text-gray-500 mb-3">您尚未设置 API Key</p>
-                      <div class="flex gap-3">
-                        <button 
-                            @click="generateApiKey" 
-                            :disabled="loadingApiKey"
-                            class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors flex items-center gap-2"
-                        >
-                            <Icon v-if="loadingApiKey" icon="line-md:loading-twotone-loop" class="w-4 h-4" />
-                            <Icon v-else icon="heroicons:sparkles" class="w-4 h-4" />
-                            随机生成
-                        </button>
-                        <button 
-                            @click="editingApiKey = true" 
-                            class="px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors flex items-center gap-2"
-                        >
-                            <Icon icon="heroicons:pencil-square" class="w-4 h-4" />
-                            手动输入
-                        </button>
-                      </div>
-                   </div>
-                   
-                   <div v-else-if="editingApiKey" class="space-y-3">
-                        <label class="text-sm font-medium text-gray-700 dark:text-gray-300">输入 API Key</label>
-                        <div class="flex gap-2">
-                            <input 
-                                v-model="newApiKeyInput"
-                                type="text" 
-                                placeholder="sk-..."
-                                class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white sm:text-sm font-mono" 
-                            />
-                            <button 
-                                @click="saveManualApiKey"
-                                :disabled="!newApiKeyInput || loadingApiKey"
-                                class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2"
-                            >
-                                <Icon icon="heroicons:check" class="w-4 h-4" />
-                                保存
-                            </button>
-                            <button 
-                                @click="editingApiKey = false; newApiKeyInput = apiKey"
-                                class="px-3 py-2 bg-gray-100 dark:bg-gray-600 text-gray-600 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-500 transition-colors"
-                            >
-                                <Icon icon="heroicons:x-mark" class="w-5 h-5" />
-                            </button>
-                        </div>
-                        <p class="text-xs text-gray-500">您可以输入已有的通用 Key，以便在多个应用间共享。</p>
+                      <button 
+                          @click="generateApiKey" 
+                          :disabled="loadingApiKey"
+                          class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors flex items-center gap-2"
+                      >
+                          <Icon v-if="loadingApiKey" icon="line-md:loading-twotone-loop" class="w-4 h-4" />
+                          <Icon v-else icon="heroicons:sparkles" class="w-4 h-4" />
+                          随机生成
+                      </button>
                    </div>
 
                    <div v-else class="space-y-3">
@@ -598,7 +562,7 @@ async function triggerImageToCalendar() {
                                 class="block w-full pl-3 pr-10 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-600 text-gray-500 dark:text-gray-300 sm:text-sm font-mono" 
                             />
                             <button 
-                                @click="showApiKey = !showApiKey"
+                                @click.prevent="showApiKey = !showApiKey"
                                 class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
                             >
                                 <Icon :icon="showApiKey ? 'heroicons:eye-slash' : 'heroicons:eye'" class="w-4 h-4" />
@@ -610,13 +574,6 @@ async function triggerImageToCalendar() {
                             title="复制"
                         >
                             <Icon icon="heroicons:clipboard" class="w-5 h-5" />
-                        </button>
-                        <button 
-                            @click="editingApiKey = true; newApiKeyInput = apiKey"
-                            class="px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
-                            title="编辑"
-                        >
-                            <Icon icon="heroicons:pencil-square" class="w-5 h-5" />
                         </button>
                         <button 
                             @click="revokeApiKey"
