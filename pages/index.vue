@@ -41,11 +41,74 @@ watch(user, async (u) => {
         config.value = { ...config.value, ...data }
       }
       fetchedConfig.value = true
+      
+      // Check for token in query param (from OAuth callback)
+      const route = useRoute()
+      const tokenFromQuery = route.query.dida_token as string
+      if (tokenFromQuery) {
+        config.value.dida_token = tokenFromQuery
+        // Auto save if we got a token
+        await saveConfig()
+        // Remove query param
+        const router = useRouter()
+        router.replace({ query: { ...route.query, dida_token: undefined } })
+      }
+
+      // If we have a token, fetch projects
+      if (config.value.dida_token) {
+        fetchProjects()
+      }
+
     } catch (e) {
       console.error('Failed to fetch config', e)
     }
   }
 }, { immediate: true })
+
+const projects = ref<any[]>([])
+const fetchingProjects = ref(false)
+
+async function fetchProjects() {
+  if (!config.value.dida_token) return
+  fetchingProjects.value = true
+  try {
+    const data: any = await $fetch('/api/dida/projects', {
+      params: { token: config.value.dida_token }
+    })
+    projects.value = data || []
+  } catch (e) {
+    console.error('Failed to fetch projects', e)
+    toast.add({ title: '获取项目列表失败', description: '请检查Token是否过期', color: 'error' })
+  } finally {
+    fetchingProjects.value = false
+  }
+}
+
+// Helper for multi-select
+const excludedProjects = computed({
+  get: () => {
+    if (!config.value.exclude_project_name) return []
+    // Parse "A","B" format
+    return config.value.exclude_project_name
+      .split(',')
+      .map(s => s.trim().replace(/^"|"$/g, ''))
+      .filter(Boolean)
+  },
+  set: (val) => {
+    // Join with quotes
+    config.value.exclude_project_name = val.map(s => `"${s}"`).join(',')
+  }
+})
+
+function toggleExcludedProject(name: string) {
+  const list = excludedProjects.value
+  const index = list.indexOf(name)
+  if (index === -1) {
+    excludedProjects.value = [...list, name]
+  } else {
+    excludedProjects.value = list.filter(n => n !== name)
+  }
+}
 
 async function saveConfig() {
   loading.value = true
@@ -192,48 +255,75 @@ async function triggerImageToCalendar() {
             <form @submit.prevent="saveConfig" class="space-y-8">
               <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-8">
                 <!-- 滴答清单 -->
-                <div class="space-y-5">
+                <div class="space-y-6">
                   <div class="flex justify-between items-center pb-2 border-b border-gray-100 dark:border-gray-700">
                     <h4 class="font-medium text-gray-900 dark:text-white flex items-center gap-2">
                       <Icon icon="heroicons:list-bullet" class="w-5 h-5 text-indigo-500" />
                       滴答清单 (Dida/TickTick)
                     </h4>
-                    <NuxtLink to="/auth/dida" class="text-xs font-medium text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1">
-                      <Icon icon="heroicons:link" class="w-3 h-3" />
-                      Connect OAuth
-                    </NuxtLink>
                   </div>
                   
                   <div class="space-y-1.5">
-                    <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Access Token</label>
-                    <div class="relative">
-                      <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <Icon icon="heroicons:key" class="w-5 h-5 text-gray-400" />
-                      </div>
-                      <input v-model="config.dida_token" type="password" class="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700/50 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+                    <label class="text-sm font-medium text-gray-700 dark:text-gray-300">连接状态</label>
+                    <div v-if="!config.dida_token" class="flex">
+                        <a href="/api/auth/dida/authorize" class="w-full flex justify-center items-center py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-200">
+                            <Icon icon="heroicons:link" class="w-5 h-5 mr-2" />
+                            点击连接滴答清单
+                        </a>
                     </div>
-                    <p class="text-xs text-gray-500">请填入滴答清单 OAuth Token</p>
-                  </div>
-
-                  <div class="space-y-1.5">
-                    <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Project ID</label>
-                    <div class="relative">
-                      <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <Icon icon="heroicons:folder" class="w-5 h-5 text-gray-400" />
-                      </div>
-                      <input v-model="config.dida_project_id" type="text" class="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700/50 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+                    <div v-else class="flex items-center justify-between bg-green-50 dark:bg-green-900/20 p-3 rounded-lg border border-green-100 dark:border-green-800">
+                        <div class="flex items-center gap-2 text-green-700 dark:text-green-400">
+                            <Icon icon="heroicons:check-circle" class="w-5 h-5" />
+                            <span class="text-sm font-medium">已连接</span>
+                        </div>
+                        <button @click="config.dida_token = ''" class="text-xs text-gray-500 hover:text-red-500 underline">断开连接</button>
                     </div>
                   </div>
 
-                  <div class="space-y-1.5">
-                    <label class="text-sm font-medium text-gray-700 dark:text-gray-300">排除项目 (CSV)</label>
-                    <div class="relative">
-                      <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <Icon icon="heroicons:no-symbol" class="w-5 h-5 text-gray-400" />
-                      </div>
-                      <input v-model="config.exclude_project_name" type="text" class="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700/50 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+                  <div v-if="config.dida_token" class="space-y-4 animate-fade-in">
+                    <div class="space-y-1.5">
+                        <label class="text-sm font-medium text-gray-700 dark:text-gray-300 flex justify-between">
+                            <span>目标项目 (用于生成日记)</span>
+                            <button @click="fetchProjects" class="text-xs text-indigo-600 hover:text-indigo-500 flex items-center gap-1">
+                                <Icon :icon="fetchingProjects ? 'line-md:loading-twotone-loop' : 'heroicons:arrow-path'" class="w-3 h-3" />
+                                刷新列表
+                            </button>
+                        </label>
+                        <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <Icon icon="heroicons:folder" class="w-5 h-5 text-gray-400" />
+                        </div>
+                        <select v-model="config.dida_project_id" class="block w-full pl-10 pr-10 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700/50 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm appearance-none">
+                            <option value="" disabled>选择一个项目...</option>
+                            <option v-for="p in projects" :key="p.id" :value="p.id">{{ p.name }}</option>
+                        </select>
+                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                            <Icon icon="heroicons:chevron-up-down" class="w-4 h-4 text-gray-400" />
+                        </div>
+                        </div>
                     </div>
-                    <p class="text-xs text-gray-500">不希望被读取的项目名称</p>
+
+                    <div class="space-y-1.5">
+                        <label class="text-sm font-medium text-gray-700 dark:text-gray-300">排除项目 (不读取任务)</label>
+                        <div class="border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700/50 p-3 max-h-48 overflow-y-auto space-y-2">
+                            <div v-if="projects.length === 0 && !fetchingProjects" class="text-xs text-gray-500 text-center py-2">
+                                点击上方刷新按钮获取项目列表
+                            </div>
+                            <div v-if="fetchingProjects" class="flex justify-center py-2">
+                                <Icon icon="line-md:loading-twotone-loop" class="w-5 h-5 text-gray-400" />
+                            </div>
+                            <label v-for="p in projects" :key="p.id" class="flex items-center gap-2 cursor-pointer group">
+                                <input 
+                                    type="checkbox" 
+                                    :checked="excludedProjects.includes(p.name)"
+                                    @change="toggleExcludedProject(p.name)"
+                                    class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 transition-colors"
+                                >
+                                <span class="text-sm text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white transition-colors">{{ p.name }}</span>
+                            </label>
+                        </div>
+                        <p class="text-xs text-gray-500">选中项目中的任务将不会被包含在每日总结中</p>
+                    </div>
                   </div>
                 </div>
 
