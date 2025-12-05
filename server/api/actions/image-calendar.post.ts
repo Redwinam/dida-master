@@ -17,23 +17,7 @@ interface UserConfig {
 }
 
 export default defineEventHandler(async (event) => {
-  const user = await serverSupabaseUser(event)
-  if (!user) {
-    throw createError({ statusCode: 401, message: 'Unauthorized' })
-  }
-
-  const client = await serverSupabaseClient(event)
-  const { data } = await client
-    .from('dida_master_user_config')
-    .select('*')
-    .eq('user_id', user.id)
-    .single()
-
-  if (!data) {
-    throw createError({ statusCode: 400, message: 'Config not found' })
-  }
-  
-  const config = data as unknown as UserConfig
+  const config = await getUserConfig(event) as unknown as UserConfig
 
   const formData = await readMultipartFormData(event)
   const imagePart = formData?.find(p => p.name === 'image')

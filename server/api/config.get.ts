@@ -1,21 +1,20 @@
 import { serverSupabaseUser, serverSupabaseClient } from '#supabase/server'
 
 export default defineEventHandler(async (event) => {
-  const client = await serverSupabaseClient(event)
   const user = await serverSupabaseUser(event)
-  let userId = user?.id as string | undefined
-  if (!userId) {
-    const { data } = await client.auth.getUser()
-    userId = data?.user?.id
-  }
-  if (!userId) {
+  console.log('Config GET: User from serverSupabaseUser:', user?.id)
+
+  if (!user) {
+    console.log('Config GET: No user found, returning 401')
     throw createError({ statusCode: 401, message: 'Unauthorized' })
   }
 
+  const client = await serverSupabaseClient(event)
+  
   const { data, error } = await client
     .from('dida_master_user_config')
     .select('*')
-    .eq('user_id', userId)
+    .eq('user_id', user.id)
     .single()
 
   if (error && error.code !== 'PGRST116') { // PGRST116 is "The result contains 0 rows"

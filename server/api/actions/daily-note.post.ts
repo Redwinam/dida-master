@@ -16,24 +16,8 @@ interface UserConfig {
 }
 
 export default defineEventHandler(async (event) => {
-  const user = await serverSupabaseUser(event)
-  if (!user) {
-    throw createError({ statusCode: 401, message: 'Unauthorized' })
-  }
+  const config = await getUserConfig(event) as unknown as UserConfig
 
-  const client = await serverSupabaseClient(event)
-  // Get config
-  const { data } = await client
-    .from('dida_master_user_config')
-    .select('*')
-    .eq('user_id', user.id)
-    .single()
-
-  if (!data) {
-    throw createError({ statusCode: 400, message: 'Config not found' })
-  }
-  
-  const config = data as unknown as UserConfig
 
   // 1. Fetch Tasks
   const allProjects = await getDidaProjects(config.dida_token)

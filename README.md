@@ -53,8 +53,10 @@ create table public.dida_master_user_config (
   icloud_app_password text,
   cal_lookahead_days integer default 2,
   calendar_target text,
+  access_token text default encode(gen_random_bytes(16), 'hex'),
   updated_at timestamptz default now()
 );
+create unique index on public.dida_master_user_config (access_token);
 
 alter table public.dida_master_user_config enable row level security;
 
@@ -104,3 +106,40 @@ npm run dev
 ## 🤝 贡献
 
 欢迎提交 Issue 和 PR 改进本项目。
+
+## 🔌 API 接口调用
+
+您可以使用外部工具（如 Shortcuts、Cron、Scriptable）调用本应用的 API，无需模拟登录。
+
+### 鉴权方式
+
+所有 API 均支持通过 `Access Token` 进行鉴权。您可以在系统配置页面的“API 访问凭证”区域获取您的 Token。
+
+鉴权方式二选一：
+
+1.  **Header**: `x-api-key: YOUR_ACCESS_TOKEN`
+2.  **Query Param**: `?api_key=YOUR_ACCESS_TOKEN`
+
+### 1. 触发每日笔记生成
+
+*   **Endpoint**: `POST /api/actions/daily-note`
+*   **Content-Type**: `application/json` (Body 可为空)
+*   **示例**:
+
+```bash
+curl -X POST "http://your-domain/api/actions/daily-note" \
+     -H "x-api-key: your_token_here"
+```
+
+### 2. 图片转日历事件
+
+*   **Endpoint**: `POST /api/actions/image-calendar`
+*   **Content-Type**: `multipart/form-data`
+*   **参数**:
+    *   `image`: 图片文件
+*   **示例**:
+
+```bash
+curl -X POST "http://your-domain/api/actions/image-calendar?api_key=your_token_here" \
+     -F "image=@/path/to/image.jpg"
+```
