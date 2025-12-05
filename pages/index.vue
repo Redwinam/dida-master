@@ -16,7 +16,7 @@ const toast = useToast()
 const config = ref({
   dida_token: '',
   dida_project_id: '',
-  exclude_project_name: '"日记","客栈"',
+  exclude_project_name: '',
   llm_api_key: '',
   llm_model: 'deepseek-ai/DeepSeek-V3.1',
   llm_api_url: 'https://api.siliconflow.cn/v1/chat/completions',
