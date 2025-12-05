@@ -33,7 +33,7 @@ const { notifications, remove } = useToast()
           </div>
           <div class="flex-1 min-w-0">
             <h3 class="text-sm font-medium text-gray-900 dark:text-white">{{ n.title }}</h3>
-            <p v-if="n.description" class="mt-1 text-sm text-gray-500 dark:text-gray-400 break-words">{{ n.description }}</p>
+            <p v-if="n.description" class="mt-1 text-sm text-gray-500 dark:text-gray-400 wrap-break-word">{{ n.description }}</p>
           </div>
           <button @click="remove(n.id)" class="shrink-0 text-gray-400 hover:text-gray-500 dark:hover:text-gray-300 transition-colors">
             <Icon icon="heroicons:x-mark" class="w-5 h-5" />

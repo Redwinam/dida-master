@@ -30,27 +30,22 @@ const config = ref({
 const loading = ref(false)
 const loadingAction = ref(false)
 const activeTab = ref<'config' | 'actions'>('config')
+const fetchedConfig = ref(false)
 
 // Fetch config on mount
-onMounted(async () => {
-  try {
-    const data = await $fetch('/api/config', {
-      onResponseError({ response }) {
-        if (response.status === 401) {
-          // Token expired or invalid, force logout
-          const { logout } = useAuth()
-          logout()
-        }
+watch(user, async (u) => {
+  if (u && !fetchedConfig.value) {
+    try {
+      const data = await $fetch('/api/config')
+      if (data) {
+        config.value = { ...config.value, ...data }
       }
-    })
-    if (data) {
-      // Merge with default to avoid undefined
-      config.value = { ...config.value, ...data }
+      fetchedConfig.value = true
+    } catch (e) {
+      console.error('Failed to fetch config', e)
     }
-  } catch (e) {
-    console.error('Failed to fetch config', e)
   }
-})
+}, { immediate: true })
 
 async function saveConfig() {
   loading.value = true
@@ -166,7 +161,7 @@ async function triggerImageToCalendar() {
             'w-full md:w-auto flex items-center justify-center gap-2 rounded-lg px-6 py-2.5 text-sm font-medium leading-5 transition-all duration-200',
             activeTab === tab
               ? 'bg-white dark:bg-gray-700 text-indigo-600 dark:text-indigo-400 shadow-sm'
-              : 'text-gray-600 dark:text-gray-400 hover:bg-white/[0.12] hover:text-gray-800 dark:hover:text-gray-200'
+              : 'text-gray-600 dark:text-gray-400 hover:bg-white/12 hover:text-gray-800 dark:hover:text-gray-200'
           ]"
         >
           <Icon :icon="tab === 'config' ? 'heroicons:cog-6-tooth' : 'heroicons:bolt'" class="w-5 h-5" />
