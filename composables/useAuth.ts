@@ -39,7 +39,7 @@ export const useAuth = () => {
     try {
       const { data, error: signUpError } = await supabase.auth.signUp({
         email,
-        password: password || undefined,
+        password: password || '', // Supabase requires password as string, not undefined
       })
 
       if (signUpError) throw signUpError

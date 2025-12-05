@@ -48,9 +48,9 @@ async function saveConfig() {
       method: 'POST',
       body: config.value
     })
-    toast.add({ title: '配置已保存', color: 'green' })
+    toast.add({ title: '配置已保存', color: 'success' })
   } catch (e: any) {
-    toast.add({ title: '保存失败', description: e.message, color: 'red' })
+    toast.add({ title: '保存失败', description: e.message, color: 'error' })
   } finally {
     loading.value = false
   }
@@ -60,9 +60,9 @@ async function triggerDailyNote() {
   loadingAction.value = true
   try {
     const res: any = await $fetch('/api/actions/daily-note', { method: 'POST' })
-    toast.add({ title: '每日笔记生成成功', description: res.message, color: 'green' })
+    toast.add({ title: '每日笔记生成成功', description: res.message, color: 'success' })
   } catch (e: any) {
-    toast.add({ title: '生成失败', description: e.message, color: 'red' })
+    toast.add({ title: '生成失败', description: e.message, color: 'error' })
   } finally {
     loadingAction.value = false
   }
@@ -92,9 +92,9 @@ async function triggerImageToCalendar() {
       method: 'POST',
       body: formData
     })
-    toast.add({ title: '日历事件已添加', description: `添加了 ${res.events?.length || 0} 个事件`, color: 'green' })
+    toast.add({ title: '日历事件已添加', description: `添加了 ${res.events?.length || 0} 个事件`, color: 'success' })
   } catch (e: any) {
-    toast.add({ title: '处理失败', description: e.message, color: 'red' })
+    toast.add({ title: '处理失败', description: e.message, color: 'error' })
   } finally {
     loadingAction.value = false
   }
@@ -108,7 +108,7 @@ async function triggerImageToCalendar() {
         <h1 class="text-2xl font-bold text-gray-800 dark:text-white">滴答清单助手</h1>
         <div class="flex gap-2 items-center">
           <span class="text-sm text-gray-500">{{ user?.email }}</span>
-          <UButton color="gray" variant="ghost" icon="i-heroicons-arrow-right-on-rectangle" @click="logout" />
+          <UButton color="neutral" variant="ghost" icon="i-heroicons-arrow-right-on-rectangle" @click="logout" />
         </div>
       </div>
 
