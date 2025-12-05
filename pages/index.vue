@@ -1,4 +1,9 @@
 <script setup lang="ts">
+// Use dynamic import for caldav related utils if they cause SSR issues, 
+// but since this is index page, let's check imports.
+// Actually, caldav is only used in server API, not client side.
+// So the client side imports should be safe.
+
 definePageMeta({
   middleware: 'auth'
 })
@@ -28,6 +33,7 @@ onMounted(async () => {
   try {
     const data = await $fetch('/api/config')
     if (data) {
+      // Merge with default to avoid undefined
       config.value = { ...config.value, ...data }
     }
   } catch (e) {
@@ -53,7 +59,7 @@ async function saveConfig() {
 async function triggerDailyNote() {
   loadingAction.value = true
   try {
-    const res = await $fetch('/api/actions/daily-note', { method: 'POST' })
+    const res: any = await $fetch('/api/actions/daily-note', { method: 'POST' })
     toast.add({ title: '每日笔记生成成功', description: res.message, color: 'green' })
   } catch (e: any) {
     toast.add({ title: '生成失败', description: e.message, color: 'red' })
@@ -82,7 +88,7 @@ async function triggerImageToCalendar() {
   formData.append('image', imageFile.value)
   
   try {
-    const res = await $fetch('/api/actions/image-calendar', {
+    const res: any = await $fetch('/api/actions/image-calendar', {
       method: 'POST',
       body: formData
     })

@@ -12,13 +12,18 @@ export default defineNuxtConfig({
     key: process.env.NUXT_PUBLIC_SUPABASE_ANON_KEY
   },
   vite: {
+    define: {
+      'global': 'window',
+      'process.env': {},
+    },
     optimizeDeps: {
-      exclude: ['tsdav', 'ical.js', 'openai']
-    }
-  },
-  nitro: {
-    externals: {
-      external: ['tsdav', 'ical.js', 'openai']
+      include: ['ical.js', 'tsdav']
+    },
+    resolve: {
+      alias: {
+        // Polyfill node modules for browser if needed by dependencies
+        path: 'path-browserify',
+      }
     }
   },
   runtimeConfig: {
