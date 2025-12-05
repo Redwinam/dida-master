@@ -3,8 +3,16 @@ import { serverSupabaseUser, serverSupabaseClient } from '#supabase/server'
 import { getCalendarEvents } from '../../utils/caldav'
 
 export default defineEventHandler(async (event) => {
-  const user = await serverSupabaseUser(event)
-  if (!user) {
+  const headers = getRequestHeaders(event)
+  let token = undefined
+  if (headers.authorization && headers.authorization.startsWith('Bearer ')) {
+    token = headers.authorization.substring(7)
+  }
+  
+  const client = await serverSupabaseClient(event)
+  const { data: { user }, error: userError } = await client.auth.getUser(token)
+  
+  if (!user || userError) {
     throw createError({ statusCode: 401, message: 'Unauthorized' })
   }
 

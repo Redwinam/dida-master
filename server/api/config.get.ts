@@ -3,15 +3,23 @@ import { serverSupabaseUser, serverSupabaseClient } from '#supabase/server'
 export default defineEventHandler(async (event) => {
   // Use explicit client.auth.getUser() for robust session retrieval
   const headers = getRequestHeaders(event)
-  console.log('Config GET: Auth Header present:', !!headers.authorization)
+  // console.log('Config GET: Auth Header present:', !!headers.authorization)
   
   const client = await serverSupabaseClient(event)
-  const { data: { user }, error: userError } = await client.auth.getUser()
+  
+  // Extract token from header manually to ensure we use the latest token provided by frontend
+  // This bypasses potential stale cookie issues in serverSupabaseClient
+  let token = undefined
+  if (headers.authorization && headers.authorization.startsWith('Bearer ')) {
+    token = headers.authorization.substring(7)
+  }
 
-  console.log('Config GET: User ID:', user?.id)
+  const { data: { user }, error: userError } = await client.auth.getUser(token)
+
+  // console.log('Config GET: User ID:', user?.id)
 
   if (userError || !user || !user.id) {
-    console.log('Config GET: No user found or error, returning 401. Error:', userError?.message)
+    // console.log('Config GET: No user found or error, returning 401. Error:', userError?.message)
     throw createError({ statusCode: 401, message: 'Unauthorized' })
   }
 

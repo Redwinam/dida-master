@@ -43,6 +43,8 @@ const newApiKeyInput = ref('')
  
 // Move client initialization to setup scope
 const client = useSupabaseClient()
+const route = useRoute()
+const router = useRouter()
 
 async function loadConfig() {
   if (loadingConfig.value) return
@@ -61,22 +63,20 @@ async function loadConfig() {
     }
     
     const data = await $fetch('/api/config', { headers })
-    console.log('Frontend: Fetched config data:', data)
+    // console.log('Frontend: Fetched config data:', data)
     if (data) {
       config.value = { ...config.value, ...data }
-      console.log('Frontend: Updated config value:', config.value)
+      // console.log('Frontend: Updated config value:', config.value)
     }
     fetchedConfig.value = true
     
     // Check for token in query param (from OAuth callback)
-    const route = useRoute()
     const tokenFromQuery = route.query.dida_token as string
     if (tokenFromQuery) {
       config.value.dida_token = tokenFromQuery
       // Auto save if we got a token
       await saveConfig()
       // Remove query param
-      const router = useRouter()
       router.replace({ query: { ...route.query, dida_token: undefined } })
     }
 
@@ -112,7 +112,7 @@ watch(user, async (u) => {
      if (freshUser) {
          const freshKey = freshUser.user_metadata?.api_key || ''
          if (freshKey !== apiKey.value) {
-             console.log('Frontend: Detected stale API Key, updating from server.')
+             // console.log('Frontend: Detected stale API Key, updating from server.')
              apiKey.value = freshKey
              newApiKeyInput.value = freshKey
              // Update global user object to reflect new metadata
