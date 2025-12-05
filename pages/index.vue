@@ -33,49 +33,73 @@ const loadingAction = ref(false)
 const activeTab = ref<'config' | 'actions'>('config')
 const fetchedConfig = ref(false)
 const configLoadError = ref<string | null>(null)
+const loadingConfig = ref(false)
 
 const apiKey = ref('')
- const loadingApiKey = ref(false)
- const showApiKey = ref(false)
- const editingApiKey = ref(false)
- const newApiKeyInput = ref('')
+const loadingApiKey = ref(false)
+const showApiKey = ref(false)
+const editingApiKey = ref(false)
+const newApiKeyInput = ref('')
  
- async function loadConfig() {
-   configLoadError.value = null
-   try {
-     const data = await $fetch('/api/config')
-     console.log('Frontend: Fetched config data:', data)
-     if (data) {
-       config.value = { ...config.value, ...data }
-       console.log('Frontend: Updated config value:', config.value)
-     }
-     fetchedConfig.value = true
-     
-     // Check for token in query param (from OAuth callback)
-     const route = useRoute()
-     const tokenFromQuery = route.query.dida_token as string
-     if (tokenFromQuery) {
-       config.value.dida_token = tokenFromQuery
-       // Auto save if we got a token
-       await saveConfig()
-       // Remove query param
-       const router = useRouter()
-       router.replace({ query: { ...route.query, dida_token: undefined } })
-     }
+// Move client initialization to setup scope
+const client = useSupabaseClient()
 
-     // If we have a token, fetch projects
-     if (config.value.dida_token) {
-       fetchProjects()
-     }
+async function loadConfig() {
+  if (loadingConfig.value) return
+  
+  loadingConfig.value = true
+  configLoadError.value = null
+  
+  try {
+    // Reuse client from setup scope
+    const { data: { session } } = await client.auth.getSession()
+    
+    // Always pass the token explicitly to avoid cookie race conditions
+    const headers: Record<string, string> = {}
+    if (session?.access_token) {
+        headers.Authorization = `Bearer ${session.access_token}`
+    }
+    
+    const data = await $fetch('/api/config', { headers })
+    console.log('Frontend: Fetched config data:', data)
+    if (data) {
+      config.value = { ...config.value, ...data }
+      console.log('Frontend: Updated config value:', config.value)
+    }
+    fetchedConfig.value = true
+    
+    // Check for token in query param (from OAuth callback)
+    const route = useRoute()
+    const tokenFromQuery = route.query.dida_token as string
+    if (tokenFromQuery) {
+      config.value.dida_token = tokenFromQuery
+      // Auto save if we got a token
+      await saveConfig()
+      // Remove query param
+      const router = useRouter()
+      router.replace({ query: { ...route.query, dida_token: undefined } })
+    }
 
-   } catch (e: any) {
-     console.error('Failed to fetch config', e)
-     configLoadError.value = e.message || '加载配置失败'
-   }
- }
+    // If we have a token, fetch projects
+    if (config.value.dida_token) {
+      fetchProjects()
+    }
 
- // Fetch config on mount
- watch(user, async (u) => {
+  } catch (e: any) {
+    console.error('Failed to fetch config', e)
+    // Only show error if it's not a 401 that might be transient during auth init
+    if (e.response?.status !== 401) {
+        configLoadError.value = e.message || '加载配置失败'
+    } else {
+        console.warn('Frontend: 401 on loadConfig, likely session expired or not ready.')
+    }
+  } finally {
+    loadingConfig.value = false
+  }
+}
+
+// Fetch config on mount
+watch(user, async (u) => {
    if (u) {
      // Get API Key from metadata - initially from cached user
      apiKey.value = u.user_metadata?.api_key || ''
@@ -83,7 +107,7 @@ const apiKey = ref('')
      
      // Force refresh user data from server to ensure metadata is up-to-date
      // This fixes the issue where local session has stale metadata after backend updates
-     const client = useSupabaseClient()
+     // Reuse client from setup scope
      const { data: { user: freshUser } } = await client.auth.getUser()
      if (freshUser) {
          const freshKey = freshUser.user_metadata?.api_key || ''
@@ -101,7 +125,13 @@ const apiKey = ref('')
     if (!fetchedConfig.value) {
       // Ensure we have a valid session before fetching config
       if (freshUser) {
-        await loadConfig()
+        // Double check session specifically
+        const { data: { session } } = await client.auth.getSession()
+        if (session) {
+             await loadConfig()
+        } else {
+             console.warn('Frontend: User exists but session is null, skipping loadConfig')
+        }
       } else {
         console.warn('Frontend: Skipping loadConfig because user session is not fully ready (freshUser is null)')
       }
@@ -112,7 +142,15 @@ const apiKey = ref('')
 async function generateApiKey() {
    loadingApiKey.value = true
    try {
-     const res: any = await $fetch('/api/auth/apikey', { method: 'POST' })
+     // Reuse client from setup scope
+     const { data: { session } } = await client.auth.getSession()
+     const headers: Record<string, string> = {}
+     if (session?.access_token) headers.Authorization = `Bearer ${session.access_token}`
+
+     const res: any = await $fetch('/api/auth/apikey', { 
+        method: 'POST',
+        headers 
+     })
      apiKey.value = res.apiKey
      newApiKeyInput.value = res.apiKey
      // Update local user metadata to reflect change immediately without page refresh
@@ -132,9 +170,15 @@ async function generateApiKey() {
     
     loadingApiKey.value = true
     try {
+        // Reuse client from setup scope
+        const { data: { session } } = await client.auth.getSession()
+        const headers: Record<string, string> = {}
+        if (session?.access_token) headers.Authorization = `Bearer ${session.access_token}`
+
         const res: any = await $fetch('/api/auth/apikey', { 
             method: 'POST',
-            body: { apiKey: newApiKeyInput.value }
+            body: { apiKey: newApiKeyInput.value },
+            headers
         })
         apiKey.value = res.apiKey
         editingApiKey.value = false
@@ -155,7 +199,15 @@ async function generateApiKey() {
    
    loadingApiKey.value = true
    try {
-     await $fetch('/api/auth/apikey', { method: 'DELETE' })
+     // Reuse client from setup scope
+     const { data: { session } } = await client.auth.getSession()
+     const headers: Record<string, string> = {}
+     if (session?.access_token) headers.Authorization = `Bearer ${session.access_token}`
+
+     await $fetch('/api/auth/apikey', { 
+        method: 'DELETE',
+        headers
+     })
      apiKey.value = ''
      newApiKeyInput.value = ''
      if (user.value) {
@@ -227,11 +279,17 @@ async function fetchCalendars() {
     // Pass credentials if needed, but usually they are saved in backend. 
     // However, if user just typed them, they might not be saved yet if they haven't clicked save.
     // So we pass them in query to be safe and support "Test Connection" style immediately.
+    // Reuse client from setup scope
+    const { data: { session } } = await client.auth.getSession()
+    const headers: Record<string, string> = {}
+    if (session?.access_token) headers.Authorization = `Bearer ${session.access_token}`
+
     const data: any = await $fetch('/api/cal/calendars', {
         params: {
             username: config.value.icloud_username,
             password: config.value.icloud_app_password
-        }
+        },
+        headers
     })
     calendars.value = data || []
     
@@ -287,7 +345,7 @@ watch(fetchedConfig, (val) => {
 async function saveConfig() {
   loading.value = true
   try {
-    const client = useSupabaseClient()
+    // Reuse client from setup scope
     const { data: { session } } = await client.auth.getSession()
     await $fetch('/api/config', {
       method: 'POST',
@@ -307,7 +365,7 @@ async function saveConfig() {
 async function triggerDailyNote() {
   loadingAction.value = true
   try {
-    const client = useSupabaseClient()
+    // Reuse client from setup scope
     const { data: { session } } = await client.auth.getSession()
     const res: any = await $fetch('/api/actions/daily-note', { 
         method: 'POST',
@@ -350,7 +408,7 @@ async function triggerTextToCalendar() {
   loadingAction.value = true
   
   try {
-    const client = useSupabaseClient()
+    // Reuse client from setup scope
     const { data: { session } } = await client.auth.getSession()
     const res: any = await $fetch('/api/actions/text-calendar', {
       method: 'POST',
@@ -376,7 +434,7 @@ async function triggerImageToCalendar() {
   formData.append('image', imageFile.value)
   
   try {
-    const client = useSupabaseClient()
+    // Reuse client from setup scope
     const { data: { session } } = await client.auth.getSession()
     const res: any = await $fetch('/api/actions/image-calendar', {
       method: 'POST',

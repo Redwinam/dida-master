@@ -21,12 +21,13 @@ export default defineEventHandler(async (event) => {
     credentials = { icloud_username: username, icloud_app_password: password }
   } else {
     const client = await serverSupabaseClient(event)
-    const { data } = await client
+    const { data: rawData } = await client
       .from('dida_master_user_config')
       .select('icloud_username, icloud_app_password')
       .eq('user_id', user.id)
       .single()
       
+    const data = rawData as any
     if (data && data.icloud_username && data.icloud_app_password) {
       credentials = data
     }
@@ -57,7 +58,23 @@ export default defineEventHandler(async (event) => {
         defaultAccountType: 'caldav',
     })
 
-    const calendars = await client.fetchCalendars()
+    let calendars: any[] = []
+    let lastError
+    for (let i = 0; i < 3; i++) {
+        try {
+            calendars = await client.fetchCalendars()
+            lastError = null
+            break
+        } catch (e: any) {
+            console.warn(`Attempt ${i + 1} failed to fetch calendars: ${e.message}`)
+            lastError = e
+            // Wait 1s before retry
+            await new Promise(resolve => setTimeout(resolve, 1000))
+        }
+    }
+
+    if (lastError) throw lastError
+
     return calendars.map(c => ({
         name: c.displayName,
         url: c.url

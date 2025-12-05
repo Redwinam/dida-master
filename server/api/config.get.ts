@@ -2,6 +2,9 @@ import { serverSupabaseUser, serverSupabaseClient } from '#supabase/server'
 
 export default defineEventHandler(async (event) => {
   // Use explicit client.auth.getUser() for robust session retrieval
+  const headers = getRequestHeaders(event)
+  console.log('Config GET: Auth Header present:', !!headers.authorization)
+  
   const client = await serverSupabaseClient(event)
   const { data: { user }, error: userError } = await client.auth.getUser()
 
