@@ -15,7 +15,11 @@
     *   利用多模态大模型 (Qwen-VL 等) 智能识别图片中的事件信息（标题、时间、地点）。
     *   自动将识别出的事件添加到您的 iCloud 日历中。
 
-3.  **个性化配置**
+3. 18. **文本转日历 (Text to Calendar)**
+    *   直接输入自然语言文本（如"明天下午3点在会议室开会"）。
+    *   AI 自动解析时间、地点并添加到日历。
+
+19. **个性化配置**
     *   支持多用户使用 (基于 Supabase Auth)。
     *   每个用户可独立配置自己的 API Token、大模型 Key、日历账号等。
     *   配置信息加密存储于 Supabase 数据库。
@@ -135,6 +139,25 @@ curl -X POST https://your-domain.com/api/actions/daily-note \
 curl -X POST https://your-domain.com/api/actions/image-calendar \
   -H "x-api-key: sk_xxxxxxxx" \
   -F "image=@/path/to/image.jpg"
+```
+
+### 3. 文本转日历 (Text to Calendar)
+
+*   **URL**: `/api/actions/text-calendar`
+*   **Method**: `POST`
+*   **Headers**:
+    *   `x-api-key`: `YOUR_API_KEY`
+    *   `Content-Type`: `application/json`
+*   **Body** (`JSON`):
+    *   `text`: 日程描述文本
+*   **Response**: `{ "events": [...] }`
+
+**示例 (cURL)**:
+```bash
+curl -X POST https://your-domain.com/api/actions/text-calendar \
+  -H "x-api-key: sk_xxxxxxxx" \
+  -H "Content-Type: application/json" \
+  -d '{"text": "下周一上午10点和团队开会"}'
 ```
 
 ## ⚠️ 注意事项

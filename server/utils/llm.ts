@@ -39,6 +39,41 @@ ${tasksContext}
   return completion.choices[0]?.message?.content || ''
 }
 
+export const parseTextToCalendar = async (client: OpenAI, model: string, text: string, calendars: string[], todayDate: string) => {
+  const prompt = `请识别文本中的日程信息，并将其转换为 JSON 格式。
+当前日期是: ${todayDate}
+允许的日历名称: ${calendars.join(', ')} (如果无法确定，默认为"${calendars[0] || '默认'}")
+
+返回格式必须是 JSON 数组，包含以下字段:
+- title: 事件标题
+- start: 开始时间 (ISO 8601 格式)
+- end: 结束时间 (ISO 8601 格式)
+- location: 地点 (可选)
+- calendar: 日历名称 (必须从允许列表中选择)
+- allDay: 是否全天 (boolean)
+
+只返回 JSON，不要包含 markdown 标记。`
+
+  const completion = await client.chat.completions.create({
+    model,
+    messages: [
+      { role: 'system', content: prompt },
+      { role: 'user', content: text }
+    ],
+    max_tokens: 1000
+  })
+
+  const content = completion.choices[0]?.message?.content || '[]'
+  // Try to strip markdown code blocks if present
+  const jsonStr = content.replace(/```json\n?|\n?```/g, '').trim()
+  try {
+    return JSON.parse(jsonStr)
+  } catch (e) {
+    console.error('Failed to parse JSON from LLM', content)
+    return []
+  }
+}
+
 export const parseImageToCalendar = async (client: OpenAI, model: string, imageBase64: string, calendars: string[], todayDate: string) => {
   const prompt = `请识别图片中的日程信息，并将其转换为 JSON 格式。
 当前日期是: ${todayDate}

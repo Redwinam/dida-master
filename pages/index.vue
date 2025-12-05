@@ -99,7 +99,12 @@ const apiKey = ref('')
      }
     
     if (!fetchedConfig.value) {
-      await loadConfig()
+      // Ensure we have a valid session before fetching config
+      if (freshUser) {
+        await loadConfig()
+      } else {
+        console.warn('Frontend: Skipping loadConfig because user session is not fully ready (freshUser is null)')
+      }
     }
   }
 }, { immediate: true })
@@ -322,6 +327,7 @@ async function triggerDailyNote() {
 const imageFile = ref<File | null>(null)
 const imagePreview = ref<string | null>(null)
 const fileInput = ref<HTMLInputElement | null>(null)
+const textInput = ref('')
 
 function onFileSelect(e: Event) {
   const input = e.target as HTMLInputElement
@@ -336,6 +342,29 @@ function clearImage() {
   imagePreview.value = null
   if (fileInput.value) {
     fileInput.value.value = ''
+  }
+}
+
+async function triggerTextToCalendar() {
+  if (!textInput.value) return
+  loadingAction.value = true
+  
+  try {
+    const client = useSupabaseClient()
+    const { data: { session } } = await client.auth.getSession()
+    const res: any = await $fetch('/api/actions/text-calendar', {
+      method: 'POST',
+      body: { text: textInput.value },
+      headers: {
+        Authorization: session?.access_token ? `Bearer ${session.access_token}` : ''
+      }
+    })
+    toast.add({ title: '日历事件已添加', description: `添加了 ${res.events?.length || 0} 个事件`, color: 'success' })
+    textInput.value = ''
+  } catch (e: any) {
+    toast.add({ title: '处理失败', description: e.message, color: 'error' })
+  } finally {
+    loadingAction.value = false
   }
 }
 
@@ -759,6 +788,44 @@ async function triggerImageToCalendar() {
               <Icon v-else icon="heroicons:play" class="w-5 h-5" />
               立即执行
             </button>
+          </div>
+        </div>
+
+        <!-- Text to Calendar Card -->
+        <div class="group relative bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden hover:shadow-md transition-all duration-300">
+           <div class="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+            <Icon icon="heroicons:chat-bubble-bottom-center-text" class="w-48 h-48 text-green-600" />
+          </div>
+
+          <div class="p-6 relative z-10">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2 mb-4">
+              <div class="p-2 bg-green-100 dark:bg-green-900/50 rounded-lg text-green-600 dark:text-green-400">
+                <Icon icon="heroicons:chat-bubble-bottom-center-text" class="w-6 h-6" />
+              </div>
+              文本转日历事件
+            </h3>
+            <p class="text-gray-500 dark:text-gray-400 text-sm mb-4 leading-relaxed">
+              直接输入自然语言文本（如"明天下午3点在会议室开会"），AI 自动解析并添加到日历。
+            </p>
+
+            <div class="space-y-4">
+              <textarea 
+                v-model="textInput"
+                rows="4"
+                placeholder="请输入日程信息..."
+                class="block w-full p-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-900/50 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-green-500 focus:border-green-500 sm:text-sm resize-none"
+              ></textarea>
+
+              <button 
+                @click="triggerTextToCalendar" 
+                :disabled="loadingAction || !textInput"
+                class="w-full py-2.5 px-4 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-medium shadow-sm transition-all flex justify-center items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <Icon v-if="loadingAction" icon="line-md:loading-twotone-loop" class="w-5 h-5" />
+                <Icon v-else icon="heroicons:sparkles" class="w-5 h-5" />
+                开始解析并添加
+              </button>
+            </div>
           </div>
         </div>
 
