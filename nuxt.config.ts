@@ -12,12 +12,13 @@ export default defineNuxtConfig({
     key: process.env.NUXT_PUBLIC_SUPABASE_ANON_KEY
   },
   vite: {
-    define: {
-      // Fix for "exports is not defined" error in browser
-      'global': 'window',
-    },
     optimizeDeps: {
-      include: ['ical.js', 'tsdav']
+      exclude: ['tsdav', 'ical.js', 'openai']
+    }
+  },
+  nitro: {
+    externals: {
+      external: ['tsdav', 'ical.js', 'openai']
     }
   },
   runtimeConfig: {
