@@ -51,10 +51,32 @@ export const getUserConfig = async (event: H3Event) => {
     .eq('user_id', userId)
     .single()
 
-  if (error || !data) {
-    // If no config found but user exists, return empty config or error?
-    // Endpoints expect config, so error is appropriate if config is mandatory.
-    throw createError({ statusCode: 400, message: 'Config not found' })
+  if (error && (error as any).code !== 'PGRST116') {
+    throw createError({ statusCode: 500, message: (error as any).message || 'Supabase error' })
+  }
+
+  if (!data) {
+    const rc = useRuntimeConfig()
+    const fallback = {
+      user_id: userId,
+      dida_token: rc.didaToken || '',
+      dida_project_id: rc.didaProjectId || '',
+      exclude_project_name: '',
+      llm_api_key: rc.openaiApiKey || '',
+      llm_model: rc.public.llmModel || 'deepseek-ai/DeepSeek-V3',
+      llm_api_url: rc.public.llmApiUrl || 'https://api.siliconflow.cn/v1/chat/completions',
+      cal_enable: !!(rc.icloudUsername && rc.icloudAppPassword),
+      icloud_username: rc.icloudUsername || '',
+      icloud_app_password: rc.icloudAppPassword || '',
+      cal_lookahead_days: 2,
+      calendar_target: ''
+    }
+
+    const hasMinimum = fallback.dida_token && fallback.dida_project_id && fallback.llm_api_key
+    if (!hasMinimum) {
+      throw createError({ statusCode: 400, message: 'Config not found' })
+    }
+    return fallback
   }
 
   return data

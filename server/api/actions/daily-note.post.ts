@@ -18,6 +18,13 @@ interface UserConfig {
 export default defineEventHandler(async (event) => {
   const config = await getUserConfig(event) as unknown as UserConfig
 
+  if (!config.dida_token || !config.dida_project_id) {
+    throw createError({ statusCode: 400, message: 'Dida token or projectId missing' })
+  }
+  if (!config.llm_api_key) {
+    throw createError({ statusCode: 400, message: 'LLM API key missing' })
+  }
+
 
   // 1. Fetch Tasks
   const allProjects = await getDidaProjects(config.dida_token)
