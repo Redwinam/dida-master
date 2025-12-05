@@ -42,6 +42,7 @@ export default defineNuxtConfig({
     didaClientSecret: process.env.DIDA_CLIENT_SECRET,
     icloudUsername: process.env.ICLOUD_USERNAME,
     icloudAppPassword: process.env.ICLOUD_APP_PASSWORD,
+    supabaseServiceKey: process.env.NUXT_SUPABASE_SERVICE_ROLE_KEY,
     
     public: {
       supabaseUrl: process.env.NUXT_PUBLIC_SUPABASE_URL,

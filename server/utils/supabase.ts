@@ -4,7 +4,7 @@ export const getAdminClient = () => {
   const config = useRuntimeConfig()
   // Ensure we have the service role key
   const supabaseUrl = config.public.supabase.url
-  const serviceRoleKey = config.supabase.serviceKey
+  const serviceRoleKey = config.supabaseServiceKey
 
   if (!supabaseUrl || !serviceRoleKey) {
     throw new Error('Missing Supabase URL or Service Role Key')
