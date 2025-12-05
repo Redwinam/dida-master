@@ -102,107 +102,143 @@ async function triggerImageToCalendar() {
 </script>
 
 <template>
-  <div class="min-h-screen bg-gray-50 dark:bg-gray-900 p-4">
-    <div class="max-w-4xl mx-auto bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-      <div class="flex justify-between items-center mb-6">
-        <h1 class="text-2xl font-bold text-gray-800 dark:text-white">滴答清单助手</h1>
-        <div class="flex gap-2 items-center">
-          <span class="text-sm text-gray-500">{{ user?.email }}</span>
-          <UButton color="neutral" variant="ghost" icon="i-heroicons-arrow-right-on-rectangle" @click="logout" />
+  <div class="min-h-screen bg-gray-50 dark:bg-gray-900 p-4 md:p-8">
+    <div class="max-w-5xl mx-auto">
+      <!-- Header -->
+      <div class="flex justify-between items-center mb-8 bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm">
+        <div>
+          <h1 class="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+            <UIcon name="i-heroicons-check-circle" class="w-8 h-8 text-primary-500" />
+            滴答清单助手
+          </h1>
+          <p class="text-sm text-gray-500 mt-1">Task Master & Time Management</p>
+        </div>
+        <div class="flex items-center gap-4">
+          <div class="text-right hidden md:block">
+            <div class="text-sm font-medium text-gray-900 dark:text-white">{{ user?.email }}</div>
+            <div class="text-xs text-gray-500">Online</div>
+          </div>
+          <UButton color="neutral" variant="soft" icon="i-heroicons-arrow-right-on-rectangle" @click="logout" label="Logout" />
         </div>
       </div>
 
-      <UTabs :items="[{ label: '配置', slot: 'config' }, { label: '功能', slot: 'actions' }]">
+      <UTabs :items="[{ label: '系统配置', slot: 'config', icon: 'i-heroicons-cog-6-tooth' }, { label: '功能中心', slot: 'actions', icon: 'i-heroicons-bolt' }]" class="w-full">
         <template #config>
-          <form @submit.prevent="saveConfig" class="space-y-4 mt-4">
-            <UCard>
-              <template #header>基础配置</template>
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <UFormGroup label="滴答清单 Token">
-                  <UInput v-model="config.dida_token" type="password" />
-                </UFormGroup>
-                <UFormGroup label="项目 ID (Project ID)">
-                  <UInput v-model="config.dida_project_id" />
-                </UFormGroup>
-                <UFormGroup label="排除项目名 (CSV)">
-                  <UInput v-model="config.exclude_project_name" />
-                </UFormGroup>
+          <UCard class="mt-6">
+            <template #header>
+              <div class="flex justify-between items-center">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">全局配置</h3>
+                <UButton type="submit" :loading="loading" @click="saveConfig" color="primary" icon="i-heroicons-check">保存所有更改</UButton>
               </div>
-            </UCard>
+            </template>
 
-            <UCard>
-              <template #header>LLM 配置</template>
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <UFormGroup label="API Key">
-                  <UInput v-model="config.llm_api_key" type="password" />
-                </UFormGroup>
-                <UFormGroup label="Model">
-                  <UInput v-model="config.llm_model" />
-                </UFormGroup>
-                <UFormGroup label="API URL">
-                  <UInput v-model="config.llm_api_url" />
-                </UFormGroup>
-              </div>
-            </UCard>
+            <form @submit.prevent="saveConfig" class="space-y-8">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- 滴答清单 -->
+                <div class="space-y-4">
+                  <h4 class="font-medium text-gray-900 dark:text-white border-b pb-2 border-gray-200 dark:border-gray-700">滴答清单 (Dida/TickTick)</h4>
+                  <UFormField label="Access Token" required help="请填入滴答清单 OAuth Token">
+                    <UInput v-model="config.dida_token" type="password" icon="i-heroicons-key" class="w-full" />
+                  </UFormField>
+                  <UFormField label="Project ID" required>
+                    <UInput v-model="config.dida_project_id" icon="i-heroicons-folder" class="w-full" />
+                  </UFormField>
+                  <UFormField label="排除项目 (CSV)" help="不希望被读取的项目名称">
+                    <UInput v-model="config.exclude_project_name" icon="i-heroicons-no-symbol" class="w-full" />
+                  </UFormField>
+                </div>
 
-            <UCard>
-              <template #header>日历配置 (iCloud)</template>
-              <div class="space-y-4">
-                <UCheckbox v-model="config.cal_enable" label="启用日历同步" />
-                <div v-if="config.cal_enable" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <UFormGroup label="iCloud Username">
-                    <UInput v-model="config.icloud_username" />
-                  </UFormGroup>
-                  <UFormGroup label="App Password">
-                    <UInput v-model="config.icloud_app_password" type="password" />
-                  </UFormGroup>
-                  <UFormGroup label="Lookahead Days">
-                    <UInput v-model="config.cal_lookahead_days" type="number" />
-                  </UFormGroup>
-                  <UFormGroup label="目标日历 (Image识别用, 逗号分隔)">
-                     <UInput v-model="config.calendar_target" placeholder="个人,工作" />
-                  </UFormGroup>
+                <!-- LLM -->
+                <div class="space-y-4">
+                  <h4 class="font-medium text-gray-900 dark:text-white border-b pb-2 border-gray-200 dark:border-gray-700">大模型 (LLM)</h4>
+                  <UFormField label="API Key" required>
+                    <UInput v-model="config.llm_api_key" type="password" icon="i-heroicons-lock-closed" class="w-full" />
+                  </UFormField>
+                  <UFormField label="Model Name">
+                    <UInput v-model="config.llm_model" icon="i-heroicons-cpu-chip" class="w-full" />
+                  </UFormField>
+                  <UFormField label="API URL">
+                    <UInput v-model="config.llm_api_url" icon="i-heroicons-globe-alt" class="w-full" />
+                  </UFormField>
                 </div>
               </div>
-            </UCard>
 
-            <div class="flex justify-end">
-              <UButton type="submit" :loading="loading">保存配置</UButton>
-            </div>
-          </form>
+              <!-- iCloud -->
+              <div class="space-y-4 pt-4 border-t border-gray-100 dark:border-gray-700">
+                <div class="flex items-center justify-between">
+                  <h4 class="font-medium text-gray-900 dark:text-white">iCloud 日历同步</h4>
+                  <UCheckbox v-model="config.cal_enable" label="启用" />
+                </div>
+                
+                <div v-if="config.cal_enable" class="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
+                  <UFormField label="Apple ID">
+                    <UInput v-model="config.icloud_username" icon="i-heroicons-user-circle" class="w-full" />
+                  </UFormField>
+                  <UFormField label="App-Specific Password">
+                    <UInput v-model="config.icloud_app_password" type="password" icon="i-heroicons-key" class="w-full" />
+                  </UFormField>
+                  <UFormField label="Lookahead Days" help="读取未来几天的日历">
+                    <UInput v-model="config.cal_lookahead_days" type="number" icon="i-heroicons-calendar" class="w-full" />
+                  </UFormField>
+                  <UFormField label="目标日历 (图片识别)" help="允许写入的日历名称，逗号分隔">
+                     <UInput v-model="config.calendar_target" placeholder="个人,工作" icon="i-heroicons-calendar-days" class="w-full" />
+                  </UFormField>
+                </div>
+              </div>
+            </form>
+          </UCard>
         </template>
 
         <template #actions>
-          <div class="space-y-6 mt-4">
-            <UCard>
-              <template #header>每日笔记生成</template>
-              <p class="text-sm text-gray-500 mb-4">
-                触发一次立即生成。将读取滴答清单任务，结合日历，调用 LLM 生成日报并写入滴答清单。
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+            <!-- Daily Note Card -->
+            <UCard class="relative overflow-hidden group hover:ring-2 hover:ring-primary-500/50 transition-all">
+              <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                <UIcon name="i-heroicons-document-text" class="w-32 h-32" />
+              </div>
+              <template #header>
+                <h3 class="text-lg font-semibold flex items-center gap-2">
+                  <UIcon name="i-heroicons-sparkles" class="text-yellow-500" />
+                  每日智能日报
+                </h3>
+              </template>
+              <p class="text-gray-600 dark:text-gray-400 mb-6 min-h-[3rem]">
+                读取滴答清单未完成任务与 iCloud 日程，由 AI 生成专业的时间管理建议，并自动写入滴答清单笔记。
               </p>
-              <UButton @click="triggerDailyNote" :loading="loadingAction">立即生成</UButton>
+              <UButton @click="triggerDailyNote" :loading="loadingAction" block size="lg" color="primary" icon="i-heroicons-play">
+                立即生成日报
+              </UButton>
             </UCard>
 
-            <UCard>
-              <template #header>图片转日历 (Qwen-VL)</template>
-              <p class="text-sm text-gray-500 mb-4">
-                上传一张包含日程的图片，AI 将自动识别并添加到指定的日历中。
+            <!-- Image to Calendar Card -->
+            <UCard class="relative overflow-hidden group hover:ring-2 hover:ring-primary-500/50 transition-all">
+              <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                <UIcon name="i-heroicons-photo" class="w-32 h-32" />
+              </div>
+              <template #header>
+                <h3 class="text-lg font-semibold flex items-center gap-2">
+                  <UIcon name="i-heroicons-camera" class="text-blue-500" />
+                  图片转日历
+                </h3>
+              </template>
+              <p class="text-gray-600 dark:text-gray-400 mb-6 min-h-[3rem]">
+                上传包含日程的海报或截图，AI (Qwen-VL) 自动识别时间地点，一键添加到您的 iCloud 日历。
               </p>
               
               <div class="space-y-4">
-                <input type="file" accept="image/*" @change="onFileSelect" class="block w-full text-sm text-gray-500
-                  file:mr-4 file:py-2 file:px-4
-                  file:rounded-full file:border-0
-                  file:text-sm file:font-semibold
-                  file:bg-primary-50 file:text-primary-700
-                  hover:file:bg-primary-100
-                "/>
-                
-                <div v-if="imagePreview" class="mt-2">
-                  <img :src="imagePreview" class="max-h-64 rounded border" />
+                <div class="flex items-center justify-center w-full">
+                  <label for="dropzone-file" class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500">
+                      <div class="flex flex-col items-center justify-center pt-5 pb-6" v-if="!imagePreview">
+                          <UIcon name="i-heroicons-cloud-arrow-up" class="w-8 h-8 text-gray-500 mb-2" />
+                          <p class="text-sm text-gray-500 dark:text-gray-400"><span class="font-semibold">点击上传</span> 或拖拽图片</p>
+                      </div>
+                      <img v-else :src="imagePreview" class="h-full object-contain p-2" />
+                      <input id="dropzone-file" type="file" accept="image/*" class="hidden" @change="onFileSelect" />
+                  </label>
                 </div>
 
-                <UButton @click="triggerImageToCalendar" :disabled="!imageFile" :loading="loadingAction">
-                  识别并添加
+                <UButton @click="triggerImageToCalendar" :disabled="!imageFile" :loading="loadingAction" block size="lg" color="neutral" icon="i-heroicons-arrow-up-tray">
+                  开始识别并添加
                 </UButton>
               </div>
             </UCard>

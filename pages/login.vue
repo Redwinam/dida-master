@@ -23,37 +23,44 @@ async function handleSubmit() {
 </script>
 
 <template>
-  <div class="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-gray-900">
-    <div class="w-full max-w-md p-8 space-y-6 bg-white rounded shadow-md dark:bg-gray-800">
-      <h2 class="text-2xl font-bold text-center text-gray-900 dark:text-white">
-        {{ isLogin ? '登录' : '注册' }}
-      </h2>
+  <div class="flex min-h-screen items-center justify-center bg-gradient-to-br from-indigo-100 to-white dark:from-gray-900 dark:to-gray-800 p-4">
+    <UCard class="w-full max-w-md shadow-xl ring-1 ring-gray-200 dark:ring-gray-700">
+      <template #header>
+        <div class="text-center">
+          <h1 class="text-3xl font-extrabold text-gray-900 dark:text-white mb-2">
+            {{ isLogin ? 'Welcome Back' : 'Create Account' }}
+          </h1>
+          <p class="text-gray-500 dark:text-gray-400">
+            滴答清单之今日主人的任务
+          </p>
+        </div>
+      </template>
       
-      <form @submit.prevent="handleSubmit" class="space-y-4">
-        <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
-          <UInput v-model="email" type="email" required placeholder="your@email.com" />
-        </div>
+      <form @submit.prevent="handleSubmit" class="space-y-6">
+        <UFormField label="Email" name="email" required>
+          <UInput v-model="email" type="email" placeholder="your@email.com" icon="i-heroicons-envelope" size="lg" class="w-full" />
+        </UFormField>
         
-        <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Password</label>
-          <UInput v-model="password" type="password" required placeholder="********" />
-        </div>
+        <UFormField label="Password" name="password" required>
+          <UInput v-model="password" type="password" placeholder="••••••••" icon="i-heroicons-lock-closed" size="lg" class="w-full" />
+        </UFormField>
 
-        <div v-if="error" class="text-red-500 text-sm">
+        <div v-if="error" class="p-3 rounded bg-red-50 text-red-600 text-sm border border-red-100 dark:bg-red-900/30 dark:text-red-400 dark:border-red-800">
           {{ error }}
         </div>
 
-        <UButton type="submit" block :loading="loading">
-          {{ isLogin ? '登录' : '注册' }}
+        <UButton type="submit" block size="lg" :loading="loading" color="primary">
+          {{ isLogin ? 'Sign In' : 'Sign Up' }}
         </UButton>
       </form>
 
-      <div class="text-center text-sm text-gray-600 dark:text-gray-400">
-        <button @click="isLogin = !isLogin" class="hover:underline">
-          {{ isLogin ? '没有账号？去注册' : '已有账号？去登录' }}
-        </button>
-      </div>
-    </div>
+      <template #footer>
+        <div class="text-center text-sm text-gray-600 dark:text-gray-400">
+          <button @click="isLogin = !isLogin" class="hover:text-primary-600 dark:hover:text-primary-400 font-medium transition-colors">
+            {{ isLogin ? "Don't have an account? Sign up" : "Already have an account? Sign in" }}
+          </button>
+        </div>
+      </template>
+    </UCard>
   </div>
 </template>
