@@ -30,7 +30,10 @@ export const getUserConfig = async (event: H3Event) => {
     }
   } else {
     // 2. Fallback to Session Authentication
-    const user = await serverSupabaseUser(event)
+    // Use serverSupabaseClient + getUser for more robust session retrieval
+    const client = await serverSupabaseClient(event)
+    const { data: { user } } = await client.auth.getUser()
+    
     if (user) {
         userId = user.id
     }

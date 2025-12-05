@@ -289,7 +289,14 @@ async function saveConfig() {
 async function triggerDailyNote() {
   loadingAction.value = true
   try {
-    const res: any = await $fetch('/api/actions/daily-note', { method: 'POST' })
+    const client = useSupabaseClient()
+    const { data: { session } } = await client.auth.getSession()
+    const res: any = await $fetch('/api/actions/daily-note', { 
+        method: 'POST',
+        headers: {
+            Authorization: session?.access_token ? `Bearer ${session.access_token}` : ''
+        }
+    })
     toast.add({ title: '每日笔记生成成功', description: res.message, color: 'success' })
   } catch (e: any) {
     toast.add({ title: '生成失败', description: e.message, color: 'error' })
@@ -327,9 +334,14 @@ async function triggerImageToCalendar() {
   formData.append('image', imageFile.value)
   
   try {
+    const client = useSupabaseClient()
+    const { data: { session } } = await client.auth.getSession()
     const res: any = await $fetch('/api/actions/image-calendar', {
       method: 'POST',
-      body: formData
+      body: formData,
+      headers: {
+        Authorization: session?.access_token ? `Bearer ${session.access_token}` : ''
+      }
     })
     toast.add({ title: '日历事件已添加', description: `添加了 ${res.events?.length || 0} 个事件`, color: 'success' })
     clearImage()
