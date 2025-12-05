@@ -1,4 +1,4 @@
-import { defineEventHandler, getQuery, sendRedirect, createError, setCookie } from 'h3'
+import { defineEventHandler, getQuery, sendRedirect, createError, setCookie, getRequestURL } from 'h3'
 import { Buffer } from 'node:buffer'
 
 export default defineEventHandler(async (event) => {
@@ -15,7 +15,8 @@ export default defineEventHandler(async (event) => {
 
   const clientId = config.didaClientId
   const clientSecret = config.didaClientSecret
-  const redirectUri = `http://localhost:3000/api/auth/dida/callback`
+  const reqURL = getRequestURL(event)
+  const redirectUri = `${reqURL.protocol}//${reqURL.host}/api/auth/dida/callback`
 
   if (!clientId || !clientSecret) {
     console.error('Missing Dida Credentials', { clientId: !!clientId, clientSecret: !!clientSecret })
@@ -34,6 +35,9 @@ export default defineEventHandler(async (event) => {
     params.append('grant_type', 'authorization_code')
     params.append('scope', 'tasks:write tasks:read')
     params.append('redirect_uri', redirectUri)
+    // Include client credentials in body as well for compatibility
+    params.append('client_id', clientId as string)
+    params.append('client_secret', clientSecret as string)
 
     console.log('Exchanging token with code:', code)
     
@@ -41,6 +45,7 @@ export default defineEventHandler(async (event) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
+        'Accept': 'application/json',
         'Authorization': `Basic ${authBase64}`
       },
       body: params
