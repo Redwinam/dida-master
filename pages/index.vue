@@ -41,15 +41,34 @@ const apiKey = ref('')
  // Fetch config on mount
  watch(user, async (u) => {
    if (u) {
-     // Get API Key from metadata
+     // Get API Key from metadata - initially from cached user
      apiKey.value = u.user_metadata?.api_key || ''
      newApiKeyInput.value = apiKey.value
+     
+     // Force refresh user data from server to ensure metadata is up-to-date
+     // This fixes the issue where local session has stale metadata after backend updates
+     const client = useSupabaseClient()
+     const { data: { user: freshUser } } = await client.auth.getUser()
+     if (freshUser) {
+         const freshKey = freshUser.user_metadata?.api_key || ''
+         if (freshKey !== apiKey.value) {
+             console.log('Frontend: Detected stale API Key, updating from server.')
+             apiKey.value = freshKey
+             newApiKeyInput.value = freshKey
+             // Update global user object to reflect new metadata
+             if (user.value) {
+                 user.value.user_metadata = freshUser.user_metadata
+             }
+         }
+     }
     
     if (!fetchedConfig.value) {
       try {
         const data = await $fetch('/api/config')
+        console.log('Frontend: Fetched config data:', data)
         if (data) {
           config.value = { ...config.value, ...data }
+          console.log('Frontend: Updated config value:', config.value)
         }
         fetchedConfig.value = true
         

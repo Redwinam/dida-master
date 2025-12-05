@@ -1,16 +1,17 @@
 import { serverSupabaseUser, serverSupabaseClient } from '#supabase/server'
 
 export default defineEventHandler(async (event) => {
-  const user = await serverSupabaseUser(event)
-  console.log('Config GET: User from serverSupabaseUser:', user?.id)
+  // Use explicit client.auth.getUser() for robust session retrieval
+  const client = await serverSupabaseClient(event)
+  const { data: { user }, error: userError } = await client.auth.getUser()
 
-  if (!user) {
-    console.log('Config GET: No user found, returning 401')
+  console.log('Config GET: User ID:', user?.id)
+
+  if (userError || !user || !user.id) {
+    console.log('Config GET: No user found or error, returning 401. Error:', userError?.message)
     throw createError({ statusCode: 401, message: 'Unauthorized' })
   }
 
-  const client = await serverSupabaseClient(event)
-  
   const { data, error } = await client
     .from('dida_master_user_config')
     .select('*')

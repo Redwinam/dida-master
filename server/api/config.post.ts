@@ -2,15 +2,14 @@ import { serverSupabaseUser, serverSupabaseClient } from '#supabase/server'
 
 export default defineEventHandler(async (event) => {
   const client = await serverSupabaseClient(event)
-  const user = await serverSupabaseUser(event)
-  let userId = user?.id as string | undefined
-  if (!userId) {
-    const { data } = await client.auth.getUser()
-    userId = data?.user?.id
-  }
-  if (!userId) {
+  // Explicitly get user from auth api
+  const { data: { user }, error: userError } = await client.auth.getUser()
+  
+  if (userError || !user || !user.id) {
     throw createError({ statusCode: 401, message: 'Unauthorized' })
   }
+  
+  const userId = user.id
 
   const body = await readBody(event)
 
