@@ -1,4 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+import { defineNuxtConfig } from 'nuxt/config'
+
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
@@ -15,8 +17,6 @@ export default defineNuxtConfig({
   vite: {
     define: {
       'global': 'window',
-      'process.env': {},
-      'exports': {},
     },
     optimizeDeps: {
       include: ['ical.js', 'tsdav']
@@ -24,7 +24,19 @@ export default defineNuxtConfig({
     resolve: {
       alias: {
         path: 'path-browserify',
+        stream: 'stream-browserify',
+        crypto: 'crypto-browserify',
       }
+    }
+  },
+  app: {
+    head: {
+      script: [
+        {
+          innerHTML: 'window.require = function() { return {}; }', // Dummy require for browser
+          type: 'text/javascript'
+        }
+      ]
     }
   },
   runtimeConfig: {
