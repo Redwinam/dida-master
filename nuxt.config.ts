@@ -1,3 +1,5 @@
+import { resolve } from 'node:path'
+
 // https://nuxt.com/docs/api/configuration/nuxt-config
 import { defineNuxtConfig } from 'nuxt/config'
 import tailwindcss from '@tailwindcss/vite'
@@ -18,8 +20,13 @@ export default defineNuxtConfig({
     plugins: [
       tailwindcss()
     ],
+    resolve: {
+      alias: {
+        '@supabase/supabase-js': resolve(process.cwd(), 'node_modules/@supabase/supabase-js/dist/main/index.js')
+      }
+    },
     optimizeDeps: {
-      include: ['buffer', 'process']
+      include: ['buffer', 'process', '@supabase/supabase-js', 'tsdav', 'ical.js', 'openai']
     }
   },
   app: {
