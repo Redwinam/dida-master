@@ -34,7 +34,15 @@ const activeTab = ref<'config' | 'actions'>('config')
 // Fetch config on mount
 onMounted(async () => {
   try {
-    const data = await $fetch('/api/config')
+    const data = await $fetch('/api/config', {
+      onResponseError({ response }) {
+        if (response.status === 401) {
+          // Token expired or invalid, force logout
+          const { logout } = useAuth()
+          logout()
+        }
+      }
+    })
     if (data) {
       // Merge with default to avoid undefined
       config.value = { ...config.value, ...data }

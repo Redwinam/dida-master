@@ -11,7 +11,10 @@ const password = ref('')
 
 watchEffect(() => {
   if (user.value) {
-    router.push('/')
+    // Add a small delay to ensure auth state is stable
+    setTimeout(() => {
+      router.push('/')
+    }, 100)
   }
 })
 
