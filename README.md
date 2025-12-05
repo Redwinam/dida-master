@@ -47,6 +47,7 @@ create table public.dida_master_user_config (
   exclude_project_name text,
   llm_api_key text,
   llm_model text,
+  vision_model text, -- 新增：视觉模型配置
   llm_api_url text,
   cal_enable boolean default false,
   icloud_username text,
@@ -96,48 +97,44 @@ npm run dev
 3.  **生成日报**: 点击“功能” -> “每日笔记生成” -> “立即生成”。
 4.  **图片日程**: 点击“功能” -> “图片转日历” -> 上传图片 -> “识别并添加”。
 
-## ⚠️ 注意事项
+## 🔌 API 外部调用 (API Usage)
 
-*   **Privacy**: 您的所有 Token 和密码仅存储在您自己的 Supabase 数据库行中，且受 RLS (Row Level Security) 保护，仅您自己可见。
-*   **Token**: 请妥善保管您的 API Key 和 Token。
+您可以使用 API Key 通过外部工具（如快捷指令、Cron Job）调用本服务的核心功能。
 
-## 🤝 贡献
+### 获取 API Key
+1. 登录系统。
+2. 在首页底部“API 访问凭证”区域点击“随机生成”。
+3. 复制生成的 API Key。
 
-欢迎提交 Issue 和 PR 改进本项目。
+### 1. 触发每日笔记生成 (Daily Note)
 
-## 🔌 API 接口调用
+*   **URL**: `/api/actions/daily-note`
+*   **Method**: `POST`
+*   **Headers**:
+    *   `x-api-key`: `YOUR_API_KEY`
+*   **Response**: `{ "message": "Success" }`
 
-您可以使用外部工具（如 Shortcuts、Cron、Scriptable）调用本应用的 API，无需模拟登录。
-
-### 鉴权方式
-
-所有 API 均支持通过 `API Key` 进行鉴权。您可以在系统配置页面的“API 访问凭证”区域获取您的 Key。
-
-鉴权方式二选一：
-
-1.  **Header**: `x-api-key: YOUR_API_KEY`
-2.  **Query Param**: `?api_key=YOUR_API_KEY`
-
-### 1. 触发每日笔记生成
-
-*   **Endpoint**: `POST /api/actions/daily-note`
-*   **Content-Type**: `application/json` (Body 可为空)
-*   **示例**:
-
+**示例 (cURL)**:
 ```bash
-curl -X POST "http://your-domain/api/actions/daily-note" \
-     -H "x-api-key: your_token_here"
+curl -X POST https://your-domain.com/api/actions/daily-note \
+  -H "x-api-key: sk_xxxxxxxx"
 ```
 
-### 2. 图片转日历事件
+### 2. 图片转日历 (Image to Calendar)
 
-*   **Endpoint**: `POST /api/actions/image-calendar`
-*   **Content-Type**: `multipart/form-data`
-*   **参数**:
+*   **URL**: `/api/actions/image-calendar`
+*   **Method**: `POST`
+*   **Headers**:
+    *   `x-api-key`: `YOUR_API_KEY`
+*   **Body** (`multipart/form-data`):
     *   `image`: 图片文件
-*   **示例**:
+*   **Response**: `{ "events": [...] }`
 
+**示例 (cURL)**:
 ```bash
-curl -X POST "http://your-domain/api/actions/image-calendar?api_key=your_token_here" \
-     -F "image=@/path/to/image.jpg"
+curl -X POST https://your-domain.com/api/actions/image-calendar \
+  -H "x-api-key: sk_xxxxxxxx" \
+  -F "image=@/path/to/image.jpg"
 ```
+
+## ⚠️ 注意事项

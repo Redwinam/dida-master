@@ -1,17 +1,11 @@
 import OpenAI from 'openai'
 
 export const createLLMClient = (apiKey: string, baseURL: string) => {
-  // Ensure baseURL doesn't end with /chat/completions if the SDK adds it automatically
-  // OpenAI SDK usually appends /chat/completions to the baseURL
-  // But it depends on how the user provided it.
-  // If user provided full URL like https://api.siliconflow.cn/v1/chat/completions
-  // we should probably trim it to base URL https://api.siliconflow.cn/v1
-  
+  // Normalize baseURL: remove /chat/completions suffix and trailing slash
   let finalBaseURL = baseURL
   if (finalBaseURL.endsWith('/chat/completions')) {
       finalBaseURL = finalBaseURL.replace('/chat/completions', '')
   }
-  // Also remove trailing slash if present
   if (finalBaseURL.endsWith('/')) {
       finalBaseURL = finalBaseURL.slice(0, -1)
   }

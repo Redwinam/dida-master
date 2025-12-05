@@ -18,7 +18,8 @@ const config = ref({
   dida_project_id: '',
   exclude_project_name: '',
   llm_api_key: '',
-  llm_model: 'deepseek-ai/DeepSeek-V3.1',
+  llm_model: 'deepseek-ai/DeepSeek-V3',
+  vision_model: 'Qwen/Qwen3-VL-32B-Instruct',
   llm_api_url: 'https://api.siliconflow.cn/v1/chat/completions',
   cal_enable: false,
   icloud_username: '',
@@ -523,12 +524,22 @@ async function triggerImageToCalendar() {
                   </div>
 
                   <div class="space-y-1.5">
-                    <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Model Name</label>
+                    <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Model Name (Text)</label>
                     <div class="relative">
                       <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <Icon icon="heroicons:cube" class="w-5 h-5 text-gray-400" />
+                        <Icon icon="heroicons:chat-bubble-bottom-center-text" class="w-5 h-5 text-gray-400" />
                       </div>
-                      <input v-model="config.llm_model" type="text" class="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700/50 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+                      <input v-model="config.llm_model" type="text" placeholder="e.g. deepseek-ai/DeepSeek-V3" class="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700/50 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+                    </div>
+                  </div>
+
+                  <div class="space-y-1.5">
+                    <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Model Name (Vision)</label>
+                    <div class="relative">
+                      <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <Icon icon="heroicons:photo" class="w-5 h-5 text-gray-400" />
+                      </div>
+                      <input v-model="config.vision_model" type="text" placeholder="e.g. Qwen/Qwen3-VL-32B-Instruct" class="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700/50 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
                     </div>
                   </div>
 
