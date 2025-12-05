@@ -1,13 +1,13 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 import { defineNuxtConfig } from 'nuxt/config'
+import tailwindcss from '@tailwindcss/vite'
 
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
   css: ['~/assets/css/main.css'],
   modules: [
-    '@nuxtjs/supabase',
-    '@nuxt/ui'
+    '@nuxtjs/supabase'
   ],
   supabase: {
     redirect: false,
@@ -15,28 +15,16 @@ export default defineNuxtConfig({
     key: process.env.NUXT_PUBLIC_SUPABASE_ANON_KEY
   },
   vite: {
-    define: {
-      'global': 'window',
-    },
+    plugins: [
+      tailwindcss()
+    ],
     optimizeDeps: {
-      include: ['ical.js', 'tsdav']
-    },
-    resolve: {
-      alias: {
-        path: 'path-browserify',
-        stream: 'stream-browserify',
-        crypto: 'crypto-browserify',
-      }
+      include: ['buffer', 'process']
     }
   },
   app: {
     head: {
-      script: [
-        {
-          innerHTML: 'window.require = function() { return {}; }', // Dummy require for browser
-          type: 'text/javascript'
-        }
-      ]
+      // Script injection removed in favor of plugins/polyfills.client.ts
     }
   },
   runtimeConfig: {

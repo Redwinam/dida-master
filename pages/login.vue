@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { Icon } from '@iconify/vue'
+
 const { login, register, loading, error } = useAuth()
 const user = useSupabaseUser()
 const router = useRouter()
@@ -23,44 +25,86 @@ async function handleSubmit() {
 </script>
 
 <template>
-  <div class="flex min-h-screen items-center justify-center bg-gradient-to-br from-indigo-100 to-white dark:from-gray-900 dark:to-gray-800 p-4">
-    <UCard class="w-full max-w-md shadow-xl ring-1 ring-gray-200 dark:ring-gray-700">
-      <template #header>
-        <div class="text-center">
-          <h1 class="text-3xl font-extrabold text-gray-900 dark:text-white mb-2">
-            {{ isLogin ? 'Welcome Back' : 'Create Account' }}
-          </h1>
-          <p class="text-gray-500 dark:text-gray-400">
-            滴答清单之今日主人的任务
-          </p>
-        </div>
-      </template>
+  <div class="flex min-h-screen items-center justify-center bg-gradient-to-br from-indigo-50 to-slate-50 dark:from-gray-900 dark:to-slate-900 p-4 transition-colors duration-300">
+    <div class="w-full max-w-md bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden transition-all duration-300 hover:shadow-2xl">
       
-      <form @submit.prevent="handleSubmit" class="space-y-6">
-        <UFormField label="Email" name="email" required>
-          <UInput v-model="email" type="email" placeholder="your@email.com" icon="i-heroicons-envelope" size="lg" class="w-full" />
-        </UFormField>
-        
-        <UFormField label="Password" name="password" required>
-          <UInput v-model="password" type="password" placeholder="••••••••" icon="i-heroicons-lock-closed" size="lg" class="w-full" />
-        </UFormField>
+      <!-- Header -->
+      <div class="px-8 pt-8 pb-6 text-center">
+        <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2 tracking-tight">
+          {{ isLogin ? 'Welcome Back' : 'Create Account' }}
+        </h1>
+        <p class="text-gray-500 dark:text-gray-400 text-sm">
+          滴答清单之今日主人的任务
+        </p>
+      </div>
+      
+      <!-- Form -->
+      <div class="px-8 pb-8">
+        <form @submit.prevent="handleSubmit" class="space-y-5">
+          
+          <!-- Email -->
+          <div class="space-y-1.5">
+            <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <Icon icon="heroicons:envelope" class="h-5 w-5 text-gray-400" />
+              </div>
+              <input 
+                id="email"
+                v-model="email" 
+                type="email" 
+                required
+                placeholder="your@email.com"
+                class="block w-full pl-10 pr-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg leading-5 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 sm:text-sm" 
+              />
+            </div>
+          </div>
+          
+          <!-- Password -->
+          <div class="space-y-1.5">
+            <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Password</label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <Icon icon="heroicons:lock-closed" class="h-5 w-5 text-gray-400" />
+              </div>
+              <input 
+                id="password"
+                v-model="password" 
+                type="password" 
+                required
+                placeholder="••••••••"
+                class="block w-full pl-10 pr-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg leading-5 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 sm:text-sm" 
+              />
+            </div>
+          </div>
 
-        <div v-if="error" class="p-3 rounded bg-red-50 text-red-600 text-sm border border-red-100 dark:bg-red-900/30 dark:text-red-400 dark:border-red-800">
-          {{ error }}
-        </div>
+          <!-- Error Message -->
+          <div v-if="error" class="p-3 rounded-lg bg-red-50 text-red-600 text-sm border border-red-100 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800/30 flex items-center gap-2">
+            <Icon icon="heroicons:exclamation-circle" class="w-5 h-5 shrink-0" />
+            <span>{{ error }}</span>
+          </div>
 
-        <UButton type="submit" block size="lg" :loading="loading" color="primary">
-          {{ isLogin ? 'Sign In' : 'Sign Up' }}
-        </UButton>
-      </form>
-
-      <template #footer>
-        <div class="text-center text-sm text-gray-600 dark:text-gray-400">
-          <button @click="isLogin = !isLogin" class="hover:text-primary-600 dark:hover:text-primary-400 font-medium transition-colors">
-            {{ isLogin ? "Don't have an account? Sign up" : "Already have an account? Sign in" }}
+          <!-- Submit Button -->
+          <button 
+            type="submit" 
+            :disabled="loading"
+            class="w-full flex justify-center items-center py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+          >
+            <Icon v-if="loading" icon="line-md:loading-twotone-loop" class="w-5 h-5 mr-2" />
+            {{ isLogin ? 'Sign In' : 'Sign Up' }}
           </button>
-        </div>
-      </template>
-    </UCard>
+        </form>
+      </div>
+
+      <!-- Footer -->
+      <div class="px-8 py-4 bg-gray-50 dark:bg-gray-700/50 border-t border-gray-100 dark:border-gray-700 text-center">
+        <button 
+          @click="isLogin = !isLogin" 
+          class="text-sm font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300 transition-colors focus:outline-none"
+        >
+          {{ isLogin ? "Don't have an account? Sign up" : "Already have an account? Sign in" }}
+        </button>
+      </div>
+    </div>
   </div>
 </template>
