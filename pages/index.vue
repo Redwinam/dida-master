@@ -25,7 +25,8 @@ const config = ref({
   icloud_username: '',
   icloud_app_password: '',
   cal_lookahead_days: 2,
-  calendar_target: ''
+  calendar_target: '',
+  timezone: 'Asia/Shanghai'
 })
 
 const loading = ref(false)
@@ -785,6 +786,16 @@ async function triggerImageToCalendar() {
                       </div>
                       <input v-model="config.icloud_app_password" type="password" class="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700/50 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
                     </div>
+                  </div>
+                  <div class="space-y-1.5">
+                    <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Timezone</label>
+                    <div class="relative">
+                      <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <Icon icon="heroicons:globe-alt" class="w-5 h-5 text-gray-400" />
+                      </div>
+                      <input v-model="config.timezone" type="text" placeholder="Asia/Shanghai" class="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700/50 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+                    </div>
+                    <p class="text-xs text-gray-500">日历时间显示时区 (如 Asia/Shanghai)</p>
                   </div>
                   <div class="space-y-1.5">
                     <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Lookahead Days</label>

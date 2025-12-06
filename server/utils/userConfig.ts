@@ -113,7 +113,8 @@ export const getUserConfig = async (event: H3Event) => {
       icloud_username: rc.icloudUsername || '',
       icloud_app_password: rc.icloudAppPassword || '',
       cal_lookahead_days: 2,
-      calendar_target: ''
+      calendar_target: '',
+      timezone: 'Asia/Shanghai'
     }
 
     const hasMinimum = fallback.dida_token && fallback.dida_project_id && fallback.llm_api_key
@@ -123,5 +124,11 @@ export const getUserConfig = async (event: H3Event) => {
     return fallback
   }
 
-  return data
+  // Merge settings into the main object for easier consumption
+  const { settings, ...rest } = data
+  return {
+    user_id: rest.user_id,
+    updated_at: rest.updated_at,
+    ...(settings || {})
+  }
 }

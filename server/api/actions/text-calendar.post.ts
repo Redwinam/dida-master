@@ -14,6 +14,7 @@ interface UserConfig {
   icloud_app_password: string
   cal_lookahead_days: number
   calendar_target: string
+  timezone?: string
 }
 
 export default defineEventHandler(async (event) => {

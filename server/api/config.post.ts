@@ -14,13 +14,16 @@ export default defineEventHandler(async (event) => {
 
   const body = await readBody(event)
 
+  // Everything goes into settings
+  const dbData = {
+      user_id: userId,
+      updated_at: new Date(),
+      settings: body
+  }
+
   const { data, error } = await client
     .from('dida_master_user_config')
-    .upsert({
-      user_id: userId,
-      ...body,
-      updated_at: new Date()
-    })
+    .upsert(dbData)
     .select()
     .single()
 

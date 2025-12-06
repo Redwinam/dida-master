@@ -13,6 +13,7 @@ interface UserConfig {
   icloud_app_password: string
   cal_lookahead_days: number
   calendar_target: string
+  timezone?: string
 }
 
 export default defineEventHandler(async (event) => {
@@ -82,7 +83,11 @@ export default defineEventHandler(async (event) => {
               icloud_app_password: config.icloud_app_password
           }, config.cal_lookahead_days)
           
-          calendarContext = events.map((e: any) => `- ${e.start} - ${e.title} (${e.location || ''})`).join('\n')
+          const timeZone = config.timezone || 'Asia/Shanghai'
+          calendarContext = events.map((e: any) => {
+            const startStr = e.start ? new Date(e.start).toLocaleString('zh-CN', { timeZone, hour12: false }) : '未知时间'
+            return `- ${startStr} - ${e.title} (${e.location || ''})`
+          }).join('\n')
           console.log(`[DailyNote] Fetched ${events.length} calendar events`)
       }
 
