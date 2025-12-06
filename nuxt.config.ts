@@ -16,6 +16,21 @@ export default defineNuxtConfig({
     url: process.env.NUXT_PUBLIC_SUPABASE_URL,
     key: process.env.NUXT_PUBLIC_SUPABASE_ANON_KEY
   },
+  sourcemap: {
+    server: false,
+    client: false
+  },
+  nitro: {
+    rollupConfig: {
+      output: {
+        manualChunks(id: string) {
+          if (id.includes('@nuxtjs/supabase')) {
+            return 'supabase'
+          }
+        }
+      }
+    }
+  },
   vite: {
     plugins: [
       tailwindcss()
