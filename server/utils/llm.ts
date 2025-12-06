@@ -33,7 +33,6 @@ ${tasksContext}
   const completion = await client.chat.completions.create({
     model,
     messages: [
-      { role: 'system', content: 'You are an expert time management assistant.' },
       { role: 'user', content: prompt }
     ]
   })
