@@ -44,7 +44,7 @@ export const getUserConfig = async (event: H3Event) => {
   }
 
   // Fetch Config for the identified user
-  const client = await serverSupabaseClient(event)
+  const client = apiKey ? getAdminClient() : await serverSupabaseClient(event)
   const { data, error } = await client
     .from('dida_master_user_config')
     .select('*')
