@@ -6,7 +6,7 @@ export const useUserConfig = () => {
     dida_project_name: '', // Store name for display without fetching
     exclude_project_name: '',
     llm_api_key: '',
-    llm_model: 'deepseek-ai/DeepSeek-V3',
+    llm_model: 'deepseek-ai/DeepSeek-V3.2-Exp',
     vision_model: 'Qwen/Qwen3-VL-32B-Instruct',
     llm_api_url: 'https://api.siliconflow.cn/v1/chat/completions',
     cal_enable: false,

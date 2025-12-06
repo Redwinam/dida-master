@@ -45,6 +45,7 @@ export default defineNuxtConfig({
   },
   app: {
     head: {
+      title: '滴答：主人的任务',
       // Script injection removed in favor of plugins/polyfills.client.ts
     }
   },
@@ -62,7 +63,7 @@ export default defineNuxtConfig({
     public: {
       supabaseUrl: process.env.NUXT_PUBLIC_SUPABASE_URL,
       supabaseKey: process.env.NUXT_PUBLIC_SUPABASE_ANON_KEY,
-      llmModel: process.env.LLM_MODEL || 'deepseek-ai/DeepSeek-V3.1',
+      llmModel: process.env.LLM_MODEL || 'deepseek-ai/DeepSeek-V3.2-Exp',
       llmApiUrl: process.env.LLM_API_URL || 'https://api.siliconflow.cn/v1/chat/completions'
     }
   }

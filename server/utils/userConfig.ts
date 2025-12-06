@@ -22,7 +22,7 @@ export const getUserConfig = async (event: H3Event) => {
        // Fallback to manual creation if auto-import fails (ReferenceError)
        const config = useRuntimeConfig()
        const { createClient } = await import('@supabase/supabase-js')
-       supabaseAdmin = createClient(config.public.supabase.url, config.supabaseServiceKey, {
+       supabaseAdmin = createClient(config.public.supabaseUrl as string, config.supabaseServiceKey, {
          auth: { autoRefreshToken: false, persistSession: false }
        })
     }
@@ -82,7 +82,7 @@ export const getUserConfig = async (event: H3Event) => {
                 // Manual fallback again
                const config = useRuntimeConfig()
                const { createClient } = await import('@supabase/supabase-js')
-               client = createClient(config.public.supabase.url, config.supabaseServiceKey, {
+               client = createClient(config.public.supabaseUrl as string, config.supabaseServiceKey, {
                     auth: { autoRefreshToken: false, persistSession: false }
                })
            }
@@ -107,7 +107,7 @@ export const getUserConfig = async (event: H3Event) => {
       dida_project_id: rc.didaProjectId || '',
       exclude_project_name: '',
       llm_api_key: rc.openaiApiKey || '',
-      llm_model: rc.public.llmModel || 'deepseek-ai/DeepSeek-V3',
+      llm_model: rc.public.llmModel || 'deepseek-ai/DeepSeek-V3.2-Exp',
       llm_api_url: rc.public.llmApiUrl || 'https://api.siliconflow.cn/v1/chat/completions',
       cal_enable: !!(rc.icloudUsername && rc.icloudAppPassword),
       icloud_username: rc.icloudUsername || '',
