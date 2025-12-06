@@ -10,7 +10,21 @@ export const getUserConfig = async (event: H3Event) => {
   
   if (apiKey) {
     // Verify API Key via Admin Client (since we need to search users)
-    const supabaseAdmin = getAdminClient()
+    console.log('[UserConfig] Validating API Key...')
+    let supabaseAdmin
+    try {
+       // @ts-ignore
+       supabaseAdmin = getAdminClient()
+    } catch (e) {
+       console.error('[UserConfig] getAdminClient failed:', e)
+       // Fallback to manual creation if auto-import fails (ReferenceError)
+       const config = useRuntimeConfig()
+       const { createClient } = await import('@supabase/supabase-js')
+       supabaseAdmin = createClient(config.public.supabase.url, config.supabaseServiceKey, {
+         auth: { autoRefreshToken: false, persistSession: false }
+       })
+    }
+
     const { data: { users }, error } = await supabaseAdmin.auth.admin.listUsers()
     
     if (error) {
@@ -45,7 +59,22 @@ export const getUserConfig = async (event: H3Event) => {
   }
 
   // Fetch Config for the identified user
-  const client = apiKey ? getAdminClient() : await serverSupabaseClient(event)
+  let client
+  if (apiKey) {
+     try {
+        // @ts-ignore
+        client = getAdminClient()
+     } catch (e) {
+        const config = useRuntimeConfig()
+        const { createClient } = await import('@supabase/supabase-js')
+        client = createClient(config.public.supabase.url, config.supabaseServiceKey, {
+             auth: { autoRefreshToken: false, persistSession: false }
+        })
+     }
+  } else {
+     client = await serverSupabaseClient(event)
+  }
+  
   const { data, error } = await client
     .from('dida_master_user_config')
     .select('*')

@@ -1,21 +1,21 @@
 export const getCalendarEvents = async (credentials: any, lookaheadDays: number = 0) => {
-  const { createDAVClient } = await import('tsdav')
-  const ICAL = (await import('ical.js')).default
-  const { icloud_username, icloud_app_password } = credentials
-  
-  if (!icloud_username || !icloud_app_password) return []
-
-  const client = await createDAVClient({
-    serverUrl: 'https://caldav.icloud.com/',
-    credentials: {
-      username: icloud_username,
-      password: icloud_app_password,
-    },
-    authMethod: 'Basic',
-    defaultAccountType: 'caldav',
-  })
-
   try {
+    const { createDAVClient } = await import('tsdav')
+    const ICAL = (await import('ical.js')).default
+    const { icloud_username, icloud_app_password } = credentials
+    
+    if (!icloud_username || !icloud_app_password) return []
+  
+    const client = await createDAVClient({
+      serverUrl: 'https://caldav.icloud.com/',
+      credentials: {
+        username: icloud_username,
+        password: icloud_app_password,
+      },
+      authMethod: 'Basic',
+      defaultAccountType: 'caldav',
+    })
+  
     const calendars = await client.fetchCalendars()
     
     const now = new Date()
