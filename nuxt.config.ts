@@ -21,15 +21,15 @@ export default defineNuxtConfig({
     client: false
   },
   nitro: {
-    rollupConfig: {
-      output: {
-        manualChunks(id: string) {
-          if (id.includes('@nuxtjs/supabase')) {
-            return 'supabase'
-          }
-        }
-      }
-    }
+    // rollupConfig: {
+    //   output: {
+    //     manualChunks(id: string) {
+    //       if (id.includes('@nuxtjs/supabase')) {
+    //         return 'supabase'
+    //       }
+    //     }
+    //   }
+    // }
   },
   vite: {
     plugins: [
