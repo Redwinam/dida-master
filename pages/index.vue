@@ -72,10 +72,18 @@ async function loadConfig() {
         headers.Authorization = `Bearer ${session.access_token}`
     }
     
-    const data = await $fetch('/api/config', { headers })
+    const data: any = await $fetch('/api/config', { headers })
     // console.log('Frontend: Fetched config data:', data)
     if (data) {
-      config.value = { ...config.value, ...data }
+      // Handle nested settings if present (fallback for raw DB reads)
+      // But our userConfig.ts should have already flattened it.
+      // However, if the API returns mixed data or the userConfig logic was bypassed/failed, we handle it.
+      // Based on user report: data contains `settings` object
+      
+      const flatData = { ...data, ...(data.settings || {}) }
+      delete flatData.settings // cleanup
+      
+      config.value = { ...config.value, ...flatData }
       // console.log('Frontend: Updated config value:', config.value)
     }
     fetchedConfig.value = true
