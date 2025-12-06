@@ -1,5 +1,6 @@
 import { defineEventHandler, createError } from 'h3'
-import { serverSupabaseUser, serverSupabaseClient } from '#supabase/server'
+import { serverSupabaseUser } from '#supabase/server'
+import { serverSupabaseClient } from '#supabase/server'
 import { getCalendarEvents } from '../../utils/caldav'
 
 export default defineEventHandler(async (event) => {

@@ -1,5 +1,6 @@
 import { defineEventHandler, getHeader, getQuery, createError } from 'h3'
-import { serverSupabaseUser, serverSupabaseClient } from '#supabase/server'
+import { serverSupabaseUser } from '#supabase/server'
+import { serverSupabaseClient } from '#supabase/server'
 import { getDidaProjects } from '../../utils/dida'
 
 export default defineEventHandler(async (event) => {
@@ -29,9 +30,10 @@ export default defineEventHandler(async (event) => {
         .select('dida_token')
         .eq('user_id', user.id)
         .single()
-        
-      if (data?.dida_token) {
-        token = data.dida_token
+      
+      const config = data as any  
+      if (config?.dida_token) {
+        token = config.dida_token
       }
     }
   }

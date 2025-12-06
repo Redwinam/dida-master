@@ -1,4 +1,5 @@
-import { serverSupabaseUser, serverSupabaseClient } from '#supabase/server'
+import { serverSupabaseUser } from '#supabase/server'
+import { serverSupabaseClient } from '#supabase/server'
 import { H3Event } from 'h3'
 
 export const getUserConfig = async (event: H3Event) => {

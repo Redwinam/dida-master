@@ -1,4 +1,5 @@
 import { serverSupabaseClient } from '#supabase/server'
+import { serverSupabaseUser } from '#supabase/server'
 
 function generateKey() {
   const arr = Array.from(crypto.getRandomValues(new Uint8Array(24)))

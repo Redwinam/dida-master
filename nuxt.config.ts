@@ -21,15 +21,14 @@ export default defineNuxtConfig({
     client: false
   },
   nitro: {
-    // rollupConfig: {
-    //   output: {
-    //     manualChunks(id: string) {
-    //       if (id.includes('@nuxtjs/supabase')) {
-    //         return 'supabase'
-    //       }
-    //     }
-    //   }
-    // }
+    rollupConfig: {
+      onwarn(warning, warn) {
+        if (warning.code === 'CIRCULAR_DEPENDENCY' && warning.message.includes('@nuxtjs/supabase')) {
+          return
+        }
+        warn(warning)
+      }
+    }
   },
   vite: {
     plugins: [
