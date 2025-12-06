@@ -58,6 +58,15 @@ async function loadConfig() {
     
     // Always pass the token explicitly to avoid cookie race conditions
     const headers: Record<string, string> = {}
+    
+    // On server side, pass the cookie so the API can use serverSupabaseUser as fallback
+    if (import.meta.server) {
+      const reqHeaders = useRequestHeaders(['cookie'])
+      if (reqHeaders.cookie) {
+        headers.cookie = reqHeaders.cookie
+      }
+    }
+
     if (session?.access_token) {
         headers.Authorization = `Bearer ${session.access_token}`
     }
@@ -222,7 +231,14 @@ async function generateApiKey() {
  }
 
 
-const projects = ref<any[]>([])
+function copyApiKey() {
+        if (process.client && navigator.clipboard) {
+            navigator.clipboard.writeText(apiKey.value)
+            toast.add({ title: 'Copied!', color: 'success' })
+        }
+    }
+
+    const projects = ref<any[]>([])
 const fetchingProjects = ref(false)
 
 async function fetchProjects() {
@@ -716,7 +732,7 @@ async function triggerImageToCalendar() {
                             </button>
                         </div>
                         <button 
-                            @click.prevent="() => { navigator.clipboard.writeText(apiKey); toast.add({ title: 'Copied!', color: 'success' }) }"
+                            @click.prevent="copyApiKey"
                             class="px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
                             title="复制"
                         >

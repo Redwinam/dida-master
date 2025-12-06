@@ -14,12 +14,22 @@ export default defineEventHandler(async (event) => {
     token = headers.authorization.substring(7)
   }
 
-  const { data: { user }, error: userError } = await client.auth.getUser(token)
+  // Try validating with the provided token first
+  let user = null
+  if (token) {
+    const { data, error } = await client.auth.getUser(token)
+    if (!error && data?.user) {
+      user = data.user
+    }
+  }
 
-  // console.log('Config GET: User ID:', user?.id)
+  // Fallback to cookie-based session if token validation failed or no token provided
+  if (!user) {
+    user = await serverSupabaseUser(event)
+  }
 
-  if (userError || !user || !user.id) {
-    // console.log('Config GET: No user found or error, returning 401. Error:', userError?.message)
+  if (!user || !user.id) {
+    // console.log('Config GET: No user found or error, returning 401.')
     throw createError({ statusCode: 401, message: 'Unauthorized' })
   }
 
