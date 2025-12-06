@@ -12,7 +12,9 @@ export const createLLMClient = (apiKey: string, baseURL: string) => {
 
   return new OpenAI({
     apiKey,
-    baseURL: finalBaseURL
+    baseURL: finalBaseURL,
+    timeout: 60000, // 60s timeout for LLM
+    maxRetries: 1
   })
 }
 

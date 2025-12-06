@@ -2,7 +2,8 @@ export const getDidaProjects = async (token: string) => {
   return await $fetch('https://api.dida365.com/open/v1/project', {
     headers: {
       Authorization: `Bearer ${token}`
-    }
+    },
+    timeout: 10000 // Add explicit timeout
   })
 }
 
@@ -10,7 +11,8 @@ export const getDidaTasks = async (token: string, projectId: string) => {
   const data: any = await $fetch(`https://api.dida365.com/open/v1/project/${projectId}/data`, {
     headers: {
       Authorization: `Bearer ${token}`
-    }
+    },
+    timeout: 10000 // Add explicit timeout
   })
   return data?.tasks || []
 }

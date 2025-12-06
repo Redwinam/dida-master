@@ -8,6 +8,8 @@ export const getUserConfig = async (event: H3Event) => {
   // 1. Check for API Key in Header or Query
   const apiKey = getHeader(event, 'x-api-key') || getQuery(event).api_key as string
   
+  let client
+  
   if (apiKey) {
     // Verify API Key via Admin Client (since we need to search users)
     console.log('[UserConfig] Validating API Key...')
@@ -43,14 +45,22 @@ export const getUserConfig = async (event: H3Event) => {
     } else {
         throw createError({ statusCode: 401, message: 'Invalid API Key' })
     }
+    
+    // Set client for later use
+    client = supabaseAdmin
   } else {
     // 2. Fallback to Session Authentication
     // Use serverSupabaseClient + getUser for more robust session retrieval
-    const client = await serverSupabaseClient(event)
-    const { data: { user } } = await client.auth.getUser()
-    
-    if (user) {
-        userId = user.id
+    try {
+        client = await serverSupabaseClient(event)
+        const { data: { user } } = await client.auth.getUser()
+        
+        if (user) {
+            userId = user.id
+        }
+    } catch (e) {
+        console.error('Session Auth Error:', e)
+        throw createError({ statusCode: 401, message: 'Session Auth Failed or Missing' })
     }
   }
 
@@ -59,22 +69,26 @@ export const getUserConfig = async (event: H3Event) => {
   }
 
   // Fetch Config for the identified user
-  let client
-  if (apiKey) {
-     try {
-        // @ts-ignore
-        client = getAdminClient()
-     } catch (e) {
-        const config = useRuntimeConfig()
-        const { createClient } = await import('@supabase/supabase-js')
-        client = createClient(config.public.supabase.url, config.supabaseServiceKey, {
-             auth: { autoRefreshToken: false, persistSession: false }
-        })
-     }
-  } else {
-     client = await serverSupabaseClient(event)
+  // Reuse client if we have it
+  if (!client) {
+      try {
+          client = await serverSupabaseClient(event)
+      } catch (e) {
+           console.warn('Failed to get Supabase client for config fetch, trying admin fallback')
+           try {
+               // @ts-ignore
+               client = getAdminClient()
+           } catch (e2) {
+                // Manual fallback again
+               const config = useRuntimeConfig()
+               const { createClient } = await import('@supabase/supabase-js')
+               client = createClient(config.public.supabase.url, config.supabaseServiceKey, {
+                    auth: { autoRefreshToken: false, persistSession: false }
+               })
+           }
+      }
   }
-  
+
   const { data, error } = await client
     .from('dida_master_user_config')
     .select('*')
