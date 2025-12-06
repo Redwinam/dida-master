@@ -27,14 +27,27 @@ export default defineEventHandler(async (event) => {
 
 
   // 1. Fetch Tasks
-  const allProjects = await getDidaProjects(config.dida_token)
+  let allProjects: any[] = []
+  try {
+    allProjects = await getDidaProjects(config.dida_token) as any[]
+  } catch (e) {
+    console.error('Dida Projects Fetch Error:', e)
+    throw createError({ statusCode: 500, message: `Dida Projects Fetch Failed: ${e}` })
+  }
+
   const excludeNames = (config.exclude_project_name || '').split(',').map((s: string) => s.replace(/"/g, '').trim())
   
   let allTasks: any[] = []
   for (const p of (allProjects as any[])) {
       if (!excludeNames.includes(p.name)) {
-          const pTasks = await getDidaTasks(config.dida_token, p.id)
-          allTasks = allTasks.concat(pTasks)
+          try {
+            const pTasks = await getDidaTasks(config.dida_token, p.id)
+            allTasks = allTasks.concat(pTasks)
+          } catch (e) {
+             console.error(`Dida Tasks Fetch Error (Project ${p.id}):`, e)
+             // Continue with other projects if one fails? Or fail?
+             // Let's fail to be safe or just log
+          }
       }
   }
 
@@ -54,7 +67,13 @@ export default defineEventHandler(async (event) => {
 
   // 3. Call LLM
   const openai = createLLMClient(config.llm_api_key, config.llm_api_url)
-  const plan = await generateDailyPlan(openai, config.llm_model, tasksContext, calendarContext)
+  let plan = ''
+  try {
+    plan = await generateDailyPlan(openai, config.llm_model, tasksContext, calendarContext)
+  } catch (e) {
+      console.error('LLM Generate Plan Error:', e)
+      throw createError({ statusCode: 500, message: `LLM Error: ${e}` })
+  }
 
   // 4. Create Note
   const title = new Date().toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' })
