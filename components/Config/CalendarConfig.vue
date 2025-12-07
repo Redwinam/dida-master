@@ -148,7 +148,7 @@ function toggleTargetCalendar(name: string) {
       <div v-if="fetchingCalendars" class="flex justify-center py-8">
         <Icon icon="line-md:loading-twotone-loop" class="w-8 h-8 text-blue-500" />
       </div>
-      <div v-else class="max-h-60 overflow-y-auto space-y-2">
+      <div v-else class="max-h-60 overflow-y-auto space-y-2 p-1">
         <label v-for="c in calendars" :key="c.name" class="flex items-center gap-3 px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg cursor-pointer">
             <input 
                 type="checkbox" 
@@ -161,6 +161,11 @@ function toggleTargetCalendar(name: string) {
          <div v-if="calendars.length === 0" class="text-center py-4 text-gray-500">
           未找到日历
         </div>
+      </div>
+      <div class="mt-4 pt-3 border-t border-gray-100 dark:border-gray-700 flex justify-end">
+         <button @click="showCalModal = false" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors shadow-sm">
+            完成
+         </button>
       </div>
     </Modal>
   </div>

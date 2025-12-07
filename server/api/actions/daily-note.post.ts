@@ -45,7 +45,8 @@ export default defineEventHandler(async (event) => {
     
     let allTasks: any[] = []
     for (const p of (allProjects as any[])) {
-        if (!excludeNames.includes(p.name)) {
+        // Exclude projects in exclusion list AND the target project itself
+        if (!excludeNames.includes(p.name) && p.id !== config.dida_project_id) {
             try {
               // console.log(`[DailyNote] Fetching tasks for project: ${p.name}`)
               const pTasks = await getDidaTasks(config.dida_token, p.id)

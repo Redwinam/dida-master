@@ -48,7 +48,11 @@ export const useUserConfig = () => {
         headers.Authorization = `Bearer ${session.access_token}`
       }
 
-      const data: any = await $fetch('/api/config', { headers })
+      const data: any = await $fetch('/api/config', { 
+        headers,
+        timeout: 15000, // 15s timeout to prevent infinite loading
+        retry: 1
+      })
       if (data) {
         const flatData = { ...data, ...(data.settings || {}) }
         delete flatData.settings
