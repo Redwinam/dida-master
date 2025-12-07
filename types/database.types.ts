@@ -24,6 +24,7 @@ export interface Database {
           cal_lookahead_days: number | null
           calendar_target: string | null
           updated_at: string | null
+          settings: Json | null
         }
         Insert: {
           user_id: string
@@ -39,6 +40,7 @@ export interface Database {
           cal_lookahead_days?: number | null
           calendar_target?: string | null
           updated_at?: string | null
+          settings?: Json | null
         }
         Update: {
           user_id?: string
@@ -54,6 +56,7 @@ export interface Database {
           cal_lookahead_days?: number | null
           calendar_target?: string | null
           updated_at?: string | null
+          settings?: Json | null
         }
       }
     }

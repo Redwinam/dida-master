@@ -1,6 +1,7 @@
 import { serverSupabaseUser } from '#supabase/server'
 import { serverSupabaseClient } from '#supabase/server'
 import { H3Event } from 'h3'
+import { Database } from '../../types/database.types'
 
 export const getUserConfig = async (event: H3Event) => {
   let userId: string | undefined
@@ -89,7 +90,7 @@ export const getUserConfig = async (event: H3Event) => {
       }
   }
 
-  const { data, error } = await client
+  const { data: rawData, error } = await client
     .from('dida_master_user_config')
     .select('*')
     .eq('user_id', userId)
@@ -98,6 +99,8 @@ export const getUserConfig = async (event: H3Event) => {
   if (error && (error as any).code !== 'PGRST116') {
     throw createError({ statusCode: 500, message: (error as any).message || 'Supabase error' })
   }
+
+  const data = rawData as Database['public']['Tables']['dida_master_user_config']['Row'] | null
 
   if (!data) {
     const rc = useRuntimeConfig()
@@ -132,6 +135,6 @@ export const getUserConfig = async (event: H3Event) => {
   return {
     user_id: rest.user_id,
     updated_at: rest.updated_at,
-    ...(settings || {})
+    ...(settings as Record<string, any> || {})
   }
 }

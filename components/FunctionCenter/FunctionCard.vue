@@ -45,7 +45,7 @@ const showApiModal = ref(false)
         </button>
       </div>
 
-      <p class="text-gray-500 dark:text-gray-400 text-sm mb-6 leading-relaxed flex-grow">
+      <p class="text-gray-500 dark:text-gray-400 text-sm mb-6 leading-relaxed grow">
         {{ description }}
       </p>
       
