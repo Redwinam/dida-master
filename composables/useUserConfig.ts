@@ -57,9 +57,17 @@ export const useUserConfig = () => {
       }
       fetched.value = true
     } catch (e: any) {
+      const errorMsg = e.message || ''
+      // Check for refresh token error and force logout
+      if (errorMsg.includes('Invalid Refresh Token') || errorMsg.includes('Refresh Token Not Found')) {
+        await client.auth.signOut()
+        navigateTo('/login')
+        return
+      }
+
       // Ignore 401 if just checking session state
       if (e.response?.status !== 401) {
-        error.value = e.message || '加载配置失败'
+        error.value = errorMsg || '加载配置失败'
       }
     } finally {
       loading.value = false

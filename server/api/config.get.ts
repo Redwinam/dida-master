@@ -6,7 +6,12 @@ export default defineEventHandler(async (event) => {
   const headers = getRequestHeaders(event)
   // console.log('Config GET: Auth Header present:', !!headers.authorization)
   
-  const client = await serverSupabaseClient(event)
+  let client
+  try {
+    client = await serverSupabaseClient(event)
+  } catch (e) {
+    throw createError({ statusCode: 401, message: 'Session Initialization Failed' })
+  }
   
   // Extract token from header manually to ensure we use the latest token provided by frontend
   // This bypasses potential stale cookie issues in serverSupabaseClient
