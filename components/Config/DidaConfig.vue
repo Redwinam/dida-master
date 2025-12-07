@@ -8,6 +8,7 @@ const toast = useToast()
 const projects = ref<any[]>([])
 const fetchingProjects = ref(false)
 const showTargetModal = ref(false)
+const showWeeklyTargetModal = ref(false)
 const showExcludeModal = ref(false)
 
 async function fetchProjects() {
@@ -33,6 +34,11 @@ function openTargetModal() {
   fetchProjects()
 }
 
+function openWeeklyTargetModal() {
+  showWeeklyTargetModal.value = true
+  fetchProjects()
+}
+
 function openExcludeModal() {
   showExcludeModal.value = true
   fetchProjects()
@@ -42,6 +48,12 @@ function selectTarget(p: any) {
   config.value.dida_project_id = p.id
   config.value.dida_project_name = p.name
   showTargetModal.value = false
+}
+
+function selectWeeklyTarget(p: any) {
+  config.value.weekly_report_project_id = p.id
+  config.value.weekly_report_project_name = p.name
+  showWeeklyTargetModal.value = false
 }
 
 // Excluded Projects Logic

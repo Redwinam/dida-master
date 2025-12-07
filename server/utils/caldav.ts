@@ -1,4 +1,4 @@
-export const getCalendarEvents = async (credentials: any, lookaheadDays: number = 0) => {
+export const getCalendarEvents = async (credentials: any, lookaheadDays: number = 0, customRange?: { start: Date, end: Date }) => {
   try {
     const { createDAVClient } = await import('tsdav')
     const ICAL = (await import('ical.js')).default
@@ -18,9 +18,24 @@ export const getCalendarEvents = async (credentials: any, lookaheadDays: number 
   
     const calendars = await client.fetchCalendars()
     
-    const now = new Date()
-    const start = new Date(now.setHours(0,0,0,0)).toISOString()
-    const end = new Date(now.setDate(now.getDate() + lookaheadDays)).toISOString() // rough approx
+    let startStr: string
+    let endStr: string
+
+    if (customRange) {
+        startStr = customRange.start.toISOString()
+        endStr = customRange.end.toISOString()
+    } else {
+        const now = new Date()
+        const s = new Date(now)
+        s.setHours(0,0,0,0)
+        startStr = s.toISOString()
+        
+        const e = new Date(s) // Start from 00:00
+        e.setDate(e.getDate() + lookaheadDays)
+        // Ensure we cover the full end day if needed, but original logic was simple addition.
+        // Let's stick to original logic: start + N days.
+        endStr = e.toISOString()
+    }
 
     const allEvents: any[] = []
 
@@ -32,7 +47,7 @@ export const getCalendarEvents = async (credentials: any, lookaheadDays: number 
         // Using basic sync or fetch
         const objects = await client.fetchCalendarObjects({
             calendar,
-            timeRange: { start, end }
+            timeRange: { start: startStr, end: endStr }
         })
 
         for (const obj of objects) {

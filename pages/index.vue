@@ -2,6 +2,7 @@
 import { Icon } from '@iconify/vue'
 import ConfigSection from '@/components/ConfigSection.vue'
 import DailyNoteAction from '@/components/FunctionCenter/DailyNoteAction.vue'
+import WeeklyReportAction from '@/components/FunctionCenter/WeeklyReportAction.vue'
 import TextToCalAction from '@/components/FunctionCenter/TextToCalAction.vue'
 import ImageToCalAction from '@/components/FunctionCenter/ImageToCalAction.vue'
 
@@ -101,6 +102,7 @@ watch(user, async (u) => {
         <!-- Actions Tab -->
         <div v-else-if="activeTab === 'actions'" class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <DailyNoteAction />
+          <WeeklyReportAction />
           <TextToCalAction />
           <ImageToCalAction />
         </div>

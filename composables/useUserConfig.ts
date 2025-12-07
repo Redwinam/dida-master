@@ -4,6 +4,8 @@ export const useUserConfig = () => {
     dida_token: '',
     dida_project_id: '',
     dida_project_name: '', // Store name for display without fetching
+    weekly_report_project_id: '',
+    weekly_report_project_name: '',
     exclude_project_name: '',
     llm_api_key: '',
     llm_model: 'deepseek-ai/DeepSeek-V3.2-Exp',

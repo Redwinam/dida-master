@@ -49,6 +49,40 @@ ${tasksContext}
   return completion.choices[0]?.message?.content || ''
 }
 
+export const generateWeeklyReport = async (client: OpenAI, model: string, tasksContext: string, calendarContext: string, timezone: string = 'Asia/Shanghai') => {
+  const now = new Date()
+  const endStr = now.toLocaleDateString('zh-CN', { timeZone: timezone })
+  const start = new Date(now)
+  start.setDate(start.getDate() - 7)
+  const startStr = start.toLocaleDateString('zh-CN', { timeZone: timezone })
+
+  const prompt = `你是一个高效的时间管理专家。
+请根据过去一周（${startStr} 至 ${endStr}）的完成任务和日程，为我生成一份周报。
+
+过去一周行程：
+${calendarContext}
+
+已完成任务列表：
+${tasksContext}
+
+请总结我的工作成就、时间分配情况，并给出下周的建议。
+周报格式要求：
+1. 本周工作总结（按项目或类别）
+2. 时间利用分析（基于日程和任务量）
+3. 下周规划建议
+4. 保持简洁专业，使用Markdown格式。
+`
+
+  const completion = await client.chat.completions.create({
+    model,
+    messages: [
+      { role: 'user', content: prompt }
+    ]
+  })
+
+  return completion.choices[0]?.message?.content || ''
+}
+
 export const parseTextToCalendar = async (client: OpenAI, model: string, text: string, calendars: string[], todayDate: string) => {
   const prompt = `请识别文本中的日程信息，并将其转换为 JSON 格式。
 当前日期是: ${todayDate}

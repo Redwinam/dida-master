@@ -108,6 +108,7 @@ export const getUserConfig = async (event: H3Event) => {
       user_id: userId,
       dida_token: rc.didaToken || '',
       dida_project_id: rc.didaProjectId || '',
+      weekly_report_project_id: '',
       exclude_project_name: '',
       llm_api_key: rc.openaiApiKey || '',
       llm_model: rc.public.llmModel || 'deepseek-ai/DeepSeek-V3.2-Exp',

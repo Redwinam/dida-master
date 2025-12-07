@@ -17,6 +17,20 @@ export const getDidaTasks = async (token: string, projectId: string) => {
   return data?.tasks || []
 }
 
+export const getDidaCompletedTasks = async (token: string, projectId: string, fromDate: string) => {
+  const data: any = await $fetch(`https://api.dida365.com/open/v1/project/${projectId}/completed`, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    },
+    query: {
+        from: fromDate,
+        limit: 100 // Reasonable limit
+    },
+    timeout: 10000
+  })
+  return data || []
+}
+
 export const createDidaNote = async (token: string, projectId: string, title: string, content: string) => {
   const now = new Date()
   const startDate = new Date(now.setHours(0, 0, 0, 0)).toISOString().replace(/\.\d{3}Z$/, '+0800') // Simplification for Asia/Shanghai
