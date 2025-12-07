@@ -18,12 +18,21 @@ export const createLLMClient = (apiKey: string, baseURL: string) => {
   })
 }
 
-export const generateDailyPlan = async (client: OpenAI, model: string, tasksContext: string, calendarContext: string) => {
+export const generateDailyPlan = async (client: OpenAI, model: string, tasksContext: string, calendarContext: string, timezone: string = 'Asia/Shanghai') => {
+  const todayStr = new Date().toLocaleDateString('zh-CN', { 
+    timeZone: timezone,
+    year: 'numeric', 
+    month: 'long', 
+    day: 'numeric', 
+    weekday: 'long' 
+  })
+
   const prompt = `你是一个高效的时间管理专家，专门为INTJ人格类型设计日程安排。
+今天是${todayStr}。
 请根据以下任务列表，为我制定今天的日程安排。并提供一些针对各项任务与一天具体的专业建议。
 （但回复中无需提到INTJ属性；返回格式中不使用表格）
 
-今日行程：
+近日行程：
 ${calendarContext}
 
 任务列表：

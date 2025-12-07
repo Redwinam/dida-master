@@ -10,6 +10,8 @@ interface UserConfig {
   llm_model: string
   vision_model?: string
   llm_api_url: string
+  vision_api_key?: string
+  vision_api_url?: string
   cal_enable: boolean
   icloud_username: string
   icloud_app_password: string
@@ -32,7 +34,11 @@ export default defineEventHandler(async (event) => {
   const calendars = (config.calendar_target || '').split(',').map((s: string) => s.trim()).filter(Boolean)
 
   // 3. Call LLM
-  const openai = createLLMClient(config.llm_api_key, config.llm_api_url)
+  // Use Vision API config if available, otherwise fallback to standard LLM config
+  const apiKey = config.vision_api_key || config.llm_api_key
+  const apiUrl = config.vision_api_url || config.llm_api_url
+  
+  const openai = createLLMClient(apiKey, apiUrl)
   
   const todayDate = new Date().toISOString().split('T')[0] || ''
   // Ensure imageBase64 doesn't have prefix

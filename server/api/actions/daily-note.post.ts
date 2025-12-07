@@ -84,7 +84,7 @@ export default defineEventHandler(async (event) => {
     const openai = createLLMClient(config.llm_api_key, config.llm_api_url)
     let plan = ''
     try {
-      plan = await generateDailyPlan(openai, config.llm_model, tasksContext, calendarContext)
+      plan = await generateDailyPlan(openai, config.llm_model, tasksContext, calendarContext, config.timezone)
       console.log('[DailyNote] Plan generated')
     } catch (e) {
         console.error('LLM Generate Plan Error:', e)

@@ -9,6 +9,8 @@ export const useUserConfig = () => {
     llm_model: 'deepseek-ai/DeepSeek-V3.2-Exp',
     vision_model: 'Qwen/Qwen3-VL-32B-Instruct',
     llm_api_url: 'https://api.siliconflow.cn/v1/chat/completions',
+    vision_api_key: '',
+    vision_api_url: '',
     cal_enable: false,
     icloud_username: '',
     icloud_app_password: '',
