@@ -8,6 +8,7 @@ interface UserConfig {
   user_id: string
   dida_token: string
   dida_project_id: string
+  dida_cookie?: string
   weekly_report_project_id: string
   exclude_project_name: string
   llm_api_key: string
@@ -51,19 +52,57 @@ export default defineEventHandler(async (event) => {
     const excludeNames = (config.exclude_project_name || '').split(',').map((s: string) => s.replace(/"/g, '').trim())
     
     let allCompletedTasks: any[] = []
-    
-    for (const p of (allProjects as any[])) {
-        if (!excludeNames.includes(p.name) && p.id !== config.weekly_report_project_id && p.id !== config.dida_project_id) {
-            try {
-                const tasks = await getDidaCompletedTasks(config.dida_token, p.id, startStr)
-                // Ensure tasks have status if not provided (Dida completed API should return completed tasks)
-                // Just in case, we can force status=2 if missing, but let's trust API.
-                allCompletedTasks = allCompletedTasks.concat(tasks)
-            } catch (e) {
-                console.error(`Dida Completed Tasks Fetch Error (Project ${p.id}):`, e)
-            }
-        }
+
+    // Optimization: Fetch all closed tasks once instead of per project
+    // Use 'all' as projectId to indicate we want all tasks, then filter later or rely on API to return all
+    // Since getDidaCompletedTasks now uses /project/all/closed, we can call it once.
+    try {
+        console.log('[WeeklyReport] Fetching all completed tasks...')
+        // Pass a dummy projectId or 'all' - the function implementation now ignores projectId for the API call 
+        // but uses it for filtering. To avoid filtering inside getDidaCompletedTasks, we should modify it or 
+        // just pass 'all' and handle filtering here.
+        // Actually, let's update getDidaCompletedTasks to accept 'all' or specific ID, 
+        // but our current implementation of getDidaCompletedTasks fetches ALL and filters by ID.
+        // To be efficient, we should change the loop logic.
+        
+        // Let's call it ONCE with 'all' (or any ID since it fetches ALL internally now)
+        // But wait, getDidaCompletedTasks filters by ID. We need it to NOT filter.
+        
+        // Let's use a special flag or just call it with a special ID that indicates "return all"
+        // But better: Update the loop to NOT call getDidaCompletedTasks multiple times.
+        
+        // Refactored approach:
+        // We need a new function or modify existing one to return ALL tasks without filtering.
+        // But since I can't easily change signature everywhere without checking usages (only used here?),
+        // I'll assume getDidaCompletedTasks is only used here or I can modify it safely.
+        
+        // Let's modify getDidaCompletedTasks to OPTIONALLY filter.
+         // For now, I will call it with a specific project ID? No.
+         
+         // Let's just use the fact that I modified getDidaCompletedTasks to use /project/all/closed.
+         // However, I added logic to FILTER by projectId.
+         // I should remove that filter logic from getDidaCompletedTasks if I want to do it here more efficiently.
+         // OR, I can revert the loop here and just call it once.
+         
+         // Let's assume I will modify getDidaCompletedTasks to NOT filter if projectId is 'all'.
+         // Pass token and cookie
+         const tasks = await getDidaCompletedTasks(config.dida_token, 'all', startStr, config.dida_cookie)
+         
+         // Now filter manually
+         allCompletedTasks = tasks.filter((t: any) => {
+              const p = allProjects.find(proj => proj.id === t.projectId)
+             const pName = p ? p.name : ''
+             // Exclude projects
+             if (excludeNames.includes(pName)) return false
+             if (t.projectId === config.weekly_report_project_id) return false
+             if (t.projectId === config.dida_project_id) return false
+             return true
+        })
+        
+    } catch (e) {
+         console.error('Dida All Completed Tasks Fetch Error:', e)
     }
+
     console.log(`[WeeklyReport] Fetched ${allCompletedTasks.length} completed tasks`)
 
     const tasksContext = formatTasksForAI(allCompletedTasks, allProjects)

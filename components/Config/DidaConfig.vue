@@ -161,6 +161,27 @@ function toggleExcludedProject(name: string) {
           </div>
         </div>
 
+        <!-- Dida Cookie -->
+        <div class="space-y-1.5">
+          <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
+            Cookie (可选，用于增强周报功能，获取已完成任务)
+          </label>
+          <div class="relative">
+             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <Icon icon="heroicons:key" class="w-5 h-5 text-gray-400" />
+              </div>
+            <textarea
+                v-model="config.dida_cookie"
+                placeholder="粘贴完整的 Cookie 字符串"
+                rows="4"
+                class="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700/50 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm resize-y"
+            ></textarea>
+          </div>
+          <p class="text-xs text-gray-500">
+            某些高级接口（如获取所有已完成任务）需要 Cookie 认证。请在浏览器登录滴答清单 Web 版，F12 打开开发者工具，复制任意请求的 `Cookie` 头部值。
+          </p>
+        </div>
+
         <!-- Excluded Projects -->
         <div class="space-y-1.5">
           <label class="text-sm font-medium text-gray-700 dark:text-gray-300">排除项目</label>

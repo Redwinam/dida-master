@@ -17,18 +17,120 @@ export const getDidaTasks = async (token: string, projectId: string) => {
   return data?.tasks || []
 }
 
-export const getDidaCompletedTasks = async (token: string, projectId: string, fromDate: string) => {
-  const data: any = await $fetch(`https://api.dida365.com/open/v1/project/${projectId}/completed`, {
-    headers: {
-      Authorization: `Bearer ${token}`
-    },
-    query: {
-        from: fromDate,
-        limit: 100 // Reasonable limit
-    },
-    timeout: 10000
-  })
-  return data || []
+export const getDidaCompletedTasks = async (token: string, projectId: string, fromDate: string, cookie?: string) => {
+  // Use "all" closed tasks API found by user which seems to work better
+  // https://api.dida365.com/api/v2/project/all/closed?from=&to=&status=Completed
+  // We can filter by project ID on our side if needed, or check if it accepts projectId in path
+  
+  // The user shared: https://api.dida365.com/api/v2/project/all/closed
+  // Let's try to fetch ALL completed tasks and filter by date and project
+  // This seems to be the "Completed" smart list endpoint.
+  
+  // Note: V2 API usually requires Cookie auth, but some endpoints might work with Bearer if we are lucky.
+  // User reported 401 with Bearer token on v2 endpoint.
+  // If Bearer doesn't work, we are stuck unless we can simulate a cookie or use v1.
+  // But v1 doesn't return completed tasks.
+  
+  // However, the user said: "刚才的接口不行... 这个V2端口要怎么接呢？" and provided a reddit link.
+  // The reddit link suggests V2 API is internal and undocumented.
+  // ticktick-py uses it by simulating a browser login (cookie).
+  // But we are using OAuth token.
+  
+  // WAIT! If we are using OAuth token, maybe we can use the `open/v1/project/{id}/data` endpoint?
+  // But documentation says it only returns 'tasks' (uncompleted).
+  
+  // Let's look at the error again: "Failed to fetch all closed tasks: 401".
+  // This confirms Bearer token is NOT accepted by /api/v2/project/all/closed.
+  
+  // Is there any other way?
+  // Maybe we can try `open/v1/project/{id}/data` again? 
+  // Some users say "I didn't find a way to retrieve all the completed tasks" with v1.
+  
+  // What if we try to use the Cookie from the user? 
+  // We don't have the user's password to generate a cookie. We only have OAuth token.
+  
+  // Let's try a different V2 endpoint that might accept OAuth?
+  // Unlikely. V2 is for their web app.
+  
+  // But wait! There is a trick in some internal APIs where you can pass token as a cookie `t={token}`.
+   // Let's try that.
+   
+   // Updated based on successful curl:
+   // https://api.dida365.com/api/v2/project/all/closed?from=&to=&status=Completed
+   // It seems 'from' and 'to' can be empty to get recent ones, or we should pass them correctly.
+   // IMPORTANT: The curl worked! 
+   // We must ensure all headers are correct.
+   
+   // NOTE: The 'from' parameter in v2 API seems to require a specific format or can be empty?
+   // The curl example had `from=&to=`. 
+   // The error `unknown_exception` might be due to date format mismatch.
+   // Let's try passing empty 'from' if we want recent, or format it differently.
+   // But we want to filter by date.
+   // Let's try passing empty 'from' first to see if it works, then filter in memory if needed.
+   // Or maybe format as '2025-11-30 00:00:00'? 
+   // Let's try matching the curl exactly first: from=&to=
+   
+   const url = `https://api.dida365.com/api/v2/project/all/closed?from=&to=&status=Completed&limit=100`
+
+   try {
+       // Prefer provided cookie, fallback to token trick
+       // Note: The curl used a full cookie string. 
+       // If user provides just 't=...', we use it. If user provides full string, we use it.
+       // If no cookie provided, we fallback to t=token which might fail (500/401).
+       const cookieHeader = cookie ? cookie : `t=${token}; wb_index_token=${token}`
+       
+       console.log('[Dida Debug] Fetching completed tasks from:', url)
+       console.log('[Dida Debug] Using Cookie length:', cookieHeader.length)
+       console.log('[Dida Debug] Using Cookie start:', cookieHeader.substring(0, 20) + '...')
+       
+       const response = await fetch(url, {
+         headers: {
+           'Cookie': cookieHeader,
+           'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+           'Accept': 'application/json, text/plain, */*',
+           'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
+           'hl': 'zh_CN',
+           'origin': 'https://dida365.com',
+           'referer': 'https://dida365.com/',
+           'x-device': '{"platform":"web","os":"macOS 10.15.7","device":"Chrome 120.0.0.0","name":"","version":6430,"id":"680b0399fc7c745c0721270a","channel":"website","campaign":"","websocket":""}',
+           'x-tz': 'Asia/Shanghai'
+         }
+       })
+
+       if (!response.ok) {
+           const text = await response.text()
+           console.error(`[Dida Debug] Failed response body: ${text.substring(0, 500)}`)
+           console.warn(`Failed to fetch all closed tasks with Cookie auth: ${response.status} ${response.statusText}`)
+           return []
+       }
+
+      const data: any = await response.json()
+      
+      // Filter by projectId if it's not "all" (though user loop calls this per project, which is inefficient if we can get all at once)
+      // But the current architecture calls this function PER project.
+      // So we filter the result here.
+      if (Array.isArray(data)) {
+          // Since we are fetching ALL (from=&to=), we need to manually filter by date if fromDate provided
+          let filtered = data
+          if (fromDate) {
+              const fromTime = new Date(fromDate).getTime()
+              filtered = filtered.filter((t: any) => {
+                  const completedTime = t.completedTime ? new Date(t.completedTime).getTime() : 0
+                  return completedTime >= fromTime
+              })
+          }
+
+          if (projectId === 'all') {
+              return filtered
+          }
+          return filtered.filter((t: any) => t.projectId === projectId)
+      }
+      return []
+
+  } catch (e) {
+      console.error('Error fetching completed tasks:', e)
+      return []
+  }
 }
 
 export const createDidaNote = async (token: string, projectId: string, title: string, content: string) => {

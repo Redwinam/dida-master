@@ -4,6 +4,7 @@ export const useUserConfig = () => {
     dida_token: '',
     dida_project_id: '',
     dida_project_name: '', // Store name for display without fetching
+    dida_cookie: '',
     weekly_report_project_id: '',
     weekly_report_project_name: '',
     exclude_project_name: '',
