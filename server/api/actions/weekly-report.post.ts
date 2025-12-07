@@ -1,5 +1,5 @@
 import { serverSupabaseUser, serverSupabaseClient } from '#supabase/server'
-import { getDidaProjects, getDidaCompletedTasks, createDidaNote, formatTasksForAI } from '../../utils/dida'
+import { getDidaProjects, getDidaCompletedTasks, getDidaTasks, createDidaNote, formatTasksForAI } from '../../utils/dida'
 import { getCalendarEvents } from '../../utils/caldav'
 import { createLLMClient, generateWeeklyReport } from '../../utils/llm'
 import { getUserConfig } from '../../utils/userConfig'
@@ -105,24 +105,59 @@ export default defineEventHandler(async (event) => {
 
     console.log(`[WeeklyReport] Fetched ${allCompletedTasks.length} completed tasks`)
 
-    const tasksContext = formatTasksForAI(allCompletedTasks, allProjects)
+    // 2.5 Fetch Uncompleted Tasks (Current Status)
+    // Fetch from all projects excluding targets
+    console.log('[WeeklyReport] Fetching uncompleted tasks...')
+    let allUncompletedTasks: any[] = []
+    for (const p of (allProjects as any[])) {
+        if (!excludeNames.includes(p.name) && p.id !== config.weekly_report_project_id && p.id !== config.dida_project_id) {
+             try {
+                 const tasks = await getDidaTasks(config.dida_token, p.id)
+                 allUncompletedTasks = allUncompletedTasks.concat(tasks)
+             } catch (e) {
+                 console.error(`Dida Uncompleted Tasks Fetch Error (Project ${p.id}):`, e)
+             }
+        }
+    }
+    console.log(`[WeeklyReport] Fetched ${allUncompletedTasks.length} uncompleted tasks`)
 
-    // 3. Fetch Calendar (Past 7 Days)
+    const completedContext = formatTasksForAI(allCompletedTasks, allProjects)
+    const uncompletedContext = formatTasksForAI(allUncompletedTasks, allProjects)
+
+    // 3. Fetch Calendar (Past 7 Days + Next 7 Days)
     let calendarContext = '无'
+    let nextWeekCalendarContext = '无'
+    
     if (config.cal_enable) {
         console.log('[WeeklyReport] Fetching calendar...')
+        // Past 7 days
         const end = new Date(now)
         const events = await getCalendarEvents({
             icloud_username: config.icloud_username,
             icloud_app_password: config.icloud_app_password
         }, 0, { start, end })
         
+        // Next 7 days
+        const nextStart = new Date(now)
+        const nextEnd = new Date(now)
+        nextEnd.setDate(nextEnd.getDate() + 7)
+        const nextEvents = await getCalendarEvents({
+            icloud_username: config.icloud_username,
+            icloud_app_password: config.icloud_app_password
+        }, 0, { start: nextStart, end: nextEnd })
+        
         const timeZone = config.timezone || 'Asia/Shanghai'
         calendarContext = events.map((e: any) => {
           const startStr = e.start ? new Date(e.start).toLocaleString('zh-CN', { timeZone, hour12: false }) : '未知时间'
           return `- ${startStr} - ${e.title} (${e.location || ''})`
         }).join('\n')
-        console.log(`[WeeklyReport] Fetched ${events.length} calendar events`)
+        
+        nextWeekCalendarContext = nextEvents.map((e: any) => {
+            const startStr = e.start ? new Date(e.start).toLocaleString('zh-CN', { timeZone, hour12: false }) : '未知时间'
+            return `- ${startStr} - ${e.title} (${e.location || ''})`
+        }).join('\n')
+        
+        console.log(`[WeeklyReport] Fetched ${events.length} past events and ${nextEvents.length} future events`)
     }
 
     // 4. Call LLM
@@ -130,7 +165,15 @@ export default defineEventHandler(async (event) => {
     const openai = createLLMClient(config.llm_api_key, config.llm_api_url)
     let report = ''
     try {
-      report = await generateWeeklyReport(openai, config.llm_model, tasksContext, calendarContext, config.timezone)
+      report = await generateWeeklyReport(
+          openai, 
+          config.llm_model, 
+          completedContext, 
+          uncompletedContext,
+          calendarContext, 
+          nextWeekCalendarContext,
+          config.timezone
+      )
       console.log('[WeeklyReport] Report generated')
     } catch (e) {
         console.error('LLM Generate Report Error:', e)

@@ -49,7 +49,15 @@ ${tasksContext}
   return completion.choices[0]?.message?.content || ''
 }
 
-export const generateWeeklyReport = async (client: OpenAI, model: string, tasksContext: string, calendarContext: string, timezone: string = 'Asia/Shanghai') => {
+export const generateWeeklyReport = async (
+  client: OpenAI, 
+  model: string, 
+  completedTasksContext: string, 
+  uncompletedTasksContext: string,
+  calendarContext: string, 
+  nextWeekCalendarContext: string,
+  timezone: string = 'Asia/Shanghai'
+) => {
   const now = new Date()
   const endStr = now.toLocaleDateString('zh-CN', { timeZone: timezone })
   const start = new Date(now)
@@ -57,20 +65,27 @@ export const generateWeeklyReport = async (client: OpenAI, model: string, tasksC
   const startStr = start.toLocaleDateString('zh-CN', { timeZone: timezone })
 
   const prompt = `你是一个高效的时间管理专家。
-请根据过去一周（${startStr} 至 ${endStr}）的完成任务和日程，为我生成一份周报。
+请根据过去一周（${startStr} 至 ${endStr}）的完成任务、日程，以及当前未完成的任务和下周的日程安排，为我生成一份周报。
 
 过去一周行程：
 ${calendarContext}
 
 已完成任务列表：
-${tasksContext}
+${completedTasksContext}
+
+当前未完成任务列表（待办）：
+${uncompletedTasksContext}
+
+下周行程预览：
+${nextWeekCalendarContext}
 
 请总结我的工作成就、时间分配情况，并给出下周的建议。
 周报格式要求：
 1. 本周工作总结（按项目或类别）
 2. 时间利用分析（基于日程和任务量）
-3. 下周规划建议
-4. 保持简洁专业，使用Markdown格式。
+3. 待办事项分析（基于未完成任务）
+4. 下周规划建议（结合下周行程和待办任务）
+5. 保持简洁专业，使用Markdown格式。
 `
 
   const completion = await client.chat.completions.create({

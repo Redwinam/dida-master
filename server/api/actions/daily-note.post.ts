@@ -4,6 +4,7 @@ interface UserConfig {
   user_id: string
   dida_token: string
   dida_project_id: string
+  weekly_report_project_id?: string
   exclude_project_name: string
   llm_api_key: string
   llm_model: string
@@ -45,8 +46,8 @@ export default defineEventHandler(async (event) => {
     
     let allTasks: any[] = []
     for (const p of (allProjects as any[])) {
-        // Exclude projects in exclusion list AND the target project itself
-        if (!excludeNames.includes(p.name) && p.id !== config.dida_project_id) {
+        // Exclude projects in exclusion list AND the target project itself AND the weekly report project
+        if (!excludeNames.includes(p.name) && p.id !== config.dida_project_id && p.id !== config.weekly_report_project_id) {
             try {
               // console.log(`[DailyNote] Fetching tasks for project: ${p.name}`)
               const pTasks = await getDidaTasks(config.dida_token, p.id)
