@@ -39,6 +39,23 @@ watch(user, async (u) => {
      }
    }
 }, { immediate: true })
+
+// Safety check: if loading gets stuck for some reason (e.g. hydration mismatch), reset it after mount
+onMounted(() => {
+    // Wait a bit for initial fetch to potentially start/finish
+    setTimeout(() => {
+        if (config.value.dida_token === '' && !fetched.value && !useUserConfig().loading.value) {
+             // If nothing loaded and not loading, try loading
+             load()
+        }
+        
+        // If still loading after 10s, force reset
+        if (useUserConfig().loading.value) {
+            console.warn('Loading stuck detected, resetting...')
+            useUserConfig().loading.value = false
+        }
+    }, 5000)
+})
 </script>
 
 <template>

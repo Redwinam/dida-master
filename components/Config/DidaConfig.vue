@@ -122,7 +122,7 @@ function toggleExcludedProject(name: string) {
         <!-- Target Project -->
         <div class="space-y-1.5">
           <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
-            目标项目 (用于生成日记，将自动从来源中排除)
+            日记目标项目 (用于生成日记)
           </label>
           <div class="flex items-center gap-3">
             <div class="flex-1 px-3 py-2 bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 rounded-lg text-sm text-gray-700 dark:text-gray-300 flex items-center gap-2">
@@ -133,6 +133,27 @@ function toggleExcludedProject(name: string) {
             </div>
             <button 
               @click="openTargetModal"
+              class="px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
+            >
+              选择
+            </button>
+          </div>
+        </div>
+
+        <!-- Weekly Report Project -->
+        <div class="space-y-1.5">
+          <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
+            周报目标项目 (用于生成周报)
+          </label>
+          <div class="flex items-center gap-3">
+            <div class="flex-1 px-3 py-2 bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 rounded-lg text-sm text-gray-700 dark:text-gray-300 flex items-center gap-2">
+              <Icon icon="heroicons:folder" class="w-4 h-4 text-gray-400" />
+              <span v-if="config.weekly_report_project_name">{{ config.weekly_report_project_name }}</span>
+              <span v-else-if="config.weekly_report_project_id" class="font-mono text-xs">{{ config.weekly_report_project_id }}</span>
+              <span v-else class="text-gray-400 italic">未选择</span>
+            </div>
+            <button 
+              @click="openWeeklyTargetModal"
               class="px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
             >
               选择
@@ -164,7 +185,7 @@ function toggleExcludedProject(name: string) {
     </div>
 
     <!-- Target Project Modal -->
-    <Modal v-model="showTargetModal" title="选择目标项目">
+    <Modal v-model="showTargetModal" title="选择日记目标项目">
       <div v-if="fetchingProjects" class="flex justify-center py-8">
         <Icon icon="line-md:loading-twotone-loop" class="w-8 h-8 text-indigo-500" />
       </div>
@@ -185,6 +206,33 @@ function toggleExcludedProject(name: string) {
       </div>
       <div class="mt-4 pt-3 border-t border-gray-100 dark:border-gray-700 flex justify-end">
          <button @click="showTargetModal = false" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-lg text-sm font-medium transition-colors">
+            取消
+         </button>
+      </div>
+    </Modal>
+
+    <!-- Weekly Report Project Modal -->
+    <Modal v-model="showWeeklyTargetModal" title="选择周报目标项目">
+      <div v-if="fetchingProjects" class="flex justify-center py-8">
+        <Icon icon="line-md:loading-twotone-loop" class="w-8 h-8 text-indigo-500" />
+      </div>
+      <div v-else class="max-h-60 overflow-y-auto space-y-1 p-1">
+        <button 
+          v-for="p in projects" 
+          :key="p.id"
+          @click="selectWeeklyTarget(p)"
+          class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-left"
+          :class="{'bg-indigo-50 dark:bg-indigo-900/20': config.weekly_report_project_id === p.id}"
+        >
+          <span class="text-sm text-gray-900 dark:text-white">{{ p.name }}</span>
+          <Icon v-if="config.weekly_report_project_id === p.id" icon="heroicons:check" class="w-4 h-4 text-indigo-600" />
+        </button>
+        <div v-if="projects.length === 0" class="text-center py-4 text-gray-500">
+          未找到项目
+        </div>
+      </div>
+      <div class="mt-4 pt-3 border-t border-gray-100 dark:border-gray-700 flex justify-end">
+         <button @click="showWeeklyTargetModal = false" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-lg text-sm font-medium transition-colors">
             取消
          </button>
       </div>

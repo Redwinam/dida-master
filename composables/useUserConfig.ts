@@ -27,10 +27,10 @@ export const useUserConfig = () => {
 
   const client = useSupabaseClient()
 
-  const load = async () => {
+  const load = async (force = false) => {
     // If already fetching or fetched, might skip? 
     // But user might want to refresh. Let's check if loading.
-    if (loading.value) return
+    if (loading.value && !force) return
 
     loading.value = true
     error.value = null

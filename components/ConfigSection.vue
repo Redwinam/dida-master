@@ -47,7 +47,7 @@ async function handleSave() {
        <p class="text-gray-900 dark:text-white font-medium text-lg">加载配置失败</p>
        <p class="text-gray-500 dark:text-gray-400 mt-2 mb-6 max-w-md text-center">{{ error }}</p>
        <button 
-         @click="load" 
+         @click="load(true)" 
          class="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors shadow-sm"
        >
          <Icon icon="heroicons:arrow-path" class="w-4 h-4" />
