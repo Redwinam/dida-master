@@ -1,13 +1,42 @@
 <script setup lang="ts">
 import { Icon } from '@iconify/vue'
 
-const { login, register, loading, error } = useAuth()
+// Use auth composable from layer
+const { 
+  loginWithPassword, 
+  sendOtp, 
+  pending, 
+  error: authError,
+  success
+} = useAuth()
+
 const user = useSupabaseUser()
 const router = useRouter()
 
 const isLogin = ref(true)
 const email = ref('')
 const password = ref('')
+
+// Map standardized error codes to messages
+function getErrorMessage(code: string | null) {
+  if (!code) return ''
+  if (!code.startsWith('auth/')) return code
+
+  const map: Record<string, string> = {
+    'auth/rate-limit': 'Too many requests. Please try again later.',
+    'auth/invalid-credentials': 'Invalid email or password.',
+    'auth/user-not-found': 'User not found.',
+    'auth/already-registered': 'User already registered.',
+    'auth/email-required': 'Email is required.',
+    'auth/email-invalid': 'Invalid email address.',
+    'auth/password-required-for-signup': 'Password is required for signup.',
+    'auth/unknown-error': 'An unknown error occurred.'
+  }
+
+  return map[code] || 'An error occurred.'
+}
+
+const displayError = computed(() => getErrorMessage(authError.value))
 
 watchEffect(() => {
   if (user.value) {
@@ -20,9 +49,10 @@ watchEffect(() => {
 
 async function handleSubmit() {
   if (isLogin.value) {
-    await login(email.value, password.value)
+    await loginWithPassword(email.value, password.value)
   } else {
-    await register(email.value, password.value)
+    // Register: sendOtp with isRegister=true and password
+    await sendOtp(email.value, true, password.value)
   }
 }
 </script>
@@ -82,18 +112,24 @@ async function handleSubmit() {
           </div>
 
           <!-- Error Message -->
-          <div v-if="error" class="p-3 rounded-lg bg-red-50 text-red-600 text-sm border border-red-100 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800/30 flex items-center gap-2">
+          <div v-if="displayError" class="p-3 rounded-lg bg-red-50 text-red-600 text-sm border border-red-100 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800/30 flex items-center gap-2">
             <Icon icon="heroicons:exclamation-circle" class="w-5 h-5 shrink-0" />
-            <span>{{ error }}</span>
+            <span>{{ displayError }}</span>
+          </div>
+          
+          <!-- Success Message (e.g. for OTP sent) -->
+          <div v-if="success" class="p-3 rounded-lg bg-green-50 text-green-600 text-sm border border-green-100 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800/30 flex items-center gap-2">
+             <Icon icon="heroicons:check-circle" class="w-5 h-5 shrink-0" />
+             <span>{{ success === 'auth/otp-sent' ? 'Confirmation email sent. Please check your inbox.' : success }}</span>
           </div>
 
           <!-- Submit Button -->
           <button 
             type="submit" 
-            :disabled="loading"
+            :disabled="pending"
             class="w-full flex justify-center items-center py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
           >
-            <Icon v-if="loading" icon="line-md:loading-twotone-loop" class="w-5 h-5 mr-2" />
+            <Icon v-if="pending" icon="line-md:loading-twotone-loop" class="w-5 h-5 mr-2" />
             {{ isLogin ? 'Sign In' : 'Sign Up' }}
           </button>
         </form>

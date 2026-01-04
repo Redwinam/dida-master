@@ -10,7 +10,7 @@ definePageMeta({
   middleware: 'auth'
 })
 
-const { user, logout } = useAuth()
+const { user, logout } = useSession()
 const { load, config, save, fetched } = useUserConfig()
 const route = useRoute()
 const router = useRouter()

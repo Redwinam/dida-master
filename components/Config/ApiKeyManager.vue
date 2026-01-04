@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Icon } from '@iconify/vue'
 
-const { user } = useAuth()
+const user = useSupabaseUser()
 const client = useSupabaseClient()
 const toast = useToast()
 
