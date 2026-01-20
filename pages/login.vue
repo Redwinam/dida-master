@@ -10,7 +10,7 @@ const {
   success
 } = useAuth()
 
-const user = useSupabaseUser()
+const { user } = useSession()
 const router = useRouter()
 
 const isLogin = ref(true)

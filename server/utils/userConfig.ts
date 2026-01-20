@@ -1,5 +1,3 @@
-import { serverSupabaseUser } from '#supabase/server'
-import { serverSupabaseClient } from '#supabase/server'
 import { H3Event } from 'h3'
 import { Database } from '../../types/database.types'
 
@@ -51,12 +49,11 @@ export const getUserConfig = async (event: H3Event) => {
     client = supabaseAdmin
   } else {
     // 2. Fallback to Session Authentication
-    // Use serverSupabaseClient + getUser for more robust session retrieval
     try {
-        client = await serverSupabaseClient(event)
-        const { data: { user } } = await client.auth.getUser()
+        client = getUserClient(event)
+        const { data: { user }, error } = await client.auth.getUser()
         
-        if (user) {
+        if (user && !error) {
             userId = user.id
         }
     } catch (e) {
@@ -73,7 +70,7 @@ export const getUserConfig = async (event: H3Event) => {
   // Reuse client if we have it
   if (!client) {
       try {
-          client = await serverSupabaseClient(event)
+          client = getUserClient(event)
       } catch (e) {
            console.warn('Failed to get Supabase client for config fetch, trying admin fallback')
            try {

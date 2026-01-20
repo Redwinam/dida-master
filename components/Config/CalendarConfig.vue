@@ -4,7 +4,8 @@ import Modal from '@/components/ui/Modal.vue'
 
 const { config } = useUserConfig()
 const toast = useToast()
-const client = useSupabaseClient()
+const { $supabase } = useNuxtApp()
+const client = $supabase as any
 
 const calendars = ref<any[]>([])
 const fetchingCalendars = ref(false)

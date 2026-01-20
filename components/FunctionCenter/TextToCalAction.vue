@@ -2,7 +2,8 @@
 import { Icon } from '@iconify/vue'
 import FunctionCard from './FunctionCard.vue'
 
-const client = useSupabaseClient()
+const { $supabase } = useNuxtApp()
+const client = $supabase as any
 const toast = useToast()
 const loadingAction = ref(false)
 const textInput = ref('')

@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { Icon } from '@iconify/vue'
 
-const user = useSupabaseUser()
-const client = useSupabaseClient()
+const { user } = useSession()
+const { $supabase } = useNuxtApp()
+const client = $supabase as any
 const toast = useToast()
 
 const apiKey = ref('')

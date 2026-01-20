@@ -1,4 +1,3 @@
-import { serverSupabaseUser, serverSupabaseClient } from '#supabase/server'
 import { readMultipartFormData } from 'h3'
 
 interface UserConfig {

@@ -10,7 +10,6 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
-    "@nuxtjs/supabase": "^2.0.2",
     "@supabase/supabase-js": "^2.89.0",
     "@tailwindcss/vite": "^4.1.17",
     "crypto-browserify": "^3.12.1",

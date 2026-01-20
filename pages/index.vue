@@ -14,8 +14,6 @@ const { user, logout } = useSession()
 const { load, config, save, fetched } = useUserConfig()
 const route = useRoute()
 const router = useRouter()
-const client = useSupabaseClient()
-
 const activeTab = ref<'config' | 'actions'>('config')
 
 // Initial Data Loading

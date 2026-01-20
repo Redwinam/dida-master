@@ -1,4 +1,3 @@
-import { serverSupabaseUser, serverSupabaseClient } from '#supabase/server'
 import { getDidaProjects, getDidaCompletedTasks, getDidaTasks, createDidaNote, formatTasksForAI } from '../../utils/dida'
 import { getCalendarEvents } from '../../utils/caldav'
 import { createLLMClient, generateWeeklyReport } from '../../utils/llm'

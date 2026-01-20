@@ -26,7 +26,8 @@ export const useUserConfig = () => {
   const fetched = useState('user-config-fetched', () => false)
   const error = useState<string | null>('user-config-error', () => null)
 
-  const client = useSupabaseClient()
+  const { $supabase } = useNuxtApp()
+  const client = $supabase as any
 
   const load = async (force = false) => {
     // If already fetching or fetched, might skip? 

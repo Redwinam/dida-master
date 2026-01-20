@@ -3,32 +3,14 @@ import tailwindcss from '@tailwindcss/vite'
 
 export default defineNuxtConfig({
   extends: [
-    ['/Users/redwinam/Developer/workspaces/if9/if9-supabase-auth', {}]
+    ['github:Redwinam/if9-supabase-auth#v0.1.3', { auth: process.env.GIGET_AUTH_TOKEN }]
   ],
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
   css: ['~/assets/css/main.css'],
-  modules: [
-    '@nuxtjs/supabase'
-  ],
-  supabase: {
-    redirect: false,
-    url: process.env.NUXT_PUBLIC_SUPABASE_URL,
-    key: process.env.NUXT_PUBLIC_SUPABASE_ANON_KEY
-  },
   sourcemap: {
     server: false,
     client: false
-  },
-  nitro: {
-    rollupConfig: {
-      onwarn(warning, warn) {
-        if (warning.code === 'CIRCULAR_DEPENDENCY' && warning.message.includes('@nuxtjs/supabase')) {
-          return
-        }
-        warn(warning)
-      }
-    }
   },
   vite: {
     plugins: [

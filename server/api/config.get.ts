@@ -1,41 +1,7 @@
-import { serverSupabaseUser } from '#supabase/server'
-import { serverSupabaseClient } from '#supabase/server'
-
 export default defineEventHandler(async (event) => {
-  // Use explicit client.auth.getUser() for robust session retrieval
-  const headers = getRequestHeaders(event)
-  // console.log('Config GET: Auth Header present:', !!headers.authorization)
-  
-  let client
-  try {
-    client = await serverSupabaseClient(event)
-  } catch (e) {
-    throw createError({ statusCode: 401, message: 'Session Initialization Failed' })
-  }
-  
-  // Extract token from header manually to ensure we use the latest token provided by frontend
-  // This bypasses potential stale cookie issues in serverSupabaseClient
-  let token = undefined
-  if (headers.authorization && headers.authorization.startsWith('Bearer ')) {
-    token = headers.authorization.substring(7)
-  }
-
-  // Try validating with the provided token first
-  let user = null
-  if (token) {
-    const { data, error } = await client.auth.getUser(token)
-    if (!error && data?.user) {
-      user = data.user
-    }
-  }
-
-  // Fallback to cookie-based session if token validation failed or no token provided
-  if (!user) {
-    user = await serverSupabaseUser(event)
-  }
-
-  if (!user || !user.id) {
-    // console.log('Config GET: No user found or error, returning 401.')
+  const client = getUserClient(event)
+  const { data: { user }, error: userError } = await client.auth.getUser()
+  if (userError || !user?.id) {
     throw createError({ statusCode: 401, message: 'Unauthorized' })
   }
 

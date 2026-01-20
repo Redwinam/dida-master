@@ -1,6 +1,4 @@
 import { defineEventHandler, getHeader, getQuery, createError } from 'h3'
-import { serverSupabaseUser } from '#supabase/server'
-import { serverSupabaseClient } from '#supabase/server'
 import { getDidaProjects } from '../../utils/dida'
 
 export default defineEventHandler(async (event) => {
@@ -22,20 +20,22 @@ export default defineEventHandler(async (event) => {
   
   if (!token) {
     // Try to get from DB
-    const user = await serverSupabaseUser(event)
-    if (user) {
-      const client = await serverSupabaseClient(event)
-      const { data } = await client
-        .from('dida_master_user_config')
-        .select('dida_token')
-        .eq('user_id', user.id)
-        .single()
-      
-      const config = data as any  
-      if (config?.dida_token) {
-        token = config.dida_token
+    try {
+      const client = getUserClient(event)
+      const { data: { user }, error } = await client.auth.getUser()
+      if (user && !error) {
+        const { data } = await client
+          .from('dida_master_user_config')
+          .select('dida_token')
+          .eq('user_id', user.id)
+          .single()
+        
+        const config = data as any  
+        if (config?.dida_token) {
+          token = config.dida_token
+        }
       }
-    }
+    } catch {}
   }
 
   if (!token) {

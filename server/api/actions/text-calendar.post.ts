@@ -1,5 +1,3 @@
-import { serverSupabaseUser, serverSupabaseClient } from '#supabase/server'
-
 interface UserConfig {
   user_id: string
   dida_token: string

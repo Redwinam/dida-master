@@ -1,17 +1,8 @@
 import { defineEventHandler, createError } from 'h3'
-import { serverSupabaseUser } from '#supabase/server'
-import { serverSupabaseClient } from '#supabase/server'
-import { getCalendarEvents } from '../../utils/caldav'
 
 export default defineEventHandler(async (event) => {
-  const headers = getRequestHeaders(event)
-  let token = undefined
-  if (headers.authorization && headers.authorization.startsWith('Bearer ')) {
-    token = headers.authorization.substring(7)
-  }
-  
-  const client = await serverSupabaseClient(event)
-  const { data: { user }, error: userError } = await client.auth.getUser(token)
+  const client = getUserClient(event)
+  const { data: { user }, error: userError } = await client.auth.getUser()
   
   if (!user || userError) {
     throw createError({ statusCode: 401, message: 'Unauthorized' })
@@ -29,7 +20,6 @@ export default defineEventHandler(async (event) => {
   if (username && password) {
     credentials = { icloud_username: username, icloud_app_password: password }
   } else {
-    const client = await serverSupabaseClient(event)
     const { data: rawData } = await client
       .from('dida_master_user_config')
       .select('icloud_username, icloud_app_password')

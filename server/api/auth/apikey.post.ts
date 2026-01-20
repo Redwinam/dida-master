@@ -1,6 +1,3 @@
-import { serverSupabaseClient } from '#supabase/server'
-import { serverSupabaseUser } from '#supabase/server'
-
 function generateKey() {
   const arr = Array.from(crypto.getRandomValues(new Uint8Array(24)))
   const hex = arr.map(b => b.toString(16).padStart(2, '0')).join('')
@@ -9,7 +6,7 @@ function generateKey() {
 
 export default defineEventHandler(async (event) => {
   // Use getUser to verify session from Supabase explicitly
-  const client = await serverSupabaseClient(event)
+  const client = getUserClient(event)
   const { data: { user }, error: userError } = await client.auth.getUser()
 
   if (userError || !user) {
@@ -26,10 +23,7 @@ export default defineEventHandler(async (event) => {
   
   console.log('API Key Post: User Object:', JSON.stringify(user, null, 2))
   
-  // Ensure user.id is treated as string and validate if needed
   if (!user?.id) {
-      // Fallback: Try to get user via client if serverSupabaseUser failed partially
-      // This is rare but possible in some Nuxt/Supabase versions
       throw createError({ statusCode: 400, statusMessage: 'User ID missing from session' })
   }
 
@@ -43,4 +37,3 @@ export default defineEventHandler(async (event) => {
   
   return { apiKey: key }
 })
-
