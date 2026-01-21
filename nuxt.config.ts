@@ -23,6 +23,9 @@ export default defineNuxtConfig({
   app: {
     head: {
       title: '滴答：主人的任务',
+      link: [
+        { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }
+      ]
     }
   },
   runtimeConfig: {
