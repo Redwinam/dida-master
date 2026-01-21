@@ -85,7 +85,7 @@ export const generateDailyPlan = async (tasksContext: string, calendarContext: s
   const prompt = `你是一个高效的时间管理专家，专门为INTJ人格类型设计日程安排。
 今天是${todayStr}。
 请根据以下任务列表，为我制定今天的日程安排。并提供一些针对各项任务与一天具体的专业建议。
-（但回复中无需提到INTJ属性；返回格式中不使用表格、无需标题）
+（但回复中无需提到INTJ属性；返回格式中不使用表格、无需一级标题）
 
 近日行程：
 ${calendarContext}
@@ -125,7 +125,7 @@ ${uncompletedTasksContext}
 下周行程预览：
 ${nextWeekCalendarContext}
 
-请总结我的工作成就、时间分配情况，并给出下周的建议。（本人为INTJ人格类型，但回复中无需提到INTJ属性；返回格式中不使用表格、无需标题）
+请总结我的工作成就、时间分配情况，并给出下周的建议。（本人为INTJ人格类型，但回复中无需提到INTJ属性；返回格式中不使用表格、无需一级标题）
 `
   return await callAiGateway('DIDA_WEEKLY_REPORT', { type: 'text', prompt }, userToken)
 }
