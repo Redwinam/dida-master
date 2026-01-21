@@ -62,8 +62,8 @@ export default defineEventHandler(async (event) => {
     const updates = mappings.map((m: any) => ({
       user_id: user.id,
       service_key: m.service_key,
-      llm_config_id: m.llm_config_id,
-      model_name: m.model_name
+      llm_config_id: m.llm_config_id || null,
+      model_name: m.model_name || null
     }))
 
     const { error } = await client

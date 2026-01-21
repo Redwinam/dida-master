@@ -3,6 +3,7 @@ import { Icon } from '@iconify/vue'
 import DidaConfig from './Config/DidaConfig.vue'
 import CalendarConfig from './Config/CalendarConfig.vue'
 import LLMConfig from './Config/LLMConfig.vue'
+import ConfigPersonalization from './Config/PersonalizationConfig.vue'
 
 const { load, save, fetched, loading, error } = useUserConfig()
 const toast = useToast()
@@ -82,7 +83,8 @@ async function handleSave() {
 
             <!-- Right Column: LLM & Auth -->
             <div class="space-y-8 lg:border-l lg:border-gray-100 lg:dark:border-gray-700 lg:pl-8">
-                <PersonalizationConfig />
+                <!-- Personalization Config -->
+                <ConfigPersonalization />
                 <LLMConfig />
             </div>
         </div>

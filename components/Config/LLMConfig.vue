@@ -13,6 +13,17 @@ const serviceKeys = ref<any[]>([])
 const llmConfigs = ref<any[]>([])
 const mappings = ref<any[]>([])
 
+const serviceNameMap: Record<string, string> = {
+  'DIDA_DAILY_NOTE': '日报生成',
+  'DIDA_WEEKLY_REPORT': '周报生成',
+  'DIDA_TEXT_TO_CALENDAR': '文本转日程',
+  'DIDA_IMAGE_TO_CALENDAR': '图片转日程'
+}
+
+function getServiceName(key: string) {
+  return serviceNameMap[key] || key
+}
+
 type ServiceGroup = '文字服务' | '图片服务' | '其他'
 
 const groupedServices = computed(() => {
@@ -46,7 +57,11 @@ async function fetchData() {
     const res: any = await $fetch('/api/ai/config', { headers })
     serviceKeys.value = res.serviceKeys || []
     llmConfigs.value = res.llmConfigs || []
-    mappings.value = res.mappings || []
+    mappings.value = (res.mappings || []).map((m: any) => ({
+      ...m,
+      llm_config_id: m.llm_config_id || '',
+      model_name: m.model_name || ''
+    }))
   } catch (e: any) {
     toast.add({ title: '加载配置失败', description: e.message, color: 'error' })
   } finally {
@@ -121,6 +136,9 @@ onMounted(() => {
         <Icon icon="heroicons:cpu-chip" class="w-5 h-5 text-purple-500" />
         AI 服务映射配置
       </h4>
+      <p class="text-xs text-gray-500 dark:text-gray-400">
+        为不同的服务指定特定的 AI 模型配置。留空则自动使用系统默认配置。
+      </p>
       
       <div v-if="loading" class="text-center py-4 text-gray-500">
         <Icon icon="eos-icons:loading" class="w-6 h-6 animate-spin mx-auto mb-2" />
@@ -130,45 +148,54 @@ onMounted(() => {
       <div v-else class="space-y-6">
         <div v-for="(keys, groupName) in groupedServices" :key="groupName" class="space-y-3">
           <div v-if="keys.length > 0">
-             <h5 class="text-sm font-semibold text-gray-700 dark:text-gray-300 flex items-center gap-2 mb-2">
+             <h5 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3 ml-1">
                 {{ groupName }}
              </h5>
-             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div v-for="sk in keys" :key="sk.service_key" class="p-4 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-100 dark:border-gray-700">
-                   <div class="flex items-center justify-between mb-2">
-                      <span class="text-sm font-medium text-gray-900 dark:text-white" :title="sk.description">{{ sk.label || sk.service_key }}</span>
-                      <span class="text-xs text-gray-500 bg-gray-200 dark:bg-gray-700 px-1.5 py-0.5 rounded">{{ sk.service_key }}</span>
-                   </div>
-                   
-                   <div class="space-y-3">
-                      <!-- Config Selection -->
-                      <div>
-                        <label class="block text-xs font-medium text-gray-500 mb-1">选择 AI 配置</label>
-                        <select 
-                          :value="getMapping(sk.service_key).llm_config_id"
-                          @change="(e: any) => updateMapping(sk.service_key, 'llm_config_id', e.target.value)"
-                          class="block w-full py-1.5 px-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-indigo-500 focus:border-indigo-500"
-                        >
-                          <option value="" disabled>请选择配置</option>
-                          <option v-for="config in llmConfigs" :key="config.id" :value="config.id">
-                            {{ config.name }}
-                          </option>
-                        </select>
+             <div class="space-y-3">
+                <div v-for="sk in keys" :key="sk.service_key" class="p-4 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm transition-all hover:border-indigo-300 dark:hover:border-indigo-700">
+                   <div class="flex flex-col gap-3">
+                      <!-- Top: Service Info -->
+                      <div class="w-full">
+                        <div class="flex items-center gap-2 mb-1">
+                          <span class="text-sm font-semibold text-gray-900 dark:text-white">
+                            {{ getServiceName(sk.service_key) }}
+                          </span>
+                        </div>
+                        <p class="text-xs text-gray-500 dark:text-gray-400" :title="sk.description || sk.service_key">
+                          {{ sk.description || sk.service_key }}
+                        </p>
                       </div>
+                   
+                      <!-- Bottom: Configs -->
+                      <div class="flex flex-col sm:flex-row gap-3 w-full">
+                        <!-- Config Selection -->
+                        <div class="w-full sm:flex-1">
+                          <select 
+                            :value="getMapping(sk.service_key).llm_config_id"
+                            @change="(e: any) => updateMapping(sk.service_key, 'llm_config_id', e.target.value)"
+                            class="block w-full py-1.5 pl-3 pr-8 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900/50 text-gray-900 dark:text-white focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+                          >
+                            <option value="">默认配置 (自动)</option>
+                            <option v-for="config in llmConfigs" :key="config.id" :value="config.id">
+                              {{ config.name }}
+                            </option>
+                          </select>
+                        </div>
 
-                      <!-- Model Selection -->
-                      <div v-if="getMapping(sk.service_key).llm_config_id">
-                         <label class="block text-xs font-medium text-gray-500 mb-1">选择模型</label>
-                         <select
-                           :value="getMapping(sk.service_key).model_name"
-                           @change="(e: any) => updateMapping(sk.service_key, 'model_name', e.target.value)"
-                           class="block w-full py-1.5 px-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-indigo-500 focus:border-indigo-500"
-                         >
-                           <option value="" disabled>请选择模型</option>
-                           <option v-for="model in getModelsForConfig(getMapping(sk.service_key).llm_config_id)" :key="model" :value="model">
-                             {{ model }}
-                           </option>
-                         </select>
+                        <!-- Model Selection -->
+                        <div class="w-full sm:flex-1">
+                           <select
+                             :value="getMapping(sk.service_key).model_name"
+                             @change="(e: any) => updateMapping(sk.service_key, 'model_name', e.target.value)"
+                             :disabled="!getMapping(sk.service_key).llm_config_id"
+                             class="block w-full py-1.5 pl-3 pr-8 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900/50 text-gray-900 dark:text-white focus:ring-indigo-500 focus:border-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                           >
+                             <option value="">默认模型 (自动)</option>
+                             <option v-for="model in getModelsForConfig(getMapping(sk.service_key).llm_config_id)" :key="model" :value="model">
+                               {{ model }}
+                             </option>
+                           </select>
+                        </div>
                       </div>
                    </div>
                 </div>
