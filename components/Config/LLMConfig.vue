@@ -13,9 +13,10 @@ const serviceKeys = ref<any[]>([])
 const llmConfigs = ref<any[]>([])
 const mappings = ref<any[]>([])
 
-// Grouped service keys for better UI
+type ServiceGroup = '文字服务' | '图片服务' | '其他'
+
 const groupedServices = computed(() => {
-  const groups: Record<string, any[]> = {
+  const groups: Record<ServiceGroup, any[]> = {
     '文字服务': [],
     '图片服务': [],
     '其他': []

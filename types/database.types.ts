@@ -59,6 +59,79 @@ export interface Database {
           settings?: Json | null
         }
       }
+      dida_master_daily_notes: {
+        Row: {
+          id: string
+          user_id: string
+          title: string
+          content: string
+          dida_task_id: string | null
+          dida_project_id: string | null
+          note_date: string
+          created_at: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          title: string
+          content: string
+          dida_task_id?: string | null
+          dida_project_id?: string | null
+          note_date?: string
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          title?: string
+          content?: string
+          dida_task_id?: string | null
+          dida_project_id?: string | null
+          note_date?: string
+          created_at?: string | null
+          updated_at?: string | null
+        }
+      }
+      dida_master_weekly_reports: {
+        Row: {
+          id: string
+          user_id: string
+          title: string
+          content: string
+          dida_task_id: string | null
+          dida_project_id: string | null
+          period_start: string
+          period_end: string
+          created_at: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          title: string
+          content: string
+          dida_task_id?: string | null
+          dida_project_id?: string | null
+          period_start: string
+          period_end: string
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          title?: string
+          content?: string
+          dida_task_id?: string | null
+          dida_project_id?: string | null
+          period_start?: string
+          period_end?: string
+          created_at?: string | null
+          updated_at?: string | null
+        }
+      }
     }
   }
 }

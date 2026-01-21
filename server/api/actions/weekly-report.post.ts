@@ -177,8 +177,29 @@ export default defineEventHandler(async (event) => {
     // 5. Create Note
     console.log('[WeeklyReport] Creating note...')
     const title = `周报 ${start.toLocaleDateString('zh-CN')} - ${now.toLocaleDateString('zh-CN')}`
-    await createDidaNote(config.dida_token, config.weekly_report_project_id, title, report)
+    const didaNote: any = await createDidaNote(config.dida_token, config.weekly_report_project_id, title, report)
     console.log('[WeeklyReport] Note created')
+
+    const timeZone = config.timezone || 'Asia/Shanghai'
+    const periodStart = start.toLocaleDateString('en-CA', { timeZone })
+    const periodEnd = now.toLocaleDateString('en-CA', { timeZone })
+    const didaTaskId = didaNote?.id || didaNote?.taskId || didaNote?.data?.id || null
+    const adminClient = getAdminClient()
+    const { error: insertError } = await adminClient
+      .from('dida_master_weekly_reports')
+      .insert({
+        user_id: config.user_id,
+        title,
+        content: report,
+        dida_task_id: didaTaskId,
+        dida_project_id: config.weekly_report_project_id,
+        period_start: periodStart,
+        period_end: periodEnd
+      })
+
+    if (insertError) {
+      throw createError({ statusCode: 500, message: insertError.message })
+    }
 
     return { message: 'Success' }
   } catch (e: any) {

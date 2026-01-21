@@ -94,8 +94,27 @@ export default defineEventHandler(async (event) => {
     // 4. Create Note
     console.log('[DailyNote] Creating note...')
     const title = new Date().toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' })
-    await createDidaNote(config.dida_token, config.dida_project_id, title, plan)
+    const didaNote: any = await createDidaNote(config.dida_token, config.dida_project_id, title, plan)
     console.log('[DailyNote] Note created')
+
+    const timeZone = config.timezone || 'Asia/Shanghai'
+    const noteDate = new Date().toLocaleDateString('en-CA', { timeZone })
+    const didaTaskId = didaNote?.id || didaNote?.taskId || didaNote?.data?.id || null
+    const adminClient = getAdminClient()
+    const { error: insertError } = await adminClient
+      .from('dida_master_daily_notes')
+      .insert({
+        user_id: config.user_id,
+        title,
+        content: plan,
+        dida_task_id: didaTaskId,
+        dida_project_id: config.dida_project_id,
+        note_date: noteDate
+      })
+
+    if (insertError) {
+      throw createError({ statusCode: 500, message: insertError.message })
+    }
 
     return { message: 'Success' }
   } catch (e: any) {
