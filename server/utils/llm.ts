@@ -73,7 +73,7 @@ const callAiGateway = async (serviceKey: string, input: Record<string, any>, use
   }
 }
 
-export const generateDailyPlan = async (tasksContext: string, calendarContext: string, timezone: string = 'Asia/Shanghai', userToken?: string) => {
+export const generateDailyPlan = async (tasksContext: string, calendarContext: string, timezone: string = 'Asia/Shanghai', userToken?: string, mbti?: string) => {
   const todayStr = new Date().toLocaleDateString('zh-CN', { 
     timeZone: timezone,
     year: 'numeric', 
@@ -82,10 +82,13 @@ export const generateDailyPlan = async (tasksContext: string, calendarContext: s
     weekday: 'long' 
   })
 
-  const prompt = `你是一个高效的时间管理专家，专门为INTJ人格类型设计日程安排。
+  const persona = mbti ? `，专门为${mbti}人格类型设计日程安排` : ''
+  const constraint = mbti ? `（但回复中无需提到${mbti}属性；返回格式中不使用表格、无需一级标题）` : '（返回格式中不使用表格、无需一级标题）'
+
+  const prompt = `你是一个高效的时间管理专家${persona}。
 今天是${todayStr}。
 请根据以下任务列表，为我制定今天的日程安排。并提供一些针对各项任务与一天具体的专业建议。
-（但回复中无需提到INTJ属性；返回格式中不使用表格、无需一级标题）
+${constraint}
 
 近日行程：
 ${calendarContext}
@@ -102,13 +105,16 @@ export const generateWeeklyReport = async (
   calendarContext: string, 
   nextWeekCalendarContext: string,
   timezone: string = 'Asia/Shanghai',
-  userToken?: string
+  userToken?: string,
+  mbti?: string
 ) => {
   const now = new Date()
   const endStr = now.toLocaleDateString('zh-CN', { timeZone: timezone })
   const start = new Date(now)
   start.setDate(start.getDate() - 7)
   const startStr = start.toLocaleDateString('zh-CN', { timeZone: timezone })
+
+  const constraint = mbti ? `（本人为${mbti}人格类型，但回复中无需提到${mbti}属性；返回格式中不使用表格、无需一级标题）` : '（返回格式中不使用表格、无需一级标题）'
 
   const prompt = `你是一个高效的时间管理专家。
 请根据过去一周（${startStr} 至 ${endStr}）的完成任务、日程，以及当前未完成的任务和下周的日程安排，为我生成一份周报。
@@ -125,7 +131,12 @@ ${uncompletedTasksContext}
 下周行程预览：
 ${nextWeekCalendarContext}
 
-请总结我的工作成就、时间分配情况，并给出下周的建议。（本人为INTJ人格类型，但回复中无需提到INTJ属性；返回格式中不使用表格、无需一级标题）
+请总结我的工作成就、时间分配情况，并给出下周的建议。周报格式要求：
+1. 本周工作总结（按项目或类别）
+2. 时间利用分析（基于日程和任务量）
+3. 待办事项分析（基于未完成任务）
+4. 下周规划建议（结合下周行程和待办任务）
+5. 保持简洁专业，使用Markdown格式。${constraint}
 `
   return await callAiGateway('DIDA_WEEKLY_REPORT', { type: 'text', prompt }, userToken)
 }

@@ -82,6 +82,7 @@ async function handleSave() {
 
             <!-- Right Column: LLM & Auth -->
             <div class="space-y-8 lg:border-l lg:border-gray-100 lg:dark:border-gray-700 lg:pl-8">
+                <PersonalizationConfig />
                 <LLMConfig />
             </div>
         </div>

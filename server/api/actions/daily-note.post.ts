@@ -18,6 +18,7 @@ interface UserConfig {
   cal_lookahead_days: number
   calendar_target: string
   timezone?: string
+  mbti?: string
 }
 
 export default defineEventHandler(async (event) => {
@@ -84,7 +85,7 @@ export default defineEventHandler(async (event) => {
     let plan = ''
     try {
       const token = getHeader(event, 'Authorization')?.replace('Bearer ', '') || getCookie(event, 'sb-access-token')
-      plan = await generateDailyPlan(tasksContext, calendarContext, config.timezone, token)
+      plan = await generateDailyPlan(tasksContext, calendarContext, config.timezone, token, config.mbti)
       console.log('[DailyNote] Plan generated')
     } catch (e) {
         console.error('LLM Generate Plan Error:', e)

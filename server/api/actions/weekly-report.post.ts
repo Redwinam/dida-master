@@ -17,6 +17,7 @@ interface UserConfig {
   icloud_username: string
   icloud_app_password: string
   timezone?: string
+  mbti?: string
 }
 
 export default defineEventHandler(async (event) => {
@@ -166,7 +167,8 @@ export default defineEventHandler(async (event) => {
           calendarContext, 
           nextWeekCalendarContext, 
           config.timezone,
-          token
+          token,
+          config.mbti
       )
       console.log('[WeeklyReport] Report generated')
     } catch (e) {

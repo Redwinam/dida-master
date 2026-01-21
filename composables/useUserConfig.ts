@@ -19,7 +19,8 @@ export const useUserConfig = () => {
     icloud_app_password: '',
     cal_lookahead_days: 2,
     calendar_target: '',
-    timezone: 'Asia/Shanghai'
+    timezone: 'Asia/Shanghai',
+    mbti: ''
   }))
 
   const loading = useState('user-config-loading', () => false)
