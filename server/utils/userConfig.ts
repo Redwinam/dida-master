@@ -122,7 +122,7 @@ export const getUserConfig = async (event: H3Event) => {
       timezone: 'Asia/Shanghai'
     }
 
-    const hasMinimum = fallback.dida_token && fallback.dida_project_id && fallback.llm_api_key
+    const hasMinimum = fallback.dida_token && fallback.dida_project_id
     if (!hasMinimum) {
       throw createError({ statusCode: 400, message: 'Config not found' })
     }

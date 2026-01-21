@@ -17,7 +17,7 @@ export default defineNuxtConfig({
       tailwindcss()
     ],
     optimizeDeps: {
-      include: ['buffer', 'process', 'tsdav', 'ical.js', 'openai']
+      include: ['buffer', 'process', 'tsdav', 'ical.js']
     }
   },
   app: {

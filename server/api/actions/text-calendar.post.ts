@@ -1,3 +1,7 @@
+import { addEventToCalendar } from '../../utils/caldav'
+import { parseTextToCalendar } from '../../utils/llm'
+import { getUserConfig } from '../../utils/userConfig'
+
 interface UserConfig {
   user_id: string
   dida_token: string
@@ -27,15 +31,10 @@ export default defineEventHandler(async (event) => {
 
   const calendars = (config.calendar_target || '').split(',').map((s: string) => s.trim()).filter(Boolean)
 
-  // 3. Call LLM
-  const openai = createLLMClient(config.llm_api_key, config.llm_api_url)
-  
-  const todayDate = new Date().toISOString().split('T')[0] || ''
-  
-  // Use configured LLM model for text
-  const model = config.llm_model || 'deepseek-ai/DeepSeek-V3'
+  const token = getHeader(event, 'Authorization')?.replace('Bearer ', '') || getCookie(event, 'sb-access-token')
 
-  const events = await parseTextToCalendar(openai, model, text, calendars, todayDate)
+  const todayDate = new Date().toISOString().split('T')[0] || ''
+  const events = await parseTextToCalendar(text, calendars, todayDate, token)
 
   if (!events || events.length === 0) {
       return { events: [] }

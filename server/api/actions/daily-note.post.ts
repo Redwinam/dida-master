@@ -1,3 +1,8 @@
+import { getDidaProjects, getDidaTasks, createDidaNote, formatTasksForAI } from '../../utils/dida'
+import { getCalendarEvents } from '../../utils/caldav'
+import { generateDailyPlan } from '../../utils/llm'
+import { getUserConfig } from '../../utils/userConfig'
+
 interface UserConfig {
   user_id: string
   dida_token: string
@@ -24,11 +29,6 @@ export default defineEventHandler(async (event) => {
     if (!config.dida_token || !config.dida_project_id) {
       throw createError({ statusCode: 400, message: 'Dida token or projectId missing' })
     }
-    if (!config.llm_api_key) {
-      throw createError({ statusCode: 400, message: 'LLM API key missing' })
-    }
-
-
     // 1. Fetch Tasks
     console.log('[DailyNote] Fetching tasks...')
     let allProjects: any[] = []
@@ -81,10 +81,10 @@ export default defineEventHandler(async (event) => {
 
     // 3. Call LLM
     console.log('[DailyNote] Calling LLM...')
-    const openai = createLLMClient(config.llm_api_key, config.llm_api_url)
     let plan = ''
     try {
-      plan = await generateDailyPlan(openai, config.llm_model, tasksContext, calendarContext, config.timezone)
+      const token = getHeader(event, 'Authorization')?.replace('Bearer ', '') || getCookie(event, 'sb-access-token')
+      plan = await generateDailyPlan(tasksContext, calendarContext, config.timezone, token)
       console.log('[DailyNote] Plan generated')
     } catch (e) {
         console.error('LLM Generate Plan Error:', e)

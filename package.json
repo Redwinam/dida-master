@@ -15,7 +15,6 @@
     "crypto-browserify": "^3.12.1",
     "ical.js": "^2.2.1",
     "nuxt": "^4.2.1",
-    "openai": "^6.10.0",
     "path-browserify": "^1.0.1",
     "stream-browserify": "^3.0.0",
     "tailwindcss": "^4.1.17",

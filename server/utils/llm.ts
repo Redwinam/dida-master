@@ -1,24 +1,79 @@
-import OpenAI from 'openai'
-
-export const createLLMClient = (apiKey: string, baseURL: string) => {
-  // Normalize baseURL: remove /chat/completions suffix and trailing slash
-  let finalBaseURL = baseURL
-  if (finalBaseURL.endsWith('/chat/completions')) {
-      finalBaseURL = finalBaseURL.replace('/chat/completions', '')
+const getAiGatewayUrl = () => {
+  const config = useRuntimeConfig()
+  const baseUrl = (config.public.supabaseUrl as string | undefined)?.replace(/\/$/, '')
+  if (!baseUrl) {
+    throw createError({ statusCode: 500, message: 'Supabase URL missing' })
   }
-  if (finalBaseURL.endsWith('/')) {
-      finalBaseURL = finalBaseURL.slice(0, -1)
-  }
-
-  return new OpenAI({
-    apiKey,
-    baseURL: finalBaseURL,
-    timeout: 60000, // 60s timeout for LLM
-    maxRetries: 1
-  })
+  return `${baseUrl}/functions/v1/ai-gateway`
 }
 
-export const generateDailyPlan = async (client: OpenAI, model: string, tasksContext: string, calendarContext: string, timezone: string = 'Asia/Shanghai') => {
+const getAiGatewayAuthHeader = () => {
+  const config = useRuntimeConfig()
+  const token = (config.supabaseServiceRoleKey || config.supabaseServiceKey || config.public.supabaseKey || config.public.supabaseAnonKey) as string | undefined
+  
+  if (config.supabaseServiceRoleKey) {
+    console.log('[LLM] Using Service Role Key (Starts with):', config.supabaseServiceRoleKey.substring(0, 10) + '...')
+  } else if (config.supabaseServiceKey) {
+    console.log('[LLM] Using Service Key')
+  } else if (config.public.supabaseKey) {
+    console.log('[LLM] Using Public Key')
+  }
+  
+  if (!token) {
+    throw createError({ statusCode: 500, message: 'Supabase key missing' })
+  }
+  return `Bearer ${token}`
+}
+
+const extractContent = (response: any) => {
+  return (
+    response?.content ||
+    response?.data?.content ||
+    response?.result?.content ||
+    response?.choices?.[0]?.message?.content ||
+    ''
+  )
+}
+
+const callAiGateway = async (serviceKey: string, input: Record<string, any>, userToken?: string) => {
+  const url = getAiGatewayUrl()
+  
+  // Ensure userToken is a valid string if provided
+  const validUserToken = userToken && userToken.length > 20 ? userToken : undefined
+  
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    Authorization: validUserToken ? `Bearer ${validUserToken}` : getAiGatewayAuthHeader()
+  }
+  
+  // Debug log (masked)
+  if (process.env.NODE_ENV === 'development') {
+    const authType = validUserToken ? 'User Token' : 'System Key'
+    console.log(`[AiGateway] Calling ${serviceKey} with ${authType}`)
+  }
+  
+  try {
+    const response = await $fetch(url, {
+      method: 'POST',
+      headers,
+      body: {
+        service_key: serviceKey,
+        input
+      },
+      // Increase timeout for LLM calls
+      timeout: 60000 
+    }) as any
+    return extractContent(response)
+  } catch (e: any) {
+    console.error(`[AiGateway] Error calling ${serviceKey}:`, e.response?.status, e.response?.statusText)
+    if (e.response?.status === 401) {
+       console.error('[AiGateway] 401 Unauthorized. Token used:', headers.Authorization.substring(0, 20) + '...')
+    }
+    throw e
+  }
+}
+
+export const generateDailyPlan = async (tasksContext: string, calendarContext: string, timezone: string = 'Asia/Shanghai', userToken?: string) => {
   const todayStr = new Date().toLocaleDateString('zh-CN', { 
     timeZone: timezone,
     year: 'numeric', 
@@ -38,25 +93,16 @@ ${calendarContext}
 任务列表：
 ${tasksContext}
 `
-
-  const completion = await client.chat.completions.create({
-    model,
-    messages: [
-      { role: 'user', content: prompt }
-    ]
-  })
-
-  return completion.choices[0]?.message?.content || ''
+  return await callAiGateway('DIDA_DAILY_NOTE', { type: 'text', prompt }, userToken)
 }
 
 export const generateWeeklyReport = async (
-  client: OpenAI, 
-  model: string, 
   completedTasksContext: string, 
   uncompletedTasksContext: string,
   calendarContext: string, 
   nextWeekCalendarContext: string,
-  timezone: string = 'Asia/Shanghai'
+  timezone: string = 'Asia/Shanghai',
+  userToken?: string
 ) => {
   const now = new Date()
   const endStr = now.toLocaleDateString('zh-CN', { timeZone: timezone })
@@ -87,18 +133,10 @@ ${nextWeekCalendarContext}
 4. 下周规划建议（结合下周行程和待办任务）
 5. 保持简洁专业，使用Markdown格式。
 `
-
-  const completion = await client.chat.completions.create({
-    model,
-    messages: [
-      { role: 'user', content: prompt }
-    ]
-  })
-
-  return completion.choices[0]?.message?.content || ''
+  return await callAiGateway('DIDA_WEEKLY_REPORT', { type: 'text', prompt }, userToken)
 }
 
-export const parseTextToCalendar = async (client: OpenAI, model: string, text: string, calendars: string[], todayDate: string) => {
+export const parseTextToCalendar = async (text: string, calendars: string[], todayDate: string, userToken?: string) => {
   const prompt = `请识别文本中的日程信息，并将其转换为 JSON 格式。
 当前日期是: ${todayDate}
 允许的日历名称: ${calendars.join(', ')} (如果无法确定，默认为"${calendars[0] || '默认'}")
@@ -112,17 +150,7 @@ export const parseTextToCalendar = async (client: OpenAI, model: string, text: s
 - allDay: 是否全天 (boolean)
 
 只返回 JSON，不要包含 markdown 标记。`
-
-  const completion = await client.chat.completions.create({
-    model,
-    messages: [
-      { role: 'system', content: prompt },
-      { role: 'user', content: text }
-    ],
-    max_tokens: 1000
-  })
-
-  const content = completion.choices[0]?.message?.content || '[]'
+  const content = await callAiGateway('DIDA_TEXT_TO_CALENDAR', { type: 'text', prompt, text }, userToken)
   // Try to strip markdown code blocks if present
   const jsonStr = content.replace(/```json\n?|\n?```/g, '').trim()
   try {
@@ -133,7 +161,7 @@ export const parseTextToCalendar = async (client: OpenAI, model: string, text: s
   }
 }
 
-export const parseImageToCalendar = async (client: OpenAI, model: string, imageBase64: string, calendars: string[], todayDate: string) => {
+export const parseImageToCalendar = async (imageBase64: string, calendars: string[], todayDate: string, userToken?: string) => {
   const prompt = `请识别图片中的日程信息，并将其转换为 JSON 格式。
 当前日期是: ${todayDate}
 允许的日历名称: ${calendars.join(', ')} (如果无法确定，默认为"${calendars[0] || '默认'}")
@@ -147,28 +175,7 @@ export const parseImageToCalendar = async (client: OpenAI, model: string, imageB
 - allDay: 是否全天 (boolean)
 
 只返回 JSON，不要包含 markdown 标记。`
-
-  const completion = await client.chat.completions.create({
-    model,
-    messages: [
-      {
-        role: 'user',
-        content: [
-          { type: 'text', text: prompt },
-          {
-            type: 'image_url',
-            image_url: {
-              url: `data:image/jpeg;base64,${imageBase64}`,
-              detail: 'auto'
-            }
-          }
-        ]
-      }
-    ],
-    max_tokens: 1000 // Ensure we have enough tokens for JSON response
-  })
-
-  const content = completion.choices[0]?.message?.content || '[]'
+  const content = await callAiGateway('DIDA_IMAGE_TO_CALENDAR', { type: 'image', prompt, image_base64: imageBase64 }, userToken)
   // Try to strip markdown code blocks if present
   const jsonStr = content.replace(/```json\n?|\n?```/g, '').trim()
   try {

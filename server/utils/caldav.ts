@@ -32,55 +32,65 @@ export const getCalendarEvents = async (credentials: any, lookaheadDays: number 
         
         const e = new Date(s) // Start from 00:00
         e.setDate(e.getDate() + lookaheadDays)
-        // Ensure we cover the full end day if needed, but original logic was simple addition.
-        // Let's stick to original logic: start + N days.
         endStr = e.toISOString()
     }
 
     const allEvents: any[] = []
 
     for (const calendar of calendars) {
-        // tsdav fetchCalendarObjects is basic, might need object filtering
-        // For simplicity, we might skip complex date range filtering here if tsdav doesn't support it easily without full sync
-        // But tsdav has fetchCalendarObjects with filters.
-        
-        // Using basic sync or fetch
-        const objects = await client.fetchCalendarObjects({
-            calendar,
-            timeRange: { start: startStr, end: endStr }
-        })
-
-        for (const obj of objects) {
+        let retries = 3
+        while (retries > 0) {
             try {
-                const jcal = ICAL.parse(obj.data)
-                const comp = new ICAL.Component(jcal)
-                const vevent = comp.getFirstSubcomponent('vevent')
-                if (!vevent) continue
-
-                const summary = vevent.getFirstPropertyValue('summary')
-                const dtstart = vevent.getFirstPropertyValue('dtstart')
-                const dtend = vevent.getFirstPropertyValue('dtend')
-                const location = vevent.getFirstPropertyValue('location')
-
-                let startJs = null
-                let endJs = null
-                
-                if (dtstart && typeof dtstart === 'object' && 'toJSDate' in dtstart) {
-                    startJs = (dtstart as any).toJSDate()
-                }
-                if (dtend && typeof dtend === 'object' && 'toJSDate' in dtend) {
-                    endJs = (dtend as any).toJSDate()
-                }
-
-                allEvents.push({
-                    title: summary,
-                    start: startJs,
-                    end: endJs,
-                    location,
-                    calendar: calendar.displayName
+                const objects = await client.fetchCalendarObjects({
+                    calendar,
+                    timeRange: { start: startStr, end: endStr }
                 })
-            } catch (e) {
-                console.error('Error parsing event', e)
+
+                for (const obj of objects) {
+                    try {
+                        const jcal = ICAL.parse(obj.data)
+                        const comp = new ICAL.Component(jcal)
+                        const vevent = comp.getFirstSubcomponent('vevent')
+                        if (!vevent) continue
+
+                        const summary = vevent.getFirstPropertyValue('summary')
+                        const dtstart = vevent.getFirstPropertyValue('dtstart')
+                        const dtend = vevent.getFirstPropertyValue('dtend')
+                        const location = vevent.getFirstPropertyValue('location')
+
+                        let startJs = null
+                        let endJs = null
+                        
+                        if (dtstart && typeof dtstart === 'object' && 'toJSDate' in dtstart) {
+                            startJs = (dtstart as any).toJSDate()
+                        }
+                        if (dtend && typeof dtend === 'object' && 'toJSDate' in dtend) {
+                            endJs = (dtend as any).toJSDate()
+                        }
+
+                        allEvents.push({
+                            title: summary,
+                            start: startJs,
+                            end: endJs,
+                            location,
+                            calendar: calendar.displayName
+                        })
+                    } catch (e) {
+                        console.error('Error parsing event', e)
+                    }
+                }
+                break // Success, exit retry loop
+            } catch (err: any) {
+                console.error(`Error fetching calendar ${calendar.displayName}:`, err.message)
+                if (err.message && (err.message.includes('socket disconnected') || err.message.includes('network'))) {
+                    retries--
+                    if (retries > 0) {
+                        console.log(`Retrying... (${retries} left)`)
+                        await new Promise(r => setTimeout(r, 1000)) // Wait 1s
+                        continue
+                    }
+                }
+                break // Non-retriable or out of retries
             }
         }
     }

@@ -1,6 +1,6 @@
 import { getDidaProjects, getDidaCompletedTasks, getDidaTasks, createDidaNote, formatTasksForAI } from '../../utils/dida'
 import { getCalendarEvents } from '../../utils/caldav'
-import { createLLMClient, generateWeeklyReport } from '../../utils/llm'
+import { generateWeeklyReport } from '../../utils/llm'
 import { getUserConfig } from '../../utils/userConfig'
 
 interface UserConfig {
@@ -28,10 +28,6 @@ export default defineEventHandler(async (event) => {
     if (!config.dida_token || !config.weekly_report_project_id) {
       throw createError({ statusCode: 400, message: 'Dida token or Weekly Report Project ID missing. Please configure it in System Config.' })
     }
-    if (!config.llm_api_key) {
-      throw createError({ statusCode: 400, message: 'LLM API key missing' })
-    }
-
     // 1. Fetch Projects
     console.log('[WeeklyReport] Fetching projects...')
     let allProjects: any[] = []
@@ -161,17 +157,16 @@ export default defineEventHandler(async (event) => {
 
     // 4. Call LLM
     console.log('[WeeklyReport] Calling LLM...')
-    const openai = createLLMClient(config.llm_api_key, config.llm_api_url)
     let report = ''
     try {
+      const token = getHeader(event, 'Authorization')?.replace('Bearer ', '') || getCookie(event, 'sb-access-token')
       report = await generateWeeklyReport(
-          openai, 
-          config.llm_model, 
           completedContext, 
           uncompletedContext,
           calendarContext, 
-          nextWeekCalendarContext,
-          config.timezone
+          nextWeekCalendarContext, 
+          config.timezone,
+          token
       )
       console.log('[WeeklyReport] Report generated')
     } catch (e) {

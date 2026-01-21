@@ -1,3 +1,6 @@
+import { addEventToCalendar } from '../../utils/caldav'
+import { parseImageToCalendar } from '../../utils/llm'
+import { getUserConfig } from '../../utils/userConfig'
 import { readMultipartFormData } from 'h3'
 
 interface UserConfig {
@@ -32,26 +35,13 @@ export default defineEventHandler(async (event) => {
   const imageBase64 = imagePart.data.toString('base64')
   const calendars = (config.calendar_target || '').split(',').map((s: string) => s.trim()).filter(Boolean)
 
-  // 3. Call LLM
-  // Use Vision API config if available, otherwise fallback to standard LLM config
-  const apiKey = config.vision_api_key || config.llm_api_key
-  const apiUrl = config.vision_api_url || config.llm_api_url
-  
-  const openai = createLLMClient(apiKey, apiUrl)
-  
   const todayDate = new Date().toISOString().split('T')[0] || ''
   // Ensure imageBase64 doesn't have prefix
   const cleanBase64 = imageBase64.replace(/^data:image\/\w+;base64,/, '')
   
-  // 1. Try user configured vision model
-  // 2. Fallback to Qwen if configured model is deepseek (text only) or not specified
-  let visionModel = config.vision_model || config.llm_model
-  
-  if (!visionModel || visionModel.toLowerCase().includes('deepseek')) {
-      visionModel = 'Qwen/Qwen3-VL-32B-Instruct'
-  }
+  const token = getHeader(event, 'Authorization')?.replace('Bearer ', '') || getCookie(event, 'sb-access-token')
 
-  const events = await parseImageToCalendar(openai, visionModel, cleanBase64, calendars, todayDate)
+  const events = await parseImageToCalendar(cleanBase64, calendars, todayDate, token)
 
   if (!events || events.length === 0) {
       return { events: [] }
