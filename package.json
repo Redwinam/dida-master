@@ -11,9 +11,11 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.89.0",
+    "@tailwindcss/typography": "^0.5.19",
     "@tailwindcss/vite": "^4.1.17",
     "crypto-browserify": "^3.12.1",
     "ical.js": "^2.2.1",
+    "markdown-it": "^14.1.0",
     "nuxt": "^4.2.1",
     "path-browserify": "^1.0.1",
     "stream-browserify": "^3.0.0",
@@ -24,6 +26,7 @@
   },
   "devDependencies": {
     "@iconify/vue": "^5.0.0",
+    "@types/markdown-it": "^14.1.2",
     "buffer": "^6.0.3"
   }
 }

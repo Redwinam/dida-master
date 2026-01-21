@@ -52,5 +52,11 @@ const apiGuide = {
       <Icon v-else icon="heroicons:play" class="w-5 h-5" />
       立即生成
     </button>
+    
+    <div class="mt-3 text-center">
+       <NuxtLink to="/history/weekly-reports" class="text-sm text-green-600 dark:text-green-400 hover:underline">
+          查看历史记录
+       </NuxtLink>
+    </div>
   </FunctionCard>
 </template>

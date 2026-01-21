@@ -67,7 +67,7 @@ const callAiGateway = async (serviceKey: string, input: Record<string, any>, use
   } catch (e: any) {
     console.error(`[AiGateway] Error calling ${serviceKey}:`, e.response?.status, e.response?.statusText)
     if (e.response?.status === 401) {
-       console.error('[AiGateway] 401 Unauthorized. Token used:', headers.Authorization.substring(0, 20) + '...')
+       console.error('[AiGateway] 401 Unauthorized. Token used:', headers.Authorization?.substring(0, 20) + '...')
     }
     throw e
   }

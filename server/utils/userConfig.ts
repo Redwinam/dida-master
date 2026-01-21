@@ -1,5 +1,5 @@
 import { H3Event } from 'h3'
-import { Database } from '../../types/database.types'
+import type { Database } from '../../types/database.types'
 
 export const getUserConfig = async (event: H3Event) => {
   let userId: string | undefined

@@ -4,6 +4,7 @@ import { Icon } from '@iconify/vue'
 defineProps<{
   modelValue: boolean
   title: string
+  maxWidth?: string
 }>()
 
 const emit = defineEmits(['update:modelValue'])
@@ -20,7 +21,10 @@ function close() {
       <div class="absolute inset-0 bg-gray-900/50 backdrop-blur-sm transition-opacity" @click="close"></div>
 
       <!-- Modal Panel -->
-      <div class="relative w-full max-w-lg transform rounded-2xl bg-white dark:bg-gray-800 p-6 text-left shadow-xl transition-all border border-gray-100 dark:border-gray-700">
+      <div :class="[
+        'relative w-full transform rounded-2xl bg-white dark:bg-gray-800 p-6 text-left shadow-xl transition-all border border-gray-100 dark:border-gray-700',
+        maxWidth || 'max-w-lg'
+      ]">
         <div class="flex items-center justify-between mb-5">
           <h3 class="text-lg font-semibold leading-6 text-gray-900 dark:text-white">
             {{ title }}
