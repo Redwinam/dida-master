@@ -45,7 +45,6 @@ export default defineNuxtConfig({
     }
   },
   runtimeConfig: {
-    openaiApiKey: process.env.LLM_API_KEY,
     didaToken: process.env.DIDA_TOKEN,
     didaProjectId: process.env.DIDA_PROJECT_ID,
     didaClientId: process.env.DIDA_CLIENT_ID,
@@ -59,9 +58,7 @@ export default defineNuxtConfig({
     public: {
       supabaseUrl: process.env.NUXT_PUBLIC_SUPABASE_URL,
       supabaseKey: process.env.NUXT_PUBLIC_SUPABASE_ANON_KEY,
-      supabaseAnonKey: process.env.NUXT_PUBLIC_SUPABASE_ANON_KEY,
-      llmModel: process.env.LLM_MODEL || 'deepseek-ai/DeepSeek-V3.2-Exp',
-      llmApiUrl: process.env.LLM_API_URL || 'https://api.siliconflow.cn/v1/chat/completions'
+      supabaseAnonKey: process.env.NUXT_PUBLIC_SUPABASE_ANON_KEY
     }
   }
 })

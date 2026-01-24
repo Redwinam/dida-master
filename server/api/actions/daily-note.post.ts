@@ -9,9 +9,6 @@ interface UserConfig {
   dida_project_id: string
   weekly_report_project_id?: string
   exclude_project_name: string
-  llm_api_key: string
-  llm_model: string
-  llm_api_url: string
   cal_enable: boolean
   icloud_username: string
   icloud_app_password: string

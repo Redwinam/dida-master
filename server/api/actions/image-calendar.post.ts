@@ -8,10 +8,7 @@ interface UserConfig {
   dida_token: string
   dida_project_id: string
   exclude_project_name: string
-  llm_api_key: string
-  llm_model: string
   vision_model?: string
-  llm_api_url: string
   vision_api_key?: string
   vision_api_url?: string
   cal_enable: boolean
