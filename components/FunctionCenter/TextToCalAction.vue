@@ -5,8 +5,18 @@ import FunctionCard from './FunctionCard.vue'
 const { $supabase } = useNuxtApp()
 const client = $supabase as any
 const toast = useToast()
+const { config } = useUserConfig()
+
+const emit = defineEmits<{
+  (e: 'configure'): void
+}>()
+
 const loadingAction = ref(false)
 const textInput = ref('')
+
+const missingConfig = computed(() => {
+  return !config.value.icloud_username || !config.value.icloud_app_password || !config.value.llm_api_key
+})
 
 async function triggerTextToCalendar() {
   if (!textInput.value) return

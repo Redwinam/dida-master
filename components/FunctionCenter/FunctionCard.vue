@@ -2,7 +2,7 @@
 import { Icon } from '@iconify/vue'
 import Modal from '@/components/ui/Modal.vue'
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   title: string
   description: string
   icon: string
@@ -18,6 +18,15 @@ const props = defineProps<{
     optionLabel?: string
     getExample?: (value?: string) => string
   }
+  missingConfig?: boolean
+  missingConfigText?: string
+}>(), {
+  missingConfig: false,
+  missingConfigText: ''
+})
+
+defineEmits<{
+  (e: 'configure'): void
 }>()
 
 const showApiModal = ref(false)
@@ -72,12 +81,25 @@ watch(
       </p>
       
       <div class="mt-auto">
-        <slot></slot>
+        <div v-if="missingConfig" class="flex flex-col gap-3">
+          <div class="p-3 bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 text-sm rounded-lg flex items-start gap-2">
+            <Icon icon="heroicons:exclamation-triangle" class="w-5 h-5 shrink-0 mt-0.5" />
+            <span>{{ missingConfigText || '功能未配置，请先完成配置。' }}</span>
+          </div>
+          <button 
+            @click="$emit('configure')"
+            class="w-full py-2.5 px-4 bg-amber-100 hover:bg-amber-200 dark:bg-amber-900/40 dark:hover:bg-amber-900/60 text-amber-700 dark:text-amber-300 rounded-lg text-sm font-medium shadow-sm transition-all flex justify-center items-center gap-2"
+          >
+            <Icon icon="heroicons:cog-6-tooth" class="w-5 h-5" />
+            去配置
+          </button>
+        </div>
+        <slot v-else></slot>
       </div>
     </div>
 
     <!-- API Guide Modal -->
-    <Modal v-if="apiGuide" v-model="showApiModal" :title="`${title} - API Guide`">
+    <Modal v-if="apiGuide" v-model="showApiModal" :title="`${title} - API 指南`">
       <div class="space-y-4 text-sm text-gray-700 dark:text-gray-300">
         <p>{{ apiGuide.description }}</p>
         
@@ -89,7 +111,7 @@ watch(
         </div>
 
         <div v-if="apiGuide.params" class="space-y-2">
-            <h5 class="font-medium text-gray-900 dark:text-white">参数</h5>
+            <h5 class="font-medium text-gray-900 dark:text-white">参数说明</h5>
             <ul class="list-disc pl-5 space-y-1 text-xs text-gray-600 dark:text-gray-400">
                 <li v-for="(desc, name) in apiGuide.params" :key="name">
                     <code class="font-bold">{{ name }}</code>: {{ desc }}

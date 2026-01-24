@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { Icon } from '@iconify/vue'
-import ApiKeyManager from './ApiKeyManager.vue'
 
 const { $supabase } = useNuxtApp()
 const client = $supabase as any
@@ -217,6 +216,5 @@ onMounted(() => {
       </div>
     </div>
 
-    <ApiKeyManager />
   </div>
 </template>

@@ -64,7 +64,7 @@ async function handleSubmit() {
       <!-- Header -->
       <div class="px-8 pt-8 pb-6 text-center">
         <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2 tracking-tight">
-          {{ isLogin ? 'Welcome Back' : 'Create Account' }}
+          {{ isLogin ? '欢迎回来' : '创建账户' }}
         </h1>
         <p class="text-gray-500 dark:text-gray-400 text-sm">
           滴答清单之今日主人的任务
@@ -77,7 +77,7 @@ async function handleSubmit() {
           
           <!-- Email -->
           <div class="space-y-1.5">
-            <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
+            <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300">电子邮箱</label>
             <div class="relative">
               <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <Icon icon="heroicons:envelope" class="h-5 w-5 text-gray-400" />
@@ -95,7 +95,7 @@ async function handleSubmit() {
           
           <!-- Password -->
           <div class="space-y-1.5">
-            <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Password</label>
+            <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300">密码</label>
             <div class="relative">
               <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <Icon icon="heroicons:lock-closed" class="h-5 w-5 text-gray-400" />
@@ -120,7 +120,7 @@ async function handleSubmit() {
           <!-- Success Message (e.g. for OTP sent) -->
           <div v-if="success" class="p-3 rounded-lg bg-green-50 text-green-600 text-sm border border-green-100 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800/30 flex items-center gap-2">
              <Icon icon="heroicons:check-circle" class="w-5 h-5 shrink-0" />
-             <span>{{ success === 'auth/otp-sent' ? 'Confirmation email sent. Please check your inbox.' : success }}</span>
+             <span>{{ success === 'auth/otp-sent' ? '确认邮件已发送，请检查收件箱。' : success }}</span>
           </div>
 
           <!-- Submit Button -->
@@ -130,7 +130,7 @@ async function handleSubmit() {
             class="w-full flex justify-center items-center py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
           >
             <Icon v-if="pending" icon="line-md:loading-twotone-loop" class="w-5 h-5 mr-2" />
-            {{ isLogin ? 'Sign In' : 'Sign Up' }}
+            {{ isLogin ? '登录' : '注册' }}
           </button>
         </form>
       </div>
@@ -141,7 +141,7 @@ async function handleSubmit() {
           @click="isLogin = !isLogin" 
           class="text-sm font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300 transition-colors focus:outline-none"
         >
-          {{ isLogin ? "Don't have an account? Sign up" : "Already have an account? Sign in" }}
+          {{ isLogin ? "还没有账号？去注册" : "已有账号？去登录" }}
         </button>
       </div>
     </div>

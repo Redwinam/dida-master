@@ -5,10 +5,20 @@ import FunctionCard from './FunctionCard.vue'
 const { $supabase } = useNuxtApp()
 const client = $supabase as any
 const toast = useToast()
+const { config } = useUserConfig()
+
+const emit = defineEmits<{
+  (e: 'configure'): void
+}>()
+
 const loadingAction = ref(false)
 const imageFile = ref<File | null>(null)
 const imagePreview = ref<string | null>(null)
 const fileInput = ref<HTMLInputElement | null>(null)
+
+const missingConfig = computed(() => {
+  return !config.value.icloud_username || !config.value.icloud_app_password || !config.value.llm_api_key
+})
 
 function onFileSelect(e: Event) {
   const input = e.target as HTMLInputElement

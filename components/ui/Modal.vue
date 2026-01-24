@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import { Icon } from '@iconify/vue'
 
-defineProps<{
+const props = withDefaults(defineProps<{
   modelValue: boolean
   title: string
   maxWidth?: string
-}>()
+  showHeader?: boolean
+}>(), {
+  showHeader: true
+})
 
 const emit = defineEmits(['update:modelValue'])
 
@@ -25,7 +28,7 @@ function close() {
         'relative w-full transform rounded-2xl bg-white dark:bg-gray-800 p-6 text-left shadow-xl transition-all border border-gray-100 dark:border-gray-700',
         maxWidth || 'max-w-lg'
       ]">
-        <div class="flex items-center justify-between mb-5">
+        <div v-if="props.showHeader" class="flex items-center justify-between mb-5">
           <h3 class="text-lg font-semibold leading-6 text-gray-900 dark:text-white">
             {{ title }}
           </h3>

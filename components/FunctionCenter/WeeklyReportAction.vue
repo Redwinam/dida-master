@@ -5,7 +5,18 @@ import FunctionCard from './FunctionCard.vue'
 const { $supabase } = useNuxtApp()
 const client = $supabase as any
 const toast = useToast()
+const { config, loading, fetched } = useUserConfig()
+
+const emit = defineEmits<{
+  (e: 'configure'): void
+}>()
+
 const loadingAction = ref(false)
+
+const missingConfig = computed(() => {
+  if (loading.value || !fetched.value) return false
+  return !config.value.dida_token || !config.value.llm_api_key
+})
 
 async function triggerWeeklyReport() {
   loadingAction.value = true
@@ -42,6 +53,9 @@ const apiGuide = {
     colorClass="text-green-600 dark:text-green-400"
     bgClass="bg-green-100 dark:bg-green-900/50"
     :apiGuide="apiGuide"
+    :missingConfig="missingConfig"
+    missingConfigText="需要配置滴答清单 Token 和 LLM API Key。"
+    @configure="emit('configure')"
   >
     <button 
       @click="triggerWeeklyReport" 

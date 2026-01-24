@@ -6,6 +6,11 @@ import Modal from '@/components/ui/Modal.vue'
 const { $supabase } = useNuxtApp()
 const client = $supabase as any
 const toast = useToast()
+const { config, loading, fetched } = useUserConfig()
+
+const emit = defineEmits<{
+  (e: 'configure'): void
+}>()
 
 const templates = ref<any[]>([])
 const loadingTemplates = ref(false)
@@ -86,6 +91,11 @@ const apiGuide = computed(() => {
     },
     example: apiGuideExample
   }
+})
+
+const missingConfig = computed(() => {
+  if (loading.value || !fetched.value) return false
+  return !config.value.icloud_username || !config.value.icloud_app_password
 })
 
 const resetTemplateForm = () => {
@@ -339,6 +349,9 @@ onMounted(() => {
     colorClass="text-amber-600 dark:text-amber-400"
     bgClass="bg-amber-100 dark:bg-amber-900/50"
     :apiGuide="apiGuide"
+    :missingConfig="missingConfig"
+    missingConfigText="需要配置日历。"
+    @configure="$emit('configure')"
   >
     <div class="space-y-4">
       <div class="flex items-center gap-2">

@@ -5,8 +5,14 @@ import CalendarConfig from './Config/CalendarConfig.vue'
 import LLMConfig from './Config/LLMConfig.vue'
 import ConfigPersonalization from './Config/PersonalizationConfig.vue'
 
+import ApiKeyManager from './Config/ApiKeyManager.vue'
+
 const { load, save, fetched, loading, error } = useUserConfig()
 const toast = useToast()
+
+const emit = defineEmits<{
+  (e: 'close'): void
+}>()
 
 const saving = ref(false)
 
@@ -22,12 +28,15 @@ async function handleSave() {
   }
 }
 
-// Initial load is handled in index.vue or here?
-// Better to handle here if it's the main config view.
-// But index.vue handles auth-dependent loading.
-// We can just watch `fetched` or rely on parent to trigger load if not fetched.
-// But index.vue has complex logic for token handling etc.
-// Let's assume index.vue handles the initial load trigger, or we check it here.
+const activeTab = ref('personalization')
+
+const tabs = [
+  { id: 'personalization', label: '个性化', icon: 'heroicons:user' },
+  { id: 'dida', label: '滴答清单', icon: 'heroicons:check-circle' },
+  { id: 'calendar', label: '日历', icon: 'heroicons:calendar' },
+  { id: 'llm', label: 'AI 模型', icon: 'heroicons:sparkles' },
+  { id: 'api_key', label: 'API 凭证', icon: 'heroicons:key' }
+]
 </script>
 
 <template>
@@ -56,37 +65,76 @@ async function handleSave() {
        </button>
     </div>
 
-    <div v-else class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden animate-fade-in">
-      <div class="p-6 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center sticky top-0 bg-white dark:bg-gray-800 z-10">
-        <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-          <Icon icon="heroicons:adjustments-horizontal" class="w-5 h-5 text-gray-400" />
-          全局配置
-        </h3>
-        <button 
-          @click="handleSave" 
-          :disabled="saving"
-          class="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          <Icon v-if="saving" icon="line-md:loading-twotone-loop" class="w-4 h-4" />
-          <Icon v-else icon="heroicons:check" class="w-4 h-4" />
-          保存所有更改
-        </button>
+    <div v-else class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden animate-fade-in flex flex-col h-[600px] md:flex-row">
+      
+      <!-- Sidebar Tabs -->
+      <div class="w-full md:w-64 bg-gray-50 dark:bg-gray-900/50 border-b md:border-b-0 md:border-r border-gray-100 dark:border-gray-700 flex md:flex-col">
+        <div class="p-6 hidden md:block">
+           <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+            <Icon icon="heroicons:adjustments-horizontal" class="w-5 h-5 text-gray-400" />
+            系统配置
+          </h3>
+        </div>
+        
+        <div class="flex-1 overflow-x-auto md:overflow-x-visible flex md:flex-col p-2 md:p-4 gap-1">
+          <button
+            v-for="tab in tabs"
+            :key="tab.id"
+            @click="activeTab = tab.id"
+            :class="[
+              'flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 whitespace-nowrap',
+              activeTab === tab.id
+                ? 'bg-white dark:bg-gray-800 text-indigo-600 dark:text-indigo-400 shadow-sm'
+                : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-200'
+            ]"
+          >
+            <Icon :icon="tab.icon" class="w-5 h-5" />
+            {{ tab.label }}
+          </button>
+        </div>
       </div>
 
-      <div class="p-6 md:p-8">
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <!-- Left Column: TickTick & Calendar -->
-            <div class="space-y-8">
-                <DidaConfig />
-                <CalendarConfig />
-            </div>
+      <!-- Content Area -->
+      <div class="flex-1 flex flex-col min-h-0">
+        <div class="p-6 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-white dark:bg-gray-800">
+           <h2 class="text-xl font-bold text-gray-900 dark:text-white">
+             {{ tabs.find(t => t.id === activeTab)?.label }}
+           </h2>
+           <div class="flex items-center gap-2">
+             <button 
+              @click="handleSave" 
+              :disabled="saving"
+              class="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <Icon v-if="saving" icon="line-md:loading-twotone-loop" class="w-4 h-4" />
+              <Icon v-else icon="heroicons:check" class="w-4 h-4" />
+              保存
+            </button>
+            <button 
+              @click="emit('close')"
+              class="flex items-center justify-center w-9 h-9 rounded-lg border border-gray-200 dark:border-gray-600 text-gray-500 hover:text-gray-700 hover:bg-gray-50 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-700/60 transition-colors"
+            >
+              <Icon icon="heroicons:x-mark" class="w-5 h-5" />
+            </button>
+           </div>
+        </div>
 
-            <!-- Right Column: LLM & Auth -->
-            <div class="space-y-8 lg:border-l lg:border-gray-100 lg:dark:border-gray-700 lg:pl-8">
-                <!-- Personalization Config -->
-                <ConfigPersonalization />
-                <LLMConfig />
-            </div>
+        <div class="flex-1 overflow-y-auto p-6 md:p-8">
+          <div v-show="activeTab === 'personalization'" class="animate-fade-in">
+            <ConfigPersonalization />
+          </div>
+          <div v-show="activeTab === 'dida'" class="animate-fade-in">
+             <DidaConfig />
+          </div>
+          <div v-show="activeTab === 'calendar'" class="animate-fade-in">
+             <CalendarConfig />
+          </div>
+          <div v-show="activeTab === 'llm'" class="animate-fade-in">
+             <LLMConfig />
+          </div>
+          <div v-show="activeTab === 'api_key'" class="animate-fade-in">
+             <ApiKeyManager />
+          </div>
         </div>
       </div>
     </div>
