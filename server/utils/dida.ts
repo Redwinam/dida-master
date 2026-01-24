@@ -133,10 +133,42 @@ export const getDidaCompletedTasks = async (token: string, projectId: string, fr
   }
 }
 
-export const createDidaNote = async (token: string, projectId: string, title: string, content: string) => {
+const getTimeZoneOffset = (date: Date, timeZone: string) => {
+  try {
+    const parts = new Intl.DateTimeFormat('en-US', { timeZone, timeZoneName: 'shortOffset' }).formatToParts(date)
+    const tzValue = parts.find((p) => p.type === 'timeZoneName')?.value || ''
+    const match = tzValue.match(/GMT([+-]\d{1,2})(?::?(\d{2}))?/)
+    if (!match) return '+0800'
+    const sign = match[1].startsWith('-') ? '-' : '+'
+    const hours = Math.abs(parseInt(match[1], 10))
+    const minutes = match[2] ? parseInt(match[2], 10) : 0
+    const hourStr = String(hours).padStart(2, '0')
+    const minuteStr = String(minutes).padStart(2, '0')
+    return `${sign}${hourStr}${minuteStr}`
+  } catch {
+    return '+0800'
+  }
+}
+
+const getTimeZoneDateString = (date: Date, timeZone: string) => {
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  }).formatToParts(date)
+  const year = parts.find((p) => p.type === 'year')?.value || '1970'
+  const month = parts.find((p) => p.type === 'month')?.value || '01'
+  const day = parts.find((p) => p.type === 'day')?.value || '01'
+  return `${year}-${month}-${day}`
+}
+
+export const createDidaNote = async (token: string, projectId: string, title: string, content: string, timeZone: string = 'Asia/Shanghai') => {
   const now = new Date()
-  const startDate = new Date(now.setHours(0, 0, 0, 0)).toISOString().replace(/\.\d{3}Z$/, '+0800') // Simplification for Asia/Shanghai
-  const dueDate = new Date(now.setHours(23, 59, 59, 999)).toISOString().replace(/\.\d{3}Z$/, '+0800')
+  const dateStr = getTimeZoneDateString(now, timeZone)
+  const offset = getTimeZoneOffset(now, timeZone)
+  const startDate = `${dateStr}T00:00:00${offset}`
+  const dueDate = `${dateStr}T23:59:59${offset}`
 
   return await $fetch('https://api.dida365.com/open/v1/task', {
     method: 'POST',
@@ -151,7 +183,7 @@ export const createDidaNote = async (token: string, projectId: string, title: st
       isAllDay: true,
       startDate, // Note: Dida API format might need checking, but python used ISO with timezone
       dueDate,
-      timeZone: "Asia/Shanghai",
+      timeZone,
       kind: "NOTE"
     }
   })

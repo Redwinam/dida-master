@@ -175,11 +175,11 @@ export default defineEventHandler(async (event) => {
 
     // 5. Create Note
     console.log('[WeeklyReport] Creating note...')
-    const title = `周报 ${start.toLocaleDateString('zh-CN')} - ${now.toLocaleDateString('zh-CN')}`
-    const didaNote: any = await createDidaNote(config.dida_token, config.weekly_report_project_id, title, report)
+    const timeZone = config.timezone || 'Asia/Shanghai'
+    const title = `周报 ${start.toLocaleDateString('zh-CN', { timeZone })} - ${now.toLocaleDateString('zh-CN', { timeZone })}`
+    const didaNote: any = await createDidaNote(config.dida_token, config.weekly_report_project_id, title, report, timeZone)
     console.log('[WeeklyReport] Note created')
 
-    const timeZone = config.timezone || 'Asia/Shanghai'
     const periodStart = start.toLocaleDateString('en-CA', { timeZone })
     const periodEnd = now.toLocaleDateString('en-CA', { timeZone })
     const didaTaskId = didaNote?.id || didaNote?.taskId || didaNote?.data?.id || null

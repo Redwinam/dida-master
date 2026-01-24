@@ -91,11 +91,11 @@ export default defineEventHandler(async (event) => {
 
     // 4. Create Note
     console.log('[DailyNote] Creating note...')
-    const title = new Date().toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' })
-    const didaNote: any = await createDidaNote(config.dida_token, config.dida_project_id, title, plan)
+    const timeZone = config.timezone || 'Asia/Shanghai'
+    const title = new Date().toLocaleDateString('zh-CN', { timeZone, year: 'numeric', month: 'long', day: 'numeric' })
+    const didaNote: any = await createDidaNote(config.dida_token, config.dida_project_id, title, plan, timeZone)
     console.log('[DailyNote] Note created')
 
-    const timeZone = config.timezone || 'Asia/Shanghai'
     const noteDate = new Date().toLocaleDateString('en-CA', { timeZone })
     const didaTaskId = didaNote?.id || didaNote?.taskId || didaNote?.data?.id || null
     const adminClient = getAdminClient()
