@@ -89,7 +89,7 @@ async function generateApiKey() {
         <button 
             @click="generateApiKey" 
             :disabled="loadingApiKey"
-            class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors flex items-center gap-2"
+            class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors flex items-center gap-2"
         >
             <Icon v-if="loadingApiKey" icon="line-md:loading-twotone-loop" class="w-4 h-4" />
             <Icon v-else icon="heroicons:sparkles" class="w-4 h-4" />

@@ -86,7 +86,7 @@ watch(() => route.query.page, (newPage) => {
                   {{ report.title }}
                 </td>
                 <td class="px-6 py-4 text-right">
-                  <button @click="openReport(report)" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 text-sm font-medium">
+                  <button @click="openReport(report)" class="text-primary-600 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-300 text-sm font-medium">
                     查看详情
                   </button>
                 </td>

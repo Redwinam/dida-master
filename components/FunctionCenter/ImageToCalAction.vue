@@ -79,13 +79,13 @@ const apiGuide = {
     title="图片转日历事件"
     description="上传一张包含日程信息的图片（如海报、截图），AI 自动识别时间地点并添加到日历。"
     icon="heroicons:photo"
-    colorClass="text-purple-600 dark:text-purple-400"
-    bgClass="bg-purple-100 dark:bg-purple-900/50"
+    colorClass="text-accent-600 dark:text-accent-400"
+    bgClass="bg-accent-100 dark:bg-accent-900/50"
     :apiGuide="apiGuide"
   >
     <div class="space-y-4">
       <div 
-        class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl p-4 text-center hover:border-purple-500 dark:hover:border-purple-500 transition-colors cursor-pointer bg-gray-50 dark:bg-gray-900/50"
+        class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl p-4 text-center hover:border-accent-500 dark:hover:border-accent-500 transition-colors cursor-pointer bg-gray-50 dark:bg-gray-900/50"
         @click="fileInput?.click()"
         @drop.prevent="onFileSelect"
         @dragover.prevent

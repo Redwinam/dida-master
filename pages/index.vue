@@ -97,16 +97,16 @@ const openConfig = () => {
                @click="showUserMenu = !showUserMenu"
                class="group flex items-center gap-3 pl-2 pr-3 py-1.5 rounded-full hover:bg-white/80 dark:hover:bg-gray-800/80 hover:shadow-sm border border-transparent hover:border-gray-100 dark:hover:border-gray-700 transition-all focus:outline-none"
              >
-                <div class="w-9 h-9 md:w-10 md:h-10 rounded-full bg-gradient-to-br from-indigo-100 to-purple-100 dark:from-indigo-900 dark:to-purple-900 flex items-center justify-center text-indigo-600 dark:text-indigo-400 font-bold text-lg overflow-hidden shadow-inner ring-2 ring-white dark:ring-gray-900">
+                <div class="w-9 h-9 md:w-10 md:h-10 rounded-full bg-gradient-to-br from-primary-100 to-accent-100 dark:from-primary-900 dark:to-accent-900 flex items-center justify-center text-primary-600 dark:text-primary-400 font-bold text-lg overflow-hidden shadow-inner ring-2 ring-white dark:ring-gray-900">
                   <img v-if="user?.user_metadata?.picture" :src="user.user_metadata.picture" class="w-full h-full object-cover" />
                   <span v-else>{{ user?.user_metadata?.name?.charAt(0) || user?.email?.charAt(0).toUpperCase() || 'U' }}</span>
                 </div>
                 <div class="text-left hidden md:block">
-                  <div class="text-sm font-bold text-gray-800 dark:text-gray-200 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                  <div class="text-sm font-bold text-gray-800 dark:text-gray-200 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
                     {{ user?.user_metadata?.name || user?.user_metadata?.full_name || user?.email?.split('@')[0] }}
                   </div>
                 </div>
-                <Icon icon="heroicons:chevron-down" class="w-4 h-4 text-gray-400 group-hover:text-indigo-500 transition-colors" :class="{'rotate-180': showUserMenu}" />
+                <Icon icon="heroicons:chevron-down" class="w-4 h-4 text-gray-400 group-hover:text-primary-500 transition-colors" :class="{'rotate-180': showUserMenu}" />
              </button>
 
              <!-- Dropdown Menu -->
@@ -123,9 +123,9 @@ const openConfig = () => {
                  
                  <button 
                    @click="openConfig"
-                   class="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 hover:text-indigo-600 dark:hover:text-indigo-400 rounded-xl transition-all group"
+                   class="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-primary-50 dark:hover:bg-primary-900/30 hover:text-primary-600 dark:hover:text-primary-400 rounded-xl transition-all group"
                  >
-                   <div class="p-1.5 rounded-lg bg-gray-100 dark:bg-gray-700 group-hover:bg-white dark:group-hover:bg-gray-800 text-gray-500 group-hover:text-indigo-500 transition-colors">
+                   <div class="p-1.5 rounded-lg bg-gray-100 dark:bg-gray-700 group-hover:bg-white dark:group-hover:bg-gray-800 text-gray-500 group-hover:text-primary-500 transition-colors">
                      <Icon icon="heroicons:cog-6-tooth" class="w-4 h-4" />
                    </div>
                    系统配置

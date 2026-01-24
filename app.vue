@@ -5,7 +5,7 @@ const { notifications, remove } = useToast()
 </script>
 
 <template>
-  <div class="bg-gray-50 dark:bg-gray-950 min-h-screen text-gray-900 dark:text-gray-100 font-sans antialiased selection:bg-indigo-500 selection:text-white">
+  <div class="bg-gray-50 dark:bg-gray-950 min-h-screen text-gray-900 dark:text-gray-100 font-sans antialiased selection:bg-primary-500 selection:text-white">
     <NuxtRouteAnnouncer />
     <NuxtLayout>
       <NuxtPage />
@@ -29,7 +29,7 @@ const { notifications, remove } = useToast()
           <div class="shrink-0 mt-0.5">
             <Icon v-if="n.color === 'success'" icon="heroicons:check-circle" class="w-5 h-5 text-green-500" />
             <Icon v-else-if="n.color === 'error'" icon="heroicons:x-circle" class="w-5 h-5 text-red-500" />
-            <Icon v-else icon="heroicons:information-circle" class="w-5 h-5 text-blue-500" />
+            <Icon v-else icon="heroicons:information-circle" class="w-5 h-5 text-primary-500" />
           </div>
           <div class="flex-1 min-w-0">
             <h3 class="text-sm font-medium text-gray-900 dark:text-white">{{ n.title }}</h3>

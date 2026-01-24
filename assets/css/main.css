@@ -39,5 +39,31 @@
       transform: translateY(0);
     }
   }
-}
 
+  /* Custom Palette based on Logo */
+  /* Logo Blue: #203255 */
+  --color-primary-50: #f2f5f9;
+  --color-primary-100: #e1e7f2;
+  --color-primary-200: #c5d2e8;
+  --color-primary-300: #9db4da;
+  --color-primary-400: #7091cb;
+  --color-primary-500: #4d72b8;
+  --color-primary-600: #37599e;
+  --color-primary-700: #2d4782;
+  --color-primary-800: #283c6a;
+  --color-primary-900: #203255;
+  --color-primary-950: #17233d;
+
+  /* Logo Coral: #f8867a */
+  --color-accent-50: #fff1f0;
+  --color-accent-100: #ffe0de;
+  --color-accent-200: #ffc6c2;
+  --color-accent-300: #ff9e96;
+  --color-accent-400: #f8867a;
+  --color-accent-500: #ed5a4a;
+  --color-accent-600: #db3e2e;
+  --color-accent-700: #b82d20;
+  --color-accent-800: #98261c;
+  --color-accent-900: #7e241b;
+  --color-accent-950: #450e09;
+}

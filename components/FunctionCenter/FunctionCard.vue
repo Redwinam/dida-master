@@ -6,8 +6,8 @@ const props = withDefaults(defineProps<{
   title: string
   description: string
   icon: string
-  colorClass: string // e.g. text-indigo-600
-  bgClass: string // e.g. bg-indigo-100
+  colorClass: string // e.g. text-primary-600
+  bgClass: string // e.g. bg-primary-100
   apiGuide?: {
     endpoint: string
     method: string
@@ -106,7 +106,7 @@ watch(
         <div class="space-y-2">
             <div class="flex items-center gap-2">
                 <span class="px-2 py-0.5 rounded bg-gray-200 dark:bg-gray-700 font-mono text-xs font-bold">{{ apiGuide.method }}</span>
-                <code class="bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded text-indigo-600 dark:text-indigo-400 font-mono">{{ apiGuide.endpoint }}</code>
+                <code class="bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded text-primary-600 dark:text-primary-400 font-mono">{{ apiGuide.endpoint }}</code>
             </div>
         </div>
 

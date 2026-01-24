@@ -150,7 +150,7 @@ defineExpose({
                 {{ groupName }}
              </h5>
              <div class="space-y-3">
-                <div v-for="sk in keys" :key="sk.service_key" class="p-4 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm transition-all hover:border-indigo-300 dark:hover:border-indigo-700">
+                <div v-for="sk in keys" :key="sk.service_key" class="p-4 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm transition-all hover:border-primary-300 dark:hover:border-primary-700">
                    <div class="flex flex-col md:flex-row items-center gap-3">
                       <!-- Top: Service Info -->
                       <div class="w-full">
@@ -174,7 +174,7 @@ defineExpose({
                           <select 
                             :value="getMapping(sk.service_key).llm_config_id"
                             @change="(e: any) => updateMapping(sk.service_key, 'llm_config_id', e.target.value)"
-                            class="block w-full py-1.5 pl-3 pr-8 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900/50 text-gray-900 dark:text-white focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+                            class="block w-full py-1.5 pl-3 pr-8 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900/50 text-gray-900 dark:text-white focus:ring-primary-500 focus:border-primary-500 transition-colors"
                           >
                             <option value="">默认配置 (自动)</option>
                             <option v-for="config in llmConfigs" :key="config.id" :value="config.id">
@@ -189,7 +189,7 @@ defineExpose({
                              :value="getMapping(sk.service_key).model_name"
                              @change="(e: any) => updateMapping(sk.service_key, 'model_name', e.target.value)"
                              :disabled="!getMapping(sk.service_key).llm_config_id"
-                             class="block w-full py-1.5 pl-3 pr-8 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900/50 text-gray-900 dark:text-white focus:ring-indigo-500 focus:border-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                             class="block w-full py-1.5 pl-3 pr-8 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900/50 text-gray-900 dark:text-white focus:ring-primary-500 focus:border-primary-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                            >
                              <option value="">默认模型 (自动)</option>
                              <option v-for="model in getModelsForConfig(getMapping(sk.service_key).llm_config_id)" :key="model" :value="model">

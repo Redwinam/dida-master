@@ -97,7 +97,7 @@ function toggleExcludedProject(name: string) {
       <div class="space-y-1.5">
         <label class="text-sm font-medium text-gray-700 dark:text-gray-300">连接状态</label>
         <div v-if="!config.dida_token" class="flex">
-          <a href="/api/auth/dida/authorize" class="w-full flex justify-center items-center py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-200">
+          <a href="/api/auth/dida/authorize" class="w-full flex justify-center items-center py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-all duration-200">
             <Icon icon="heroicons:link" class="w-5 h-5 mr-2" />
             点击连接滴答清单
           </a>
@@ -166,7 +166,7 @@ function toggleExcludedProject(name: string) {
             <input
                 v-model="config.dida_cookie"
                 placeholder="粘贴完整的 Cookie 字符串"
-                class="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700/50 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm resize-y"
+                class="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700/50 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 sm:text-sm resize-y"
             ></input>
           </div>
           <p class="text-xs text-gray-500">
@@ -200,7 +200,7 @@ function toggleExcludedProject(name: string) {
     <!-- Target Project Modal -->
     <Modal v-model="showTargetModal" title="选择日记目标项目">
       <div v-if="fetchingProjects" class="flex justify-center py-8">
-        <Icon icon="line-md:loading-twotone-loop" class="w-8 h-8 text-indigo-500" />
+        <Icon icon="line-md:loading-twotone-loop" class="w-8 h-8 text-primary-500" />
       </div>
       <div v-else class="max-h-60 overflow-y-auto space-y-1 p-1">
         <button 
@@ -208,10 +208,10 @@ function toggleExcludedProject(name: string) {
           :key="p.id"
           @click="selectTarget(p)"
           class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-left"
-          :class="{'bg-indigo-50 dark:bg-indigo-900/20': config.dida_project_id === p.id}"
+          :class="{'bg-primary-50 dark:bg-primary-900/20': config.dida_project_id === p.id}"
         >
           <span class="text-sm text-gray-900 dark:text-white">{{ p.name }}</span>
-          <Icon v-if="config.dida_project_id === p.id" icon="heroicons:check" class="w-4 h-4 text-indigo-600" />
+          <Icon v-if="config.dida_project_id === p.id" icon="heroicons:check" class="w-4 h-4 text-primary-600" />
         </button>
         <div v-if="projects.length === 0" class="text-center py-4 text-gray-500">
           未找到项目
@@ -227,7 +227,7 @@ function toggleExcludedProject(name: string) {
     <!-- Weekly Report Project Modal -->
     <Modal v-model="showWeeklyTargetModal" title="选择周报目标项目">
       <div v-if="fetchingProjects" class="flex justify-center py-8">
-        <Icon icon="line-md:loading-twotone-loop" class="w-8 h-8 text-indigo-500" />
+        <Icon icon="line-md:loading-twotone-loop" class="w-8 h-8 text-primary-500" />
       </div>
       <div v-else class="max-h-60 overflow-y-auto space-y-1 p-1">
         <button 
@@ -235,10 +235,10 @@ function toggleExcludedProject(name: string) {
           :key="p.id"
           @click="selectWeeklyTarget(p)"
           class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-left"
-          :class="{'bg-indigo-50 dark:bg-indigo-900/20': config.weekly_report_project_id === p.id}"
+          :class="{'bg-primary-50 dark:bg-primary-900/20': config.weekly_report_project_id === p.id}"
         >
           <span class="text-sm text-gray-900 dark:text-white">{{ p.name }}</span>
-          <Icon v-if="config.weekly_report_project_id === p.id" icon="heroicons:check" class="w-4 h-4 text-indigo-600" />
+          <Icon v-if="config.weekly_report_project_id === p.id" icon="heroicons:check" class="w-4 h-4 text-primary-600" />
         </button>
         <div v-if="projects.length === 0" class="text-center py-4 text-gray-500">
           未找到项目
@@ -254,7 +254,7 @@ function toggleExcludedProject(name: string) {
     <!-- Exclude Project Modal -->
     <Modal v-model="showExcludeModal" title="选择排除项目">
        <div v-if="fetchingProjects" class="flex justify-center py-8">
-        <Icon icon="line-md:loading-twotone-loop" class="w-8 h-8 text-indigo-500" />
+        <Icon icon="line-md:loading-twotone-loop" class="w-8 h-8 text-primary-500" />
       </div>
       <div v-else class="max-h-60 overflow-y-auto space-y-2 p-1">
         <label v-for="p in projects" :key="p.id" class="flex items-center gap-3 px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg cursor-pointer">
@@ -263,11 +263,11 @@ function toggleExcludedProject(name: string) {
                 :checked="excludedProjects.includes(p.name) || p.id === config.dida_project_id"
                 :disabled="p.id === config.dida_project_id"
                 @change="toggleExcludedProject(p.name)"
-                class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 transition-colors w-4 h-4 disabled:opacity-50 disabled:cursor-not-allowed"
+                class="rounded border-gray-300 text-primary-600 focus:ring-primary-500 transition-colors w-4 h-4 disabled:opacity-50 disabled:cursor-not-allowed"
             >
             <span class="text-sm text-gray-700 dark:text-gray-300" :class="{'text-gray-500': p.id === config.dida_project_id}">
                 {{ p.name }}
-                <span v-if="p.id === config.dida_project_id" class="text-xs text-indigo-500 ml-1">(自动排除)</span>
+                <span v-if="p.id === config.dida_project_id" class="text-xs text-primary-500 ml-1">(自动排除)</span>
             </span>
         </label>
          <div v-if="projects.length === 0" class="text-center py-4 text-gray-500">
@@ -275,7 +275,7 @@ function toggleExcludedProject(name: string) {
         </div>
       </div>
       <div class="mt-4 pt-3 border-t border-gray-100 dark:border-gray-700 flex justify-end">
-         <button @click="showExcludeModal = false" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-medium transition-colors shadow-sm">
+         <button @click="showExcludeModal = false" class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg text-sm font-medium transition-colors shadow-sm">
             完成
          </button>
       </div>

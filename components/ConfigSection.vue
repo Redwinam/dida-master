@@ -50,8 +50,8 @@ const tabs = [
   <div class="space-y-6">
     <!-- Loading State -->
     <div v-if="loading && !fetched" class="flex flex-col items-center justify-center py-20 animate-fade-in">
-      <div class="p-4 bg-indigo-50 dark:bg-indigo-900/20 rounded-full mb-4">
-        <Icon icon="line-md:loading-twotone-loop" class="w-8 h-8 text-indigo-600 dark:text-indigo-400" />
+      <div class="p-4 bg-primary-50 dark:bg-primary-900/20 rounded-full mb-4">
+        <Icon icon="line-md:loading-twotone-loop" class="w-8 h-8 text-primary-600 dark:text-primary-400" />
       </div>
       <p class="text-gray-500 dark:text-gray-400 font-medium">正在加载配置信息...</p>
     </div>
@@ -91,7 +91,7 @@ const tabs = [
             :class="[
               'flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 whitespace-nowrap',
               activeTab === tab.id
-                ? 'bg-white dark:bg-gray-800 text-indigo-600 dark:text-indigo-400 shadow-sm'
+                ? 'bg-white dark:bg-gray-800 text-primary-600 dark:text-primary-400 shadow-sm'
                 : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-200'
             ]"
           >
@@ -111,7 +111,7 @@ const tabs = [
              <button 
               @click="handleSave" 
               :disabled="saving"
-              class="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              class="flex items-center gap-2 px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Icon v-if="saving" icon="line-md:loading-twotone-loop" class="w-4 h-4" />
               <Icon v-else icon="heroicons:check" class="w-4 h-4" />

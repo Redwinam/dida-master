@@ -21,7 +21,7 @@ const mbtiTypes = [
         <div class="relative">
           <select 
             v-model="config.mbti" 
-            class="appearance-none w-full pl-3 pr-10 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+            class="appearance-none w-full pl-3 pr-10 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm"
           >
             <option value="">未设置</option>
             <option v-for="type in mbtiTypes" :key="type" :value="type">

@@ -58,7 +58,7 @@ async function handleSubmit() {
 </script>
 
 <template>
-  <div class="flex min-h-screen items-center justify-center bg-linear-to-br from-indigo-50 to-slate-50 dark:from-gray-900 dark:to-slate-900 p-4 transition-colors duration-300">
+  <div class="flex min-h-screen items-center justify-center bg-linear-to-br from-primary-50 to-slate-50 dark:from-gray-900 dark:to-slate-900 p-4 transition-colors duration-300">
     <div class="w-full max-w-md bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden transition-all duration-300 hover:shadow-2xl">
       
       <!-- Header -->
@@ -88,7 +88,7 @@ async function handleSubmit() {
                 type="email" 
                 required
                 placeholder="your@email.com"
-                class="block w-full pl-10 pr-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg leading-5 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 sm:text-sm" 
+                class="block w-full pl-10 pr-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg leading-5 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200 sm:text-sm" 
               />
             </div>
           </div>
@@ -106,7 +106,7 @@ async function handleSubmit() {
                 type="password" 
                 required
                 placeholder="••••••••"
-                class="block w-full pl-10 pr-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg leading-5 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 sm:text-sm" 
+                class="block w-full pl-10 pr-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg leading-5 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200 sm:text-sm" 
               />
             </div>
           </div>
@@ -127,7 +127,7 @@ async function handleSubmit() {
           <button 
             type="submit" 
             :disabled="pending"
-            class="w-full flex justify-center items-center py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+            class="w-full flex justify-center items-center py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
           >
             <Icon v-if="pending" icon="line-md:loading-twotone-loop" class="w-5 h-5 mr-2" />
             {{ isLogin ? '登录' : '注册' }}
@@ -139,7 +139,7 @@ async function handleSubmit() {
       <div class="px-8 py-4 bg-gray-50 dark:bg-gray-700/50 border-t border-gray-100 dark:border-gray-700 text-center">
         <button 
           @click="isLogin = !isLogin" 
-          class="text-sm font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300 transition-colors focus:outline-none"
+          class="text-sm font-medium text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300 transition-colors focus:outline-none"
         >
           {{ isLogin ? "还没有账号？去注册" : "已有账号？去登录" }}
         </button>

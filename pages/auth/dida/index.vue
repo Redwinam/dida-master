@@ -7,7 +7,7 @@ const connect = () => {
 </script>
 
 <template>
-  <div class="flex min-h-screen items-center justify-center bg-linear-to-br from-indigo-50 to-slate-50 dark:from-gray-900 dark:to-slate-900 p-4 transition-colors duration-300">
+  <div class="flex min-h-screen items-center justify-center bg-linear-to-br from-primary-50 to-slate-50 dark:from-gray-900 dark:to-slate-900 p-4 transition-colors duration-300">
     <div class="w-full max-w-md bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden transition-all duration-300 hover:shadow-2xl">
       
       <!-- Header -->
