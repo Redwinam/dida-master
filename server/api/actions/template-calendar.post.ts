@@ -68,28 +68,34 @@ export default defineEventHandler(async (event) => {
   const token = getHeader(event, 'Authorization')?.replace('Bearer ', '') || getCookie(event, 'sb-access-token')
   const timeZone = config.timezone || 'Asia/Shanghai'
   const todayDate = new Date().toLocaleDateString('en-CA', { timeZone }) || ''
-
   const fixedFields = Array.isArray(template.rules?.fixed_fields) ? template.rules.fixed_fields : []
+  const titleRule = template.rules?.title_rule || ''
+  const baseEvent = template.base_event || {}
+
+  console.log('[TemplateCalendar] Input', {
+    templateId,
+    text,
+    timeZone,
+    todayDate,
+    calendars,
+    fixedFields,
+    titleRule,
+    baseEvent
+  })
+
   const parsed = await parseTextToTemplateFields(text, calendars, todayDate, timeZone, template, token)
-  let merged = mergeEventFields(parsed, template.base_event || {}, fixedFields)
+  console.log('[TemplateCalendar] Parsed', parsed)
+  let merged = mergeEventFields(parsed, baseEvent, fixedFields)
 
   if (!merged.description && parsed?.notes) {
     merged.description = parsed.notes
   }
-  if (!merged.title) {
-    const fallbackTitle = text
-      .split('\n')
-      .map((line: string) => line.trim())
-      .find((line: string) => line.length > 0)
-    if (fallbackTitle && !/\d/.test(fallbackTitle)) {
-      merged.title = fallbackTitle
-    }
-  }
 
-  const titleRule = template.rules?.title_rule
   if (titleRule && !merged.title) {
     merged.title = ''
   }
+
+  console.log('[TemplateCalendar] Merged', merged)
 
   if (calendars.length > 0 && (!merged.calendar || !calendars.includes(merged.calendar))) {
     merged.calendar = template.base_event?.calendar || calendars[0]
