@@ -79,13 +79,13 @@ const apiGuide = {
     title="图片转日历事件"
     description="上传一张包含日程信息的图片（如海报、截图），AI 自动识别时间地点并添加到日历。"
     icon="heroicons:photo"
-    colorClass="text-accent-600 dark:text-accent-400"
-    bgClass="bg-accent-100 dark:bg-accent-900/50"
+    colorClass="text-indigo-600 dark:text-indigo-400"
+    bgClass="bg-indigo-100 dark:bg-indigo-900/50"
     :apiGuide="apiGuide"
   >
     <div class="space-y-4">
       <div 
-        class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl p-4 text-center hover:border-accent-500 dark:hover:border-accent-500 transition-colors cursor-pointer bg-gray-50 dark:bg-gray-900/50"
+        class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl p-4 text-center hover:border-indigo-500 dark:hover:border-indigo-500 transition-colors cursor-pointer bg-gray-50 dark:bg-gray-900/50"
         @click="fileInput?.click()"
         @drop.prevent="onFileSelect"
         @dragover.prevent
@@ -114,10 +114,10 @@ const apiGuide = {
       </div>
 
       <button 
-        @click="triggerImageToCalendar" 
-        :disabled="loadingAction || !imageFile"
-        class="w-full py-2.5 px-4 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-sm font-medium shadow-sm transition-all flex justify-center items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-      >
+      @click="triggerImageToCalendar" 
+      :disabled="loadingAction || !imageFile"
+      class="w-full py-2.5 px-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-medium shadow-sm transition-all flex justify-center items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+    >
         <Icon v-if="loadingAction" icon="line-md:loading-twotone-loop" class="w-5 h-5" />
         <Icon v-else icon="heroicons:sparkles" class="w-5 h-5" />
         开始识别并添加

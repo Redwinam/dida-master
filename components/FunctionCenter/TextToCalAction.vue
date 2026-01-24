@@ -59,8 +59,8 @@ const apiGuide = {
     title="文本转日历事件"
     description="直接输入自然语言文本（如'明天下午3点在会议室开会'），AI 自动解析并添加到日历。"
     icon="heroicons:chat-bubble-bottom-center-text"
-    colorClass="text-green-600 dark:text-green-400"
-    bgClass="bg-green-100 dark:bg-green-900/50"
+    colorClass="text-cyan-600 dark:text-cyan-400"
+    bgClass="bg-cyan-100 dark:bg-cyan-900/50"
     :apiGuide="apiGuide"
   >
     <div class="space-y-4">
@@ -68,13 +68,13 @@ const apiGuide = {
         v-model="textInput"
         rows="4"
         placeholder="请输入日程信息..."
-        class="block w-full p-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-900/50 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-green-500 focus:border-green-500 sm:text-sm resize-none"
+        class="block w-full p-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-900/50 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 sm:text-sm resize-none"
       ></textarea>
 
       <button 
         @click="triggerTextToCalendar" 
         :disabled="loadingAction || !textInput"
-        class="w-full py-2.5 px-4 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-medium shadow-sm transition-all flex justify-center items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+        class="w-full py-2.5 px-4 bg-cyan-600 hover:bg-cyan-700 text-white rounded-lg text-sm font-medium shadow-sm transition-all flex justify-center items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
       >
         <Icon v-if="loadingAction" icon="line-md:loading-twotone-loop" class="w-5 h-5" />
         <Icon v-else icon="heroicons:sparkles" class="w-5 h-5" />

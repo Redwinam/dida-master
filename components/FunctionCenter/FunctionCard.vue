@@ -68,10 +68,10 @@ watch(
         <button 
           v-if="apiGuide"
           @click="showApiModal = true"
-          class="text-xs text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 flex items-center gap-1 px-2 py-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+          class="text-xs text-gray-500 hover:text-primary-600 dark:text-gray-400 dark:hover:text-primary-400 flex items-center gap-1.5 px-2 py-1 rounded-md  hover:bg-gray-50 dark:hover:bg-gray-700/50 border border-transparent dark:border-gray-600 hover:border-primary-200 dark:hover:border-primary-800 transition-all"
           title="API 使用说明"
         >
-          <Icon icon="heroicons:code-bracket" class="w-4 h-4" />
+          <Icon icon="heroicons:code-bracket" class="w-3.5 h-3.5" />
           API
         </button>
       </div>

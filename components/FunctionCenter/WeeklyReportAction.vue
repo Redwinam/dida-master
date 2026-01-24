@@ -50,8 +50,8 @@ const apiGuide = {
     title="周报生成"
     description="自动获取过去一周完成的任务和日程，利用 LLM 生成周报，推送到指定项目。"
     icon="heroicons:presentation-chart-bar"
-    colorClass="text-green-600 dark:text-green-400"
-    bgClass="bg-green-100 dark:bg-green-900/50"
+    colorClass="text-teal-600 dark:text-teal-400"
+    bgClass="bg-teal-100 dark:bg-teal-900/50"
     :apiGuide="apiGuide"
     :missingConfig="missingConfig"
     missingConfigText="需要配置滴答清单 Token 和 LLM API Key。"
@@ -60,7 +60,7 @@ const apiGuide = {
     <button 
       @click="triggerWeeklyReport" 
       :disabled="loadingAction"
-      class="w-full py-2.5 px-4 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-medium shadow-sm transition-all flex justify-center items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+      class="w-full py-2.5 px-4 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-sm font-medium shadow-sm transition-all flex justify-center items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
     >
       <Icon v-if="loadingAction" icon="line-md:loading-twotone-loop" class="w-5 h-5" />
       <Icon v-else icon="heroicons:play" class="w-5 h-5" />
@@ -68,7 +68,7 @@ const apiGuide = {
     </button>
     
     <div class="mt-3 text-center">
-       <NuxtLink to="/history/weekly-reports" class="text-sm text-green-600 dark:text-green-400 hover:underline">
+       <NuxtLink to="/history/weekly-reports" class="text-sm text-teal-600 dark:text-teal-400 hover:underline">
           查看历史记录
        </NuxtLink>
     </div>
