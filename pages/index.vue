@@ -75,14 +75,20 @@ const openConfig = () => {
     <ClientOnly>
       <div class="max-w-5xl mx-auto">
         <!-- Header -->
-        <div class="flex flex-col md:flex-row justify-between items-center mb-10 px-4 md:px-2 mt-6 relative z-40">
-          <div class="mb-6 md:mb-0 relative group text-center md:text-left">
-            <h1 class="relative text-2xl md:text-3xl font-black text-gray-900 dark:text-white pb-2">
-              滴答：主人的任务
-            </h1>
-            <p class="text-xs text-gray-400/80 dark:text-gray-500 tracking-wider uppercase pl-1">
-              Master's Tasks & Time Management
-            </p>
+        <div class="flex flex-col md:flex-row justify-between items-center mb-12 px-4 md:px-2 mt-8 relative z-40">
+          <div class="mb-6 md:mb-0 relative group flex flex-col md:flex-row items-center gap-4 md:gap-6">
+            <div class="w-10 h-10 flex-shrink-0 transition-transform duration-500 hover:scale-110 hover:rotate-3">
+               <Logo class="w-full h-full drop-shadow-2xl" />
+            </div>
+            <div class="text-center md:text-left">
+              <h1 class="text-2xl md:text-2xl font-black text-[#203255] dark:text-white tracking-tight leading-tight">
+                <span class="bg-clip-text text-transparent bg-gradient-to-r from-[#203255] to-[#4a5d85] dark:from-white dark:to-gray-300">滴答：</span>
+                <span class="text-[#f8867a]">主人的任务</span>
+              </h1>
+              <p class="text-xs text-gray-400/90 dark:text-gray-500 tracking-wider uppercase mt-1 ml-0.5">
+                Master's Tasks & Time Management
+              </p>
+            </div>
           </div>
           
           <div class="flex items-center gap-4 relative" ref="userMenuRef">
