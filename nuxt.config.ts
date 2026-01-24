@@ -37,7 +37,8 @@ export default defineNuxtConfig({
   },
   ignore: [
     'node_modules/.c12/**/app/plugins/supabase.ts',
-    'node_modules/.c12/**/plugins/supabase.ts'
+    'node_modules/.c12/**/plugins/supabase.ts',
+    'node_modules/.c12/**/server/utils/supabase.ts'
   ],
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
