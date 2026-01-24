@@ -78,7 +78,7 @@ const apiGuide = {
 const resetTemplateForm = () => {
   selectedEventId.value = ''
   templateName.value = ''
-  fixedFields.value = []
+  fixedFields.value = fieldOptions.map((field) => field.value)
   titleRule.value = ''
   baseEvent.title = ''
   baseEvent.start = ''
@@ -104,6 +104,9 @@ const resetTemplateDetailForm = () => {
 }
 
 const applyEventToBase = (ev: any) => {
+  if (!templateName.value) {
+    templateName.value = ev?.title || ''
+  }
   baseEvent.title = ev?.title || ''
   baseEvent.start = ev?.start ? new Date(ev.start).toISOString() : ''
   baseEvent.end = ev?.end ? new Date(ev.end).toISOString() : ''
@@ -204,7 +207,8 @@ const createTemplate = async () => {
     toast.add({ title: '请输入模板名称', color: 'warning' })
     return
   }
-  if (!baseEvent.title && !baseEvent.location && !baseEvent.calendar) {
+  const requiresBaseInfo = fixedFields.value.some((field) => ['title', 'location', 'calendar'].includes(field))
+  if (requiresBaseInfo && !baseEvent.title && !baseEvent.location && !baseEvent.calendar) {
     toast.add({ title: '模板基础信息不足', description: '请选择日程或补充基础字段', color: 'warning' })
     return
   }
@@ -408,45 +412,6 @@ onMounted(() => {
         </div>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div class="space-y-2">
-          <label class="text-sm font-medium text-gray-700 dark:text-gray-300">标题</label>
-          <input v-model="baseEvent.title" type="text" class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900/50 text-sm text-gray-900 dark:text-white" />
-        </div>
-        <div class="space-y-2">
-          <label class="text-sm font-medium text-gray-700 dark:text-gray-300">地点</label>
-          <input v-model="baseEvent.location" type="text" class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900/50 text-sm text-gray-900 dark:text-white" />
-        </div>
-        <div class="space-y-2">
-          <label class="text-sm font-medium text-gray-700 dark:text-gray-300">开始时间</label>
-          <input v-model="baseEvent.start" type="text" placeholder="ISO 时间" class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900/50 text-sm text-gray-900 dark:text-white" />
-        </div>
-        <div class="space-y-2">
-          <label class="text-sm font-medium text-gray-700 dark:text-gray-300">结束时间</label>
-          <input v-model="baseEvent.end" type="text" placeholder="ISO 时间" class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900/50 text-sm text-gray-900 dark:text-white" />
-        </div>
-        <div class="space-y-2">
-          <label class="text-sm font-medium text-gray-700 dark:text-gray-300">日历</label>
-          <input v-model="baseEvent.calendar" type="text" class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900/50 text-sm text-gray-900 dark:text-white" />
-        </div>
-        <div class="space-y-2">
-          <label class="text-sm font-medium text-gray-700 dark:text-gray-300">提醒 (分钟, 逗号分隔)</label>
-          <input v-model="baseEvent.reminders" type="text" class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900/50 text-sm text-gray-900 dark:text-white" />
-        </div>
-        <div class="space-y-2">
-          <label class="text-sm font-medium text-gray-700 dark:text-gray-300">全天</label>
-          <label class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
-            <input v-model="baseEvent.allDay" type="checkbox" class="rounded border-gray-300 dark:border-gray-600 text-amber-600" />
-            全天日程
-          </label>
-        </div>
-      </div>
-
-      <div class="space-y-2">
-        <label class="text-sm font-medium text-gray-700 dark:text-gray-300">备注</label>
-        <textarea v-model="baseEvent.description" rows="2" class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900/50 text-sm text-gray-900 dark:text-white"></textarea>
-      </div>
-
       <div class="space-y-2">
         <label class="text-sm font-medium text-gray-700 dark:text-gray-300">固定字段</label>
         <div class="flex flex-wrap gap-2">
@@ -456,6 +421,73 @@ onMounted(() => {
           </label>
         </div>
       </div>
+
+      <div class="border-t border-gray-200 dark:border-gray-700"></div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="space-y-2">
+          <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
+            标题
+            <span v-if="!fixedFields.includes('title')" class="text-xs text-gray-400 ml-2">AI识别</span>
+          </label>
+          <input v-model="baseEvent.title" :disabled="!fixedFields.includes('title')" type="text" class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900/50 text-sm text-gray-900 dark:text-white disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed dark:disabled:bg-gray-800/50" />
+        </div>
+        <div class="space-y-2">
+          <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
+            地点
+            <span v-if="!fixedFields.includes('location')" class="text-xs text-gray-400 ml-2">AI识别</span>
+          </label>
+          <input v-model="baseEvent.location" :disabled="!fixedFields.includes('location')" type="text" class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900/50 text-sm text-gray-900 dark:text-white disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed dark:disabled:bg-gray-800/50" />
+        </div>
+        <div class="space-y-2">
+          <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
+            开始时间
+            <span v-if="!fixedFields.includes('start')" class="text-xs text-gray-400 ml-2">AI识别</span>
+          </label>
+          <input v-model="baseEvent.start" :disabled="!fixedFields.includes('start')" type="text" placeholder="ISO 时间" class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900/50 text-sm text-gray-900 dark:text-white disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed dark:disabled:bg-gray-800/50" />
+        </div>
+        <div class="space-y-2">
+          <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
+            结束时间
+            <span v-if="!fixedFields.includes('end')" class="text-xs text-gray-400 ml-2">AI识别</span>
+          </label>
+          <input v-model="baseEvent.end" :disabled="!fixedFields.includes('end')" type="text" placeholder="ISO 时间" class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900/50 text-sm text-gray-900 dark:text-white disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed dark:disabled:bg-gray-800/50" />
+        </div>
+        <div class="space-y-2">
+          <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
+            日历
+            <span v-if="!fixedFields.includes('calendar')" class="text-xs text-gray-400 ml-2">AI识别</span>
+          </label>
+          <input v-model="baseEvent.calendar" :disabled="!fixedFields.includes('calendar')" type="text" class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900/50 text-sm text-gray-900 dark:text-white disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed dark:disabled:bg-gray-800/50" />
+        </div>
+        <div class="space-y-2">
+          <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
+            提醒 (分钟, 逗号分隔)
+            <span v-if="!fixedFields.includes('reminders')" class="text-xs text-gray-400 ml-2">AI识别</span>
+          </label>
+          <input v-model="baseEvent.reminders" :disabled="!fixedFields.includes('reminders')" type="text" class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900/50 text-sm text-gray-900 dark:text-white disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed dark:disabled:bg-gray-800/50" />
+        </div>
+        <div class="space-y-2">
+          <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
+            全天
+            <span v-if="!fixedFields.includes('allDay')" class="text-xs text-gray-400 ml-2">AI识别</span>
+          </label>
+          <label class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+            <input v-model="baseEvent.allDay" :disabled="!fixedFields.includes('allDay')" type="checkbox" class="rounded border-gray-300 dark:border-gray-600 text-amber-600 disabled:opacity-50" />
+            全天日程
+          </label>
+        </div>
+      </div>
+
+      <div class="space-y-2">
+        <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
+          备注
+          <span v-if="!fixedFields.includes('description')" class="text-xs text-gray-400 ml-2">AI识别</span>
+        </label>
+        <textarea v-model="baseEvent.description" :disabled="!fixedFields.includes('description')" rows="2" class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900/50 text-sm text-gray-900 dark:text-white disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed dark:disabled:bg-gray-800/50"></textarea>
+      </div>
+
+      <div class="border-t border-gray-200 dark:border-gray-700"></div>
 
       <div class="space-y-2">
         <label class="text-sm font-medium text-gray-700 dark:text-gray-300">标题规则</label>
@@ -494,45 +526,6 @@ onMounted(() => {
           />
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div v-if="editFixedFields.includes('title')" class="space-y-2">
-            <label class="text-sm font-medium text-gray-700 dark:text-gray-300">标题</label>
-            <input v-model="editBaseEvent.title" type="text" class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900/50 text-sm text-gray-900 dark:text-white" />
-          </div>
-          <div v-if="editFixedFields.includes('location')" class="space-y-2">
-            <label class="text-sm font-medium text-gray-700 dark:text-gray-300">地点</label>
-            <input v-model="editBaseEvent.location" type="text" class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900/50 text-sm text-gray-900 dark:text-white" />
-          </div>
-          <div v-if="editFixedFields.includes('start')" class="space-y-2">
-            <label class="text-sm font-medium text-gray-700 dark:text-gray-300">开始时间</label>
-            <input v-model="editBaseEvent.start" type="text" placeholder="ISO 时间" class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900/50 text-sm text-gray-900 dark:text-white" />
-          </div>
-          <div v-if="editFixedFields.includes('end')" class="space-y-2">
-            <label class="text-sm font-medium text-gray-700 dark:text-gray-300">结束时间</label>
-            <input v-model="editBaseEvent.end" type="text" placeholder="ISO 时间" class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900/50 text-sm text-gray-900 dark:text-white" />
-          </div>
-          <div v-if="editFixedFields.includes('calendar')" class="space-y-2">
-            <label class="text-sm font-medium text-gray-700 dark:text-gray-300">日历</label>
-            <input v-model="editBaseEvent.calendar" type="text" class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900/50 text-sm text-gray-900 dark:text-white" />
-          </div>
-          <div v-if="editFixedFields.includes('reminders')" class="space-y-2">
-            <label class="text-sm font-medium text-gray-700 dark:text-gray-300">提醒 (分钟, 逗号分隔)</label>
-            <input v-model="editBaseEvent.reminders" type="text" class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900/50 text-sm text-gray-900 dark:text-white" />
-          </div>
-          <div v-if="editFixedFields.includes('allDay')" class="space-y-2">
-            <label class="text-sm font-medium text-gray-700 dark:text-gray-300">全天</label>
-            <label class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
-              <input v-model="editBaseEvent.allDay" type="checkbox" class="rounded border-gray-300 dark:border-gray-600 text-amber-600" />
-              全天日程
-            </label>
-          </div>
-        </div>
-
-        <div v-if="editFixedFields.includes('description')" class="space-y-2">
-          <label class="text-sm font-medium text-gray-700 dark:text-gray-300">备注</label>
-          <textarea v-model="editBaseEvent.description" rows="2" class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900/50 text-sm text-gray-900 dark:text-white"></textarea>
-        </div>
-
         <div class="space-y-2">
           <label class="text-sm font-medium text-gray-700 dark:text-gray-300">固定字段</label>
           <div class="flex flex-wrap gap-2">
@@ -542,6 +535,73 @@ onMounted(() => {
             </label>
           </div>
         </div>
+
+        <div class="border-t border-gray-200 dark:border-gray-700"></div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="space-y-2">
+            <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
+              标题
+              <span v-if="!editFixedFields.includes('title')" class="text-xs text-gray-400 ml-2">AI识别</span>
+            </label>
+            <input v-model="editBaseEvent.title" :disabled="!editFixedFields.includes('title')" type="text" class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900/50 text-sm text-gray-900 dark:text-white disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed dark:disabled:bg-gray-800/50" />
+          </div>
+          <div class="space-y-2">
+            <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
+              地点
+              <span v-if="!editFixedFields.includes('location')" class="text-xs text-gray-400 ml-2">AI识别</span>
+            </label>
+            <input v-model="editBaseEvent.location" :disabled="!editFixedFields.includes('location')" type="text" class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900/50 text-sm text-gray-900 dark:text-white disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed dark:disabled:bg-gray-800/50" />
+          </div>
+          <div class="space-y-2">
+            <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
+              开始时间
+              <span v-if="!editFixedFields.includes('start')" class="text-xs text-gray-400 ml-2">AI识别</span>
+            </label>
+            <input v-model="editBaseEvent.start" :disabled="!editFixedFields.includes('start')" type="text" placeholder="ISO 时间" class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900/50 text-sm text-gray-900 dark:text-white disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed dark:disabled:bg-gray-800/50" />
+          </div>
+          <div class="space-y-2">
+            <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
+              结束时间
+              <span v-if="!editFixedFields.includes('end')" class="text-xs text-gray-400 ml-2">AI识别</span>
+            </label>
+            <input v-model="editBaseEvent.end" :disabled="!editFixedFields.includes('end')" type="text" placeholder="ISO 时间" class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900/50 text-sm text-gray-900 dark:text-white disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed dark:disabled:bg-gray-800/50" />
+          </div>
+          <div class="space-y-2">
+            <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
+              日历
+              <span v-if="!editFixedFields.includes('calendar')" class="text-xs text-gray-400 ml-2">AI识别</span>
+            </label>
+            <input v-model="editBaseEvent.calendar" :disabled="!editFixedFields.includes('calendar')" type="text" class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900/50 text-sm text-gray-900 dark:text-white disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed dark:disabled:bg-gray-800/50" />
+          </div>
+          <div class="space-y-2">
+            <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
+              提醒 (分钟, 逗号分隔)
+              <span v-if="!editFixedFields.includes('reminders')" class="text-xs text-gray-400 ml-2">AI识别</span>
+            </label>
+            <input v-model="editBaseEvent.reminders" :disabled="!editFixedFields.includes('reminders')" type="text" class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900/50 text-sm text-gray-900 dark:text-white disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed dark:disabled:bg-gray-800/50" />
+          </div>
+          <div class="space-y-2">
+            <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
+              全天
+              <span v-if="!editFixedFields.includes('allDay')" class="text-xs text-gray-400 ml-2">AI识别</span>
+            </label>
+            <label class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+              <input v-model="editBaseEvent.allDay" :disabled="!editFixedFields.includes('allDay')" type="checkbox" class="rounded border-gray-300 dark:border-gray-600 text-amber-600 disabled:opacity-50" />
+              全天日程
+            </label>
+          </div>
+        </div>
+
+        <div class="space-y-2">
+          <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
+            备注
+            <span v-if="!editFixedFields.includes('description')" class="text-xs text-gray-400 ml-2">AI识别</span>
+          </label>
+          <textarea v-model="editBaseEvent.description" :disabled="!editFixedFields.includes('description')" rows="2" class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900/50 text-sm text-gray-900 dark:text-white disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed dark:disabled:bg-gray-800/50"></textarea>
+        </div>
+
+        <div class="border-t border-gray-200 dark:border-gray-700"></div>
 
         <div class="space-y-2">
           <label class="text-sm font-medium text-gray-700 dark:text-gray-300">标题规则</label>

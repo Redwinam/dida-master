@@ -40,6 +40,11 @@ export default defineNuxtConfig({
     'node_modules/.c12/**/plugins/supabase.ts',
     'node_modules/.c12/**/server/utils/supabase.ts'
   ],
+  nitro: {
+    imports: {
+      dirs: ['server/utils']
+    }
+  },
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
   css: ['~/assets/css/main.css'],
