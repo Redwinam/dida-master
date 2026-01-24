@@ -25,7 +25,7 @@ function close() {
 
       <!-- Modal Panel -->
       <div :class="[
-        'relative w-full transform rounded-2xl bg-white dark:bg-gray-800 p-6 text-left shadow-xl transition-all border border-gray-100 dark:border-gray-700',
+        'relative w-full transform rounded-2xl bg-white dark:bg-gray-800 overflow-hidden text-left shadow-xl transition-all border border-gray-100 dark:border-gray-700',
         maxWidth || 'max-w-lg'
       ]">
         <div v-if="props.showHeader" class="flex items-center justify-between mb-5">
@@ -37,9 +37,7 @@ function close() {
           </button>
         </div>
         
-        <div class="mt-2">
-          <slot></slot>
-        </div>
+        <slot></slot>
       </div>
     </div>
   </Teleport>

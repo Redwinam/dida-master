@@ -23,26 +23,25 @@ function getServiceName(key: string) {
   return serviceNameMap[key] || key
 }
 
-type ServiceGroup = '文字服务' | '图片服务' | '其他'
+type ServiceGroup = '文字服务' | '图片服务'
+type ServiceKey = keyof typeof serviceNameMap
+
+const serviceGroups: { name: ServiceGroup; keys: ServiceKey[] }[] = [
+  { name: '文字服务', keys: ['DIDA_DAILY_NOTE', 'DIDA_WEEKLY_REPORT', 'DIDA_TEXT_TO_CALENDAR'] },
+  { name: '图片服务', keys: ['DIDA_IMAGE_TO_CALENDAR'] }
+]
 
 const groupedServices = computed(() => {
+  const map = new Map(serviceKeys.value.map((sk: any) => [sk.service_key, sk]))
   const groups: Record<ServiceGroup, any[]> = {
     '文字服务': [],
-    '图片服务': [],
-    '其他': []
+    '图片服务': []
   }
-  
-  serviceKeys.value.forEach((sk: any) => {
-    if (!sk?.service_key) return
-    if (sk.service_key.includes('IMAGE')) {
-      groups['图片服务'].push(sk)
-    } else if (sk.service_key.includes('TEXT') || sk.service_key.includes('NOTE') || sk.service_key.includes('REPORT')) {
-      groups['文字服务'].push(sk)
-    } else {
-      groups['其他'].push(sk)
-    }
+  serviceGroups.forEach((group) => {
+    groups[group.name] = group.keys
+      .map((key) => map.get(key))
+      .filter(Boolean)
   })
-  
   return groups
 })
 
@@ -110,9 +109,9 @@ async function saveMappings() {
       headers,
       body: { mappings: mappings.value }
     })
-    toast.add({ title: '保存成功', color: 'success' })
   } catch (e: any) {
     toast.add({ title: '保存失败', description: e.message, color: 'error' })
+    throw e
   } finally {
     saving.value = false
   }
@@ -126,15 +125,15 @@ function getModelsForConfig(configId: string) {
 onMounted(() => {
   fetchData()
 })
+
+defineExpose({
+  saveMappings
+})
 </script>
 
 <template>
   <div class="space-y-6">
     <div class="space-y-5">
-      <h4 class="font-medium text-gray-900 dark:text-white pb-2 border-b border-gray-100 dark:border-gray-700 flex items-center gap-2">
-        <Icon icon="heroicons:cpu-chip" class="w-5 h-5 text-purple-500" />
-        AI 服务映射配置
-      </h4>
       <p class="text-xs text-gray-500 dark:text-gray-400">
         为不同的服务指定特定的 AI 模型配置。留空则自动使用系统默认配置。
       </p>
@@ -152,16 +151,19 @@ onMounted(() => {
              </h5>
              <div class="space-y-3">
                 <div v-for="sk in keys" :key="sk.service_key" class="p-4 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm transition-all hover:border-indigo-300 dark:hover:border-indigo-700">
-                   <div class="flex flex-col gap-3">
+                   <div class="flex flex-col md:flex-row items-center gap-3">
                       <!-- Top: Service Info -->
                       <div class="w-full">
-                        <div class="flex items-center gap-2 mb-1">
+                        <div class="flex items-center gap-2 flex-wrap">
                           <span class="text-sm font-semibold text-gray-900 dark:text-white">
                             {{ getServiceName(sk.service_key) }}
                           </span>
+                          <span class="text-xs text-gray-400 font-mono">
+                            {{ sk.service_key }}
+                          </span>
                         </div>
-                        <p class="text-xs text-gray-500 dark:text-gray-400" :title="sk.description || sk.service_key">
-                          {{ sk.description || sk.service_key }}
+                        <p v-if="sk.description" class="text-xs text-gray-500 dark:text-gray-400 mt-1" :title="sk.description">
+                          {{ sk.description }}
                         </p>
                       </div>
                    
@@ -202,17 +204,6 @@ onMounted(() => {
           </div>
         </div>
         
-        <div class="flex justify-end pt-4">
-           <button 
-             @click="saveMappings" 
-             :disabled="saving"
-             class="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-           >
-             <Icon v-if="saving" icon="eos-icons:loading" class="w-4 h-4 animate-spin" />
-             <Icon v-else icon="heroicons:check" class="w-4 h-4" />
-             保存映射配置
-           </button>
-        </div>
       </div>
     </div>
 

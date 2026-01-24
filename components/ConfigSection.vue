@@ -16,9 +16,16 @@ const emit = defineEmits<{
 
 const saving = ref(false)
 
+const llmConfigRef = ref<InstanceType<typeof LLMConfig> | null>(null)
+
 async function handleSave() {
   saving.value = true
   try {
+    if (activeTab.value === 'llm') {
+      await llmConfigRef.value?.saveMappings()
+      toast.add({ title: '映射已保存', color: 'success' })
+      return
+    }
     await save()
     toast.add({ title: '配置已保存', color: 'success' })
   } catch (e: any) {
@@ -65,7 +72,7 @@ const tabs = [
        </button>
     </div>
 
-    <div v-else class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden animate-fade-in flex flex-col h-[600px] md:flex-row">
+    <div v-else class="bg-transparent rounded-none shadow-none border-0 overflow-hidden animate-fade-in flex flex-col h-[600px] md:flex-row">
       
       <!-- Sidebar Tabs -->
       <div class="w-full md:w-64 bg-gray-50 dark:bg-gray-900/50 border-b md:border-b-0 md:border-r border-gray-100 dark:border-gray-700 flex md:flex-col">
@@ -76,7 +83,7 @@ const tabs = [
           </h3>
         </div>
         
-        <div class="flex-1 overflow-x-auto md:overflow-x-visible flex md:flex-col p-2 md:p-4 gap-1">
+        <div class="flex-1 overflow-x-auto md:overflow-x-visible flex flex-wrap md:flex-col p-2 md:p-4 gap-1">
           <button
             v-for="tab in tabs"
             :key="tab.id"
@@ -96,7 +103,7 @@ const tabs = [
 
       <!-- Content Area -->
       <div class="flex-1 flex flex-col min-h-0">
-        <div class="p-6 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-white dark:bg-gray-800">
+        <div class="p-6 flex justify-between items-center bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
            <h2 class="text-xl font-bold text-gray-900 dark:text-white">
              {{ tabs.find(t => t.id === activeTab)?.label }}
            </h2>
@@ -130,7 +137,7 @@ const tabs = [
              <CalendarConfig />
           </div>
           <div v-show="activeTab === 'llm'" class="animate-fade-in">
-             <LLMConfig />
+             <LLMConfig ref="llmConfigRef" />
           </div>
           <div v-show="activeTab === 'api_key'" class="animate-fade-in">
              <ApiKeyManager />

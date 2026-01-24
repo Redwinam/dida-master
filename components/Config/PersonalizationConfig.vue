@@ -13,13 +13,6 @@ const mbtiTypes = [
 
 <template>
   <div class="space-y-6">
-    <div class="flex justify-between items-center pb-2 border-b border-gray-100 dark:border-gray-700">
-      <h4 class="font-medium text-gray-900 dark:text-white flex items-center gap-2">
-        <Icon icon="heroicons:user-circle" class="w-5 h-5 text-indigo-500" />
-        个性化设置
-      </h4>
-    </div>
-
     <div class="space-y-4">
       <div>
         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">

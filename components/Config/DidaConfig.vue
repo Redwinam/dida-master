@@ -92,13 +92,6 @@ function toggleExcludedProject(name: string) {
 
 <template>
   <div class="space-y-6">
-    <div class="flex justify-between items-center pb-2 border-b border-gray-100 dark:border-gray-700">
-      <h4 class="font-medium text-gray-900 dark:text-white flex items-center gap-2">
-        <Icon icon="heroicons:list-bullet" class="w-5 h-5 text-indigo-500" />
-        滴答清单 (Dida/TickTick)
-      </h4>
-    </div>
-
     <div class="space-y-4">
       <!-- Connection Status -->
       <div class="space-y-1.5">
@@ -170,12 +163,11 @@ function toggleExcludedProject(name: string) {
              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <Icon icon="heroicons:key" class="w-5 h-5 text-gray-400" />
               </div>
-            <textarea
+            <input
                 v-model="config.dida_cookie"
                 placeholder="粘贴完整的 Cookie 字符串"
-                rows="4"
                 class="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700/50 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm resize-y"
-            ></textarea>
+            ></input>
           </div>
           <p class="text-xs text-gray-500">
             某些高级接口（如获取所有已完成任务）需要 Cookie 认证。请在浏览器登录滴答清单 Web 版，F12 打开开发者工具，复制任意请求的 `Cookie` 头部值。

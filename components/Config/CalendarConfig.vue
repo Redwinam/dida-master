@@ -67,16 +67,12 @@ function toggleTargetCalendar(name: string) {
 </script>
 
 <template>
-  <div class="space-y-6 pt-6 border-t border-gray-100 dark:border-gray-700">
-    <div class="flex items-center justify-between mb-6">
-      <h4 class="font-medium text-gray-900 dark:text-white flex items-center gap-2">
-        <Icon icon="heroicons:cloud" class="w-5 h-5 text-blue-500" />
-        iCloud 日历同步
-      </h4>
+  <div class="space-y-6">
+    <div class="flex items-center justify-between">
+      <span class="text-sm font-medium text-gray-700 dark:text-gray-300">启用 iCloud 日历同步</span>
       <label class="inline-flex items-center cursor-pointer">
         <input type="checkbox" v-model="config.cal_enable" class="sr-only peer">
         <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 dark:peer-focus:ring-indigo-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-indigo-600"></div>
-        <span class="ms-3 text-sm font-medium text-gray-700 dark:text-gray-300">启用</span>
       </label>
     </div>
 
