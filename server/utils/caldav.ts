@@ -128,6 +128,18 @@ export const addEventToCalendar = async (credentials: any, eventData: any, targe
     vevent.addPropertyWithValue('dtstart', ICAL.Time.fromJSDate(new Date(eventData.start)))
     vevent.addPropertyWithValue('dtend', ICAL.Time.fromJSDate(new Date(eventData.end)))
     if (eventData.location) vevent.addPropertyWithValue('location', eventData.location)
+    if (eventData.description) vevent.addPropertyWithValue('description', eventData.description)
+    if (Array.isArray(eventData.reminders)) {
+        for (const reminder of eventData.reminders) {
+            const minutes = typeof reminder === 'number' ? reminder : parseInt(reminder, 10)
+            if (!minutes || Number.isNaN(minutes)) continue
+            const alarm = new ICAL.Component('valarm')
+            alarm.addPropertyWithValue('action', 'DISPLAY')
+            alarm.addPropertyWithValue('description', eventData.title || 'Reminder')
+            alarm.addPropertyWithValue('trigger', `-PT${minutes}M`)
+            vevent.addSubcomponent(alarm)
+        }
+    }
     
     comp.addSubcomponent(vevent)
 

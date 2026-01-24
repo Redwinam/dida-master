@@ -166,6 +166,64 @@ export const parseTextToCalendar = async (text: string, calendars: string[], tod
   }
 }
 
+export const parseTextToTemplateFields = async (
+  text: string,
+  calendars: string[],
+  todayDate: string,
+  timezone: string,
+  template: any,
+  userToken?: string
+) => {
+  const baseEvent = template?.base_event || {}
+  const rules = template?.rules || {}
+  const fixedFields = Array.isArray(rules.fixed_fields) ? rules.fixed_fields : []
+  const allowedFields = ['title', 'start', 'end', 'location', 'calendar', 'allDay', 'description', 'reminders'].filter(
+    (field) => !fixedFields.includes(field)
+  )
+  const titleRule = rules.title_rule || ''
+
+  const prompt = `请基于日程模板和用户输入，提取本次需要变化的字段，并输出 JSON 对象。
+当前日期是: ${todayDate}
+当前时区: ${timezone}
+允许的日历名称: ${calendars.join(', ')} (如果无法确定，默认为"${calendars[0] || '默认'}")
+
+模板基础字段:
+${JSON.stringify(baseEvent)}
+
+模板规则:
+${JSON.stringify({ fixed_fields: fixedFields, title_rule: titleRule })}
+
+只输出允许变化的字段:
+${allowedFields.join(', ')}
+
+字段说明:
+- title: 事件标题
+- start: 开始时间 (ISO 8601 格式，必须带时区偏移，例如 2026-01-24T19:40:00+08:00)
+- end: 结束时间 (ISO 8601 格式，必须带时区偏移，例如 2026-01-24T20:40:00+08:00)
+- location: 地点 (可选)
+- calendar: 日历名称 (必须从允许列表中选择)
+- allDay: 是否全天 (boolean)
+- description: 备注或描述 (可选)
+- reminders: 提醒数组 (以分钟为单位的数字数组, 例如 [10, 30])
+
+标题规则:
+${titleRule || '无'}
+
+优先从用户输入中抽取标题线索，允许自由组合与调整措辞。
+若用户输入未提供明确标题，再结合标题规则生成；不得回退为模板历史标题。
+若文本包含课程名称或标题内容，必须输出 title。
+只返回 JSON，不要包含 markdown 标记。`
+
+  const content = await callAiGateway('DIDA_TEXT_TO_CALENDAR', { type: 'text', prompt, text }, userToken)
+  const jsonStr = content.replace(/```json\n?|\n?```/g, '').trim()
+  try {
+    return JSON.parse(jsonStr)
+  } catch (e) {
+    console.error('Failed to parse JSON from LLM', content)
+    return {}
+  }
+}
+
 export const parseImageToCalendar = async (imageBase64: string, calendars: string[], todayDate: string, userToken?: string) => {
   const prompt = `请识别图片中的日程信息，并将其转换为 JSON 格式。
 当前日期是: ${todayDate}

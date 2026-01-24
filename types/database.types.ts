@@ -9,6 +9,38 @@ export type Json =
 export interface Database {
   public: {
     Tables: {
+      dida_master_calendar_templates: {
+        Row: {
+          id: string
+          user_id: string
+          name: string
+          base_event: Json
+          rules: Json
+          created_at: string | null
+          updated_at: string | null
+          last_used_at: string | null
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          name: string
+          base_event?: Json
+          rules?: Json
+          created_at?: string | null
+          updated_at?: string | null
+          last_used_at?: string | null
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          name?: string
+          base_event?: Json
+          rules?: Json
+          created_at?: string | null
+          updated_at?: string | null
+          last_used_at?: string | null
+        }
+      }
       dida_master_user_config: {
         Row: {
           user_id: string

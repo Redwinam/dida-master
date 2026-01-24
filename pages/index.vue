@@ -5,6 +5,7 @@ import DailyNoteAction from '@/components/FunctionCenter/DailyNoteAction.vue'
 import WeeklyReportAction from '@/components/FunctionCenter/WeeklyReportAction.vue'
 import TextToCalAction from '@/components/FunctionCenter/TextToCalAction.vue'
 import ImageToCalAction from '@/components/FunctionCenter/ImageToCalAction.vue'
+import TemplateCalAction from '@/components/FunctionCenter/TemplateCalAction.vue'
 
 definePageMeta({
   middleware: 'auth'
@@ -120,6 +121,7 @@ onMounted(() => {
           <WeeklyReportAction />
           <TextToCalAction />
           <ImageToCalAction />
+          <TemplateCalAction />
         </div>
       </div>
     </ClientOnly>

@@ -3,16 +3,27 @@ import tailwindcss from '@tailwindcss/vite'
 import { existsSync, readdirSync } from 'fs'
 import { join } from 'path'
 
-const layerSupabasePlugin = (() => {
+const layerBaseDir = (() => {
   const baseDir = join(process.cwd(), 'node_modules', '.c12')
   if (!existsSync(baseDir)) return null
-  const candidates = readdirSync(baseDir).filter((name) => name.startsWith('github_Redwinam_if9_'))
+  const candidates = readdirSync(baseDir)
+    .filter((name) => name.startsWith('github_Redwinam_if9_'))
+    .sort()
   for (const name of candidates) {
-    const pluginPath = join(baseDir, name, 'plugins', 'supabase.ts')
-    if (existsSync(pluginPath)) return pluginPath
-    const appPluginPath = join(baseDir, name, 'app', 'plugins', 'supabase.ts')
-    if (existsSync(appPluginPath)) return appPluginPath
+    const layerDir = join(baseDir, name)
+    const appPluginPath = join(layerDir, 'app', 'plugins', 'supabase.ts')
+    const pluginPath = join(layerDir, 'plugins', 'supabase.ts')
+    if (existsSync(appPluginPath) || existsSync(pluginPath)) return layerDir
   }
+  return null
+})()
+
+const layerSupabasePlugin = (() => {
+  if (!layerBaseDir) return null
+  const appPluginPath = join(layerBaseDir, 'app', 'plugins', 'supabase.ts')
+  if (existsSync(appPluginPath)) return appPluginPath
+  const pluginPath = join(layerBaseDir, 'plugins', 'supabase.ts')
+  if (existsSync(pluginPath)) return pluginPath
   return null
 })()
 
@@ -21,6 +32,13 @@ export default defineNuxtConfig({
     ['github:Redwinam/if9-supabase-auth#v0.1.5', { auth: process.env.GIGET_AUTH_TOKEN }]
   ],
   plugins: layerSupabasePlugin ? [layerSupabasePlugin] : [],
+  imports: {
+    dirs: layerBaseDir ? [join(layerBaseDir, 'composables')] : []
+  },
+  ignore: [
+    'node_modules/.c12/**/app/plugins/supabase.ts',
+    'node_modules/.c12/**/plugins/supabase.ts'
+  ],
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
   css: ['~/assets/css/main.css'],
