@@ -4,12 +4,14 @@
   "private": true,
   "scripts": {
     "build": "nuxt build",
+    "build:edgeone": "node tools/build-edgeone.mjs",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@edgeone/nuxt-pages": "^1.0.14",
     "@supabase/supabase-js": "^2.89.0",
     "@tailwindcss/typography": "^0.5.19",
     "@tailwindcss/vite": "^4.1.17",

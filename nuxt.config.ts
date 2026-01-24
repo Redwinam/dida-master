@@ -1,10 +1,26 @@
 import { defineNuxtConfig } from 'nuxt/config'
 import tailwindcss from '@tailwindcss/vite'
+import { existsSync, readdirSync } from 'fs'
+import { join } from 'path'
+
+const layerSupabasePlugin = (() => {
+  const baseDir = join(process.cwd(), 'node_modules', '.c12')
+  if (!existsSync(baseDir)) return null
+  const candidates = readdirSync(baseDir).filter((name) => name.startsWith('github_Redwinam_if9_'))
+  for (const name of candidates) {
+    const pluginPath = join(baseDir, name, 'plugins', 'supabase.ts')
+    if (existsSync(pluginPath)) return pluginPath
+    const appPluginPath = join(baseDir, name, 'app', 'plugins', 'supabase.ts')
+    if (existsSync(appPluginPath)) return appPluginPath
+  }
+  return null
+})()
 
 export default defineNuxtConfig({
   extends: [
-    ['github:Redwinam/if9-supabase-auth#v0.1.3', { auth: process.env.GIGET_AUTH_TOKEN }]
+    ['github:Redwinam/if9-supabase-auth#v0.1.5', { auth: process.env.GIGET_AUTH_TOKEN }]
   ],
+  plugins: layerSupabasePlugin ? [layerSupabasePlugin] : [],
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
   css: ['~/assets/css/main.css'],
