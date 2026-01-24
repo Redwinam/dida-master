@@ -75,58 +75,65 @@ const openConfig = () => {
     <ClientOnly>
       <div class="max-w-5xl mx-auto">
         <!-- Header -->
-        <div class="flex flex-col md:flex-row justify-between items-center mb-8 bg-linear-to-r from-white to-indigo-50/60 dark:from-gray-800 dark:to-gray-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 transition-all">
-          <div class="flex items-center gap-4 mb-4 md:mb-0">
-            <div class="p-3 bg-indigo-50 dark:bg-indigo-900/30 rounded-xl text-indigo-600 dark:text-indigo-400">
-              <Icon icon="heroicons:check-circle" class="w-8 h-8" />
-            </div>
-            <div>
-              <h1 class="text-2xl font-bold text-gray-900 dark:text-white tracking-tight">
-                滴答：主人的任务
-              </h1>
-              <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">主人的任务与时间管理</p>
-            </div>
+        <div class="flex flex-col md:flex-row justify-between items-center mb-10 px-4 md:px-2 mt-6 relative z-40">
+          <div class="mb-6 md:mb-0 relative group text-center md:text-left">
+            <h1 class="relative text-2xl md:text-3xl font-black text-gray-900 dark:text-white pb-2">
+              滴答：主人的任务
+            </h1>
+            <p class="text-xs text-gray-400/80 dark:text-gray-500 tracking-wider uppercase pl-1">
+              Master's Tasks & Time Management
+            </p>
           </div>
           
           <div class="flex items-center gap-4 relative" ref="userMenuRef">
-             <!-- User Profile / Menu -->
+             <!-- User Profile Trigger -->
              <button 
                @click="showUserMenu = !showUserMenu"
-               class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors focus:outline-none"
+               class="group flex items-center gap-3 pl-2 pr-3 py-1.5 rounded-full hover:bg-white/80 dark:hover:bg-gray-800/80 hover:shadow-sm border border-transparent hover:border-gray-100 dark:hover:border-gray-700 transition-all focus:outline-none"
              >
-                <div class="w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-900/50 flex items-center justify-center text-indigo-600 dark:text-indigo-400 font-bold text-lg overflow-hidden">
+                <div class="w-9 h-9 md:w-10 md:h-10 rounded-full bg-gradient-to-br from-indigo-100 to-purple-100 dark:from-indigo-900 dark:to-purple-900 flex items-center justify-center text-indigo-600 dark:text-indigo-400 font-bold text-lg overflow-hidden shadow-inner ring-2 ring-white dark:ring-gray-900">
                   <img v-if="user?.user_metadata?.picture" :src="user.user_metadata.picture" class="w-full h-full object-cover" />
                   <span v-else>{{ user?.user_metadata?.name?.charAt(0) || user?.email?.charAt(0).toUpperCase() || 'U' }}</span>
                 </div>
                 <div class="text-left hidden md:block">
-                  <div class="text-sm font-medium text-gray-900 dark:text-white">{{ user?.user_metadata?.name || user?.user_metadata?.full_name || user?.email?.split('@')[0] }}</div>
-                  <div class="text-xs text-green-500 font-medium flex items-center gap-1">
-                    <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
-                    在线
+                  <div class="text-sm font-bold text-gray-800 dark:text-gray-200 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                    {{ user?.user_metadata?.name || user?.user_metadata?.full_name || user?.email?.split('@')[0] }}
                   </div>
                 </div>
-                <Icon icon="heroicons:chevron-down" class="w-4 h-4 text-gray-400" />
+                <Icon icon="heroicons:chevron-down" class="w-4 h-4 text-gray-400 group-hover:text-indigo-500 transition-colors" :class="{'rotate-180': showUserMenu}" />
              </button>
 
              <!-- Dropdown Menu -->
              <div 
                v-if="showUserMenu"
-               class="absolute top-full right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden z-20 animate-fade-in origin-top-right"
+               class="absolute top-full right-0 mt-3 w-56 bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl rounded-2xl shadow-xl border border-gray-100/50 dark:border-gray-700/50 overflow-hidden z-[100] animate-fade-in origin-top-right ring-1 ring-black/5"
              >
                <div class="p-2 space-y-1">
+                 <div class="px-3 py-2 md:hidden">
+                    <div class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Signed in as</div>
+                    <div class="text-sm font-bold text-gray-900 dark:text-white truncate">{{ user?.email }}</div>
+                 </div>
+                 <div class="h-px bg-gray-100 dark:bg-gray-700/50 my-1 md:hidden"></div>
+                 
                  <button 
                    @click="openConfig"
-                   class="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                   class="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 hover:text-indigo-600 dark:hover:text-indigo-400 rounded-xl transition-all group"
                  >
-                   <Icon icon="heroicons:cog-6-tooth" class="w-4 h-4" />
+                   <div class="p-1.5 rounded-lg bg-gray-100 dark:bg-gray-700 group-hover:bg-white dark:group-hover:bg-gray-800 text-gray-500 group-hover:text-indigo-500 transition-colors">
+                     <Icon icon="heroicons:cog-6-tooth" class="w-4 h-4" />
+                   </div>
                    系统配置
                  </button>
-                 <div class="h-px bg-gray-100 dark:bg-gray-700 my-1"></div>
+                 
+                 <div class="h-px bg-gray-100 dark:bg-gray-700/50 my-1"></div>
+                 
                  <button 
                    @click="logout" 
-                   class="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                   class="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-all group"
                  >
-                   <Icon icon="heroicons:arrow-right-on-rectangle" class="w-4 h-4" />
+                   <div class="p-1.5 rounded-lg bg-red-50 dark:bg-red-900/30 group-hover:bg-white dark:group-hover:bg-gray-800 text-red-500 transition-colors">
+                     <Icon icon="heroicons:arrow-right-on-rectangle" class="w-4 h-4" />
+                   </div>
                    退出登录
                  </button>
                </div>
