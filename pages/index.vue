@@ -151,7 +151,7 @@ const openConfig = () => {
         </div>
 
         <!-- Config Modal -->
-        <Modal v-model="showConfigModal" title="系统配置" maxWidth="max-w-5xl" :showHeader="false">
+        <Modal v-model="showConfigModal" title="系统配置" maxWidth="max-w-5xl" :showHeader="false" :padding="false">
           <ConfigSection @close="showConfigModal = false" />
         </Modal>
       </div>

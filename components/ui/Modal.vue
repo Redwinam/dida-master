@@ -6,8 +6,10 @@ const props = withDefaults(defineProps<{
   title: string
   maxWidth?: string
   showHeader?: boolean
+  padding?: boolean
 }>(), {
-  showHeader: true
+  showHeader: true,
+  padding: true
 })
 
 const emit = defineEmits(['update:modelValue'])
@@ -26,7 +28,8 @@ function close() {
       <!-- Modal Panel -->
       <div :class="[
         'relative w-full transform rounded-2xl bg-white dark:bg-gray-800 overflow-hidden text-left shadow-xl transition-all border border-gray-100 dark:border-gray-700',
-        maxWidth || 'max-w-lg'
+        maxWidth || 'max-w-lg',
+        padding ? 'p-6' : ''
       ]">
         <div v-if="props.showHeader" class="flex items-center justify-between mb-5">
           <h3 class="text-lg font-semibold leading-6 text-gray-900 dark:text-white">
