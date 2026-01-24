@@ -38,11 +38,11 @@ async function handleSave() {
 const activeTab = ref('personalization')
 
 const tabs = [
-  { id: 'personalization', label: '个性化', icon: 'heroicons:user' },
   { id: 'dida', label: '滴答清单', icon: 'heroicons:check-circle' },
   { id: 'calendar', label: '日历', icon: 'heroicons:calendar' },
   { id: 'llm', label: 'AI 模型', icon: 'heroicons:sparkles' },
-  { id: 'api_key', label: 'API 凭证', icon: 'heroicons:key' }
+  { id: 'api_key', label: 'API 凭证', icon: 'heroicons:key' },
+  { id: 'personalization', label: '个性化', icon: 'heroicons:user' }
 ]
 </script>
 
