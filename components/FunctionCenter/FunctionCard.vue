@@ -14,10 +14,32 @@ const props = defineProps<{
     description: string
     params?: Record<string, string>
     example?: string
+    options?: { label: string; value: string }[]
+    optionLabel?: string
+    getExample?: (value?: string) => string
   }
 }>()
 
 const showApiModal = ref(false)
+const selectedApiOption = ref('')
+
+const exampleText = computed(() => {
+  if (!props.apiGuide) return ''
+  if (props.apiGuide.getExample) {
+    return props.apiGuide.getExample(selectedApiOption.value || undefined)
+  }
+  return props.apiGuide.example || ''
+})
+
+watch(
+  () => showApiModal.value,
+  (open) => {
+    if (!open) return
+    const options = props.apiGuide?.options || []
+    const firstOption = options[0]
+    selectedApiOption.value = firstOption?.value || ''
+  }
+)
 </script>
 
 <template>
@@ -67,7 +89,7 @@ const showApiModal = ref(false)
         </div>
 
         <div v-if="apiGuide.params" class="space-y-2">
-            <h5 class="font-medium text-gray-900 dark:text-white">Parameters</h5>
+            <h5 class="font-medium text-gray-900 dark:text-white">参数</h5>
             <ul class="list-disc pl-5 space-y-1 text-xs text-gray-600 dark:text-gray-400">
                 <li v-for="(desc, name) in apiGuide.params" :key="name">
                     <code class="font-bold">{{ name }}</code>: {{ desc }}
@@ -75,9 +97,21 @@ const showApiModal = ref(false)
             </ul>
         </div>
 
-        <div v-if="apiGuide.example" class="space-y-2">
-            <h5 class="font-medium text-gray-900 dark:text-white">Example (cURL)</h5>
-            <pre class="bg-gray-900 text-gray-200 p-3 rounded-lg overflow-x-auto text-xs font-mono whitespace-pre-wrap">{{ apiGuide.example }}</pre>
+        <div v-if="apiGuide.options && apiGuide.options.length > 0" class="space-y-2">
+            <h5 class="font-medium text-gray-900 dark:text-white">{{ apiGuide.optionLabel || '选择模板' }}</h5>
+            <select
+              v-model="selectedApiOption"
+              class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900/50 text-sm text-gray-900 dark:text-white"
+            >
+              <option v-for="option in apiGuide.options" :key="option.value || option.label" :value="option.value">
+                {{ option.label }}
+              </option>
+            </select>
+        </div>
+
+        <div v-if="exampleText" class="space-y-2">
+            <h5 class="font-medium text-gray-900 dark:text-white">接口示例 (cURL)</h5>
+            <pre class="bg-gray-900 text-gray-200 p-3 rounded-lg overflow-x-auto text-xs font-mono whitespace-pre-wrap">{{ exampleText }}</pre>
         </div>
       </div>
     </Modal>

@@ -61,19 +61,32 @@ const fieldOptions = [
   { value: 'reminders', label: '提醒' }
 ]
 
-const apiGuide = {
-  endpoint: '/api/actions/template-calendar',
-  method: 'POST',
-  description: '根据模板与文本创建日历事件。',
-  params: {
-    template_id: 'Required. 模板 ID',
-    text: 'Required. 本次日程描述'
-  },
-  example: `curl -X POST https://your-domain.com/api/actions/template-calendar \\
+const apiGuideExample = `curl -X POST https://your-domain.com/api/actions/template-calendar \\
   -H "x-api-key: YOUR_API_KEY" \\
   -H "Content-Type: application/json" \\
   -d '{"template_id": "TEMPLATE_ID", "text": "普拉提：核心床 今天19:40-20:40"}'`
-}
+
+const apiGuide = computed(() => {
+  const options = templates.value.length
+    ? [{ label: '未选择模板', value: '' }, ...templates.value.map((tpl) => ({ label: tpl.name, value: tpl.id }))]
+    : undefined
+  return {
+    endpoint: '/api/actions/template-calendar',
+    method: 'POST',
+    description: '根据模板与文本创建日历事件。',
+    params: {
+      template_id: 'Required. 模板 ID',
+      text: 'Required. 本次日程描述'
+    },
+    options,
+    optionLabel: '日程模板',
+    getExample: (value?: string) => {
+      const id = value || 'TEMPLATE_ID'
+      return apiGuideExample.replace('TEMPLATE_ID', id)
+    },
+    example: apiGuideExample
+  }
+})
 
 const resetTemplateForm = () => {
   selectedEventId.value = ''
