@@ -83,8 +83,9 @@ export default defineEventHandler(async (event) => {
     baseEvent
   })
 
-  const parsed = await parseTextToTemplateFields(text, calendars, todayDate, timeZone, template, token)
-  console.log('[TemplateCalendar] Parsed', parsed)
+  const rawParsed = await parseTextToTemplateFields(text, calendars, todayDate, timeZone, template, token)
+  console.log('[TemplateCalendar] Parsed', rawParsed)
+  const parsed = Array.isArray(rawParsed) ? rawParsed[0] : rawParsed
   let merged = mergeEventFields(parsed, baseEvent, fixedFields)
 
   if (!merged.description && parsed?.notes) {
