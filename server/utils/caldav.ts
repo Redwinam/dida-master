@@ -125,8 +125,8 @@ export const addEventToCalendar = async (credentials: any, eventData: any, targe
     const vevent = new ICAL.Component('vevent')
     
     vevent.addPropertyWithValue('summary', eventData.title)
-    vevent.addPropertyWithValue('dtstart', ICAL.Time.fromJSDate(new Date(eventData.start)))
-    vevent.addPropertyWithValue('dtend', ICAL.Time.fromJSDate(new Date(eventData.end)))
+    vevent.addPropertyWithValue('dtstart', ICAL.Time.fromJSDate(new Date(eventData.start), true))
+    vevent.addPropertyWithValue('dtend', ICAL.Time.fromJSDate(new Date(eventData.end), true))
     if (eventData.location) vevent.addPropertyWithValue('location', eventData.location)
     if (eventData.description) vevent.addPropertyWithValue('description', eventData.description)
     if (Array.isArray(eventData.reminders)) {
