@@ -102,10 +102,10 @@ export const getUserConfig = async (event: H3Event) => {
   if (!data) {
     const rc = useRuntimeConfig()
     
-    // Resolve credentials from generic or legacy env vars
-    const calUsername = (rc.calUsername || rc.icloudUsername || '') as string
-    const calPassword = (rc.calPassword || rc.icloudAppPassword || '') as string
-    const calServerUrl = (rc.calServerUrl || (rc.icloudUsername ? 'https://caldav.icloud.com/' : '') || '') as string
+    // Resolve credentials from generic env vars
+    const calUsername = (rc.calUsername || '') as string
+    const calPassword = (rc.calPassword || '') as string
+    const calServerUrl = (rc.calServerUrl || '') as string
     const calEnable = !!(calUsername && calPassword && calServerUrl)
 
     const fallback = {
