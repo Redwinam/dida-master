@@ -118,11 +118,19 @@ export const addEventToCalendar = async (credentials: any, eventData: any, targe
     const calendars = await client.fetchCalendars()
     const targetCal = calendars.find(c => c.displayName === targetCalendarName) || calendars[0]
     
+    console.log(`[CalDAV] Adding event to calendar: ${targetCal?.displayName} (Requested: ${targetCalendarName})`)
+
     if (!targetCal) throw new Error('No calendar found')
 
     // Create VCALENDAR object using ical.js
+    const { randomUUID } = await import('node:crypto')
     const comp = new ICAL.Component(['vcalendar', [], []])
+    comp.updatePropertyWithValue('prodid', '-//Trae AI//NONSGML Dida Task//EN')
+    comp.updatePropertyWithValue('version', '2.0')
+
     const vevent = new ICAL.Component('vevent')
+    vevent.addPropertyWithValue('uid', randomUUID())
+    vevent.addPropertyWithValue('dtstamp', ICAL.Time.fromJSDate(new Date(), true))
     
     vevent.addPropertyWithValue('summary', eventData.title)
     vevent.addPropertyWithValue('dtstart', ICAL.Time.fromJSDate(new Date(eventData.start), true))
