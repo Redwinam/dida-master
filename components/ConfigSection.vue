@@ -35,7 +35,7 @@ async function handleSave() {
   }
 }
 
-const activeTab = ref('personalization')
+const activeTab = ref('dida')
 
 const tabs = [
   { id: 'dida', label: '滴答清单', icon: 'heroicons:check-circle' },
@@ -127,9 +127,6 @@ const tabs = [
         </div>
 
         <div class="flex-1 overflow-y-auto p-6 md:p-8">
-          <div v-show="activeTab === 'personalization'" class="animate-fade-in">
-            <ConfigPersonalization />
-          </div>
           <div v-show="activeTab === 'dida'" class="animate-fade-in">
              <DidaConfig />
           </div>
@@ -141,6 +138,9 @@ const tabs = [
           </div>
           <div v-show="activeTab === 'api_key'" class="animate-fade-in">
              <ApiKeyManager />
+          </div>
+          <div v-show="activeTab === 'personalization'" class="animate-fade-in">
+            <ConfigPersonalization />
           </div>
         </div>
       </div>
