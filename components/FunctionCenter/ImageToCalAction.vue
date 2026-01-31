@@ -17,7 +17,7 @@ const imagePreview = ref<string | null>(null)
 const fileInput = ref<HTMLInputElement | null>(null)
 
 const missingConfig = computed(() => {
-  return !config.value.icloud_username || !config.value.icloud_app_password || !config.value.llm_api_key
+  return !config.value.cal_username || !config.value.cal_password || !config.value.llm_api_key
 })
 
 function onFileSelect(e: Event) {

@@ -95,7 +95,7 @@ const apiGuide = computed(() => {
 
 const missingConfig = computed(() => {
   if (loading.value || !fetched.value) return false
-  return !config.value.icloud_username || !config.value.icloud_app_password
+  return !config.value.cal_username || !config.value.cal_password
 })
 
 const resetTemplateForm = () => {

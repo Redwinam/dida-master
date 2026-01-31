@@ -54,8 +54,7 @@ create table public.dida_master_user_config (
   vision_model text, -- 新增：视觉模型配置
   llm_api_url text,
   cal_enable boolean default false,
-  icloud_username text,
-  icloud_app_password text,
+  settings jsonb, -- 存储 CalDAV 配置 (cal_username, cal_password, cal_server_url) 等
   cal_lookahead_days integer default 2,
   calendar_target text,
   updated_at timestamptz default now()
@@ -97,7 +96,7 @@ npm run dev
 2.  **填写配置**:
     *   在首页“配置”标签页中，填入您的滴答清单 Token、LLM API Key 等信息。
     *   **滴答清单 Token**: 需要您自行申请或抓包获取。
-    *   **iCloud 密码**: 请使用 Apple ID 的“应用专用密码”。
+    *   **CalDAV 密码**: 如果使用 iCloud，请使用“应用专用密码”。
 3.  **生成日报**: 点击“功能” -> “每日笔记生成” -> “立即生成”。
 4.  **图片日程**: 点击“功能” -> “图片转日历” -> 上传图片 -> “识别并添加”。
 

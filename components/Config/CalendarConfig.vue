@@ -26,7 +26,7 @@ watch(calProvider, (val) => {
     if (val === 'icloud') {
         config.value.cal_server_url = 'https://caldav.icloud.com/'
     } else {
-        // If switching to custom, keep existing if not icloud, or clear
+        // If switching to custom, keep existing if not preset, or clear
         if (config.value.cal_server_url === 'https://caldav.icloud.com/') {
             config.value.cal_server_url = ''
         }
@@ -103,7 +103,7 @@ function toggleTargetCalendar(name: string) {
       
       <!-- Provider Selection -->
       <div class="space-y-1.5">
-          <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Service Provider</label>
+          <label class="text-sm font-medium text-gray-700 dark:text-gray-300">服务商 (Service Provider)</label>
           <div class="flex gap-4">
               <label class="inline-flex items-center">
                   <input type="radio" v-model="calProvider" value="icloud" class="form-radio text-primary-600">
@@ -111,14 +111,14 @@ function toggleTargetCalendar(name: string) {
               </label>
               <label class="inline-flex items-center">
                   <input type="radio" v-model="calProvider" value="custom" class="form-radio text-primary-600">
-                  <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Custom (CalDAV)</span>
+                  <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">其他 / 自定义 (CalDAV)</span>
               </label>
           </div>
       </div>
 
       <!-- Server URL (Custom only) -->
       <div v-if="calProvider === 'custom'" class="space-y-1.5 animate-fade-in">
-          <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Server URL</label>
+          <label class="text-sm font-medium text-gray-700 dark:text-gray-300">服务器地址 (Server URL)</label>
           <div class="relative">
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <Icon icon="heroicons:server" class="w-5 h-5 text-gray-400" />
@@ -129,16 +129,16 @@ function toggleTargetCalendar(name: string) {
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div class="space-y-1.5">
-          <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Username</label>
+          <label class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ calProvider === 'icloud' ? 'Apple ID' : '邮箱地址' }}</label>
           <div class="relative">
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <Icon icon="heroicons:user-circle" class="w-5 h-5 text-gray-400" />
             </div>
-            <input v-model="config.cal_username" type="text" :placeholder="calProvider === 'icloud' ? 'Apple ID' : 'Username'" class="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700/50 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 sm:text-sm" />
+            <input v-model="config.cal_username" type="text" :placeholder="calProvider === 'icloud' ? 'example@icloud.com' : 'example@icloud.com'" class="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700/50 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 sm:text-sm" />
           </div>
         </div>
         <div class="space-y-1.5">
-          <label class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ calProvider === 'icloud' ? 'App-Specific Password' : 'Password' }}</label>
+          <label class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ calProvider === 'icloud' ? '应用专用密码' : '密码' }}</label>
           <div class="relative">
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <Icon icon="heroicons:key" class="w-5 h-5 text-gray-400" />
@@ -150,7 +150,7 @@ function toggleTargetCalendar(name: string) {
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div class="space-y-1.5">
-          <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Timezone</label>
+          <label class="text-sm font-medium text-gray-700 dark:text-gray-300">时区</label>
           <div class="relative">
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <Icon icon="heroicons:globe-alt" class="w-5 h-5 text-gray-400" />
@@ -159,7 +159,7 @@ function toggleTargetCalendar(name: string) {
           </div>
         </div>
         <div class="space-y-1.5">
-          <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Lookahead Days</label>
+          <label class="text-sm font-medium text-gray-700 dark:text-gray-300">周报前瞻天数</label>
           <div class="relative">
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <Icon icon="heroicons:calendar" class="w-5 h-5 text-gray-400" />
@@ -170,7 +170,7 @@ function toggleTargetCalendar(name: string) {
       </div>
 
       <div class="space-y-1.5">
-        <label class="text-sm font-medium text-gray-700 dark:text-gray-300">目标日历 (图片识别)</label>
+        <label class="text-sm font-medium text-gray-700 dark:text-gray-300">目标日历</label>
         <div class="flex items-start gap-3">
              <div class="flex-1 p-3 bg-white dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 rounded-lg text-sm min-h-[42px]">
                 <div v-if="targetCalendars.length > 0" class="flex flex-wrap gap-2">
