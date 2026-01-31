@@ -28,7 +28,11 @@ async function triggerDailyNote() {
             Authorization: session?.access_token ? `Bearer ${session.access_token}` : ''
         }
     })
-    toast.add({ title: '每日笔记生成成功', description: res.message, color: 'success' })
+    if (res.status === 'queued') {
+      toast.add({ title: '请求已提交', description: 'AI 正在后台生成内容，请稍候... 完成后将自动同步到滴答清单。', color: 'success' })
+    } else {
+      toast.add({ title: '每日笔记生成成功', description: res.message, color: 'success' })
+    }
   } catch (e: any) {
     toast.add({ title: '生成失败', description: e.message, color: 'error' })
   } finally {

@@ -153,28 +153,51 @@ export default defineEventHandler(async (event) => {
         console.log(`[WeeklyReport] Fetched ${events.length} past events and ${nextEvents.length} future events`)
     }
 
-    // 4. Call LLM
-    console.log('[WeeklyReport] Calling LLM...')
-    let report = ''
+    // 4. Call LLM (Async)
+    console.log('[WeeklyReport] Calling LLM (Async)...')
+    const displayStartStr = start.toLocaleDateString('zh-CN', { timeZone: config.timezone || 'Asia/Shanghai' })
+    const displayEndStr = now.toLocaleDateString('zh-CN', { timeZone: config.timezone || 'Asia/Shanghai' })
+    const dateStr = `${displayStartStr} - ${displayEndStr}`
+
     try {
       const token = getHeader(event, 'Authorization')?.replace('Bearer ', '') || getCookie(event, 'sb-access-token')
-      report = await generateWeeklyReport(
+      
+      const siteUrl = process.env.NUXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+      const callbackUrl = `${siteUrl}/api/callbacks/weekly-report`
+      
+      const callbackPayload = {
+        dida_token: config.dida_token,
+        dida_project_id: config.weekly_report_project_id,
+        timezone: config.timezone || 'Asia/Shanghai',
+        date_str: dateStr
+      }
+
+      const response = await generateWeeklyReport(
           completedContext, 
           uncompletedContext,
           calendarContext, 
           nextWeekCalendarContext, 
           config.timezone,
           token,
-          config.mbti
+          config.mbti,
+          undefined, // userId
+          callbackUrl,
+          callbackPayload
       )
-      console.log('[WeeklyReport] Report generated')
+      console.log('[WeeklyReport] Async request sent:', response)
+      return { status: 'queued', message: 'Weekly report generation started in background.' }
+
     } catch (e) {
         console.error('LLM Generate Report Error:', e)
         throw createError({ statusCode: 500, message: `LLM Error: ${e}` })
     }
 
+    /*
+    // Legacy Synchronous Code
     // 5. Create Note
     console.log('[WeeklyReport] Creating note...')
+    // ...
+    
     const timeZone = config.timezone || 'Asia/Shanghai'
     const title = `周报 ${start.toLocaleDateString('zh-CN', { timeZone })} - ${now.toLocaleDateString('zh-CN', { timeZone })}`
     const didaNote: any = await createDidaNote(config.dida_token, config.weekly_report_project_id, title, report, timeZone)
@@ -201,6 +224,7 @@ export default defineEventHandler(async (event) => {
     }
 
     return { message: 'Success' }
+    */
   } catch (e: any) {
     console.error('[WeeklyReport] Fatal Error:', e)
     return {

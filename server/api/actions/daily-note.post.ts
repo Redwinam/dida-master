@@ -77,44 +77,73 @@ export default defineEventHandler(async (event) => {
         console.log(`[DailyNote] Fetched ${events.length} calendar events`)
     }
 
-    // 3. Call LLM
-    console.log('[DailyNote] Calling LLM...')
-    let plan = ''
+    // 3. Call LLM (Async with Callback)
+    console.log('[DailyNote] Calling LLM (Async)...')
     try {
       const token = getHeader(event, 'Authorization')?.replace('Bearer ', '') || getCookie(event, 'sb-access-token')
-      plan = await generateDailyPlan(tasksContext, calendarContext, config.timezone, token, config.mbti)
-      console.log('[DailyNote] Plan generated')
+      
+      // Determine callback URL
+      const siteUrl = process.env.NUXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+      const callbackUrl = `${siteUrl}/api/callbacks/daily-note`
+      
+      // Payload for callback to resume execution (save note)
+      const callbackPayload = {
+        dida_token: config.dida_token,
+        dida_project_id: config.dida_project_id,
+        timezone: config.timezone || 'Asia/Shanghai'
+      }
+
+      const response = await generateDailyPlan(
+        tasksContext, 
+        calendarContext, 
+        config.timezone, 
+        token, 
+        config.mbti, 
+        undefined, // userId
+        callbackUrl, 
+        callbackPayload
+      )
+      
+      console.log('[DailyNote] Async request sent:', response)
+      return { status: 'queued', message: 'Daily note generation started in background.' }
+
     } catch (e) {
         console.error('LLM Generate Plan Error:', e)
         throw createError({ statusCode: 500, message: `LLM Error: ${e}` })
     }
 
+    /* 
+    // Legacy Synchronous Code (Commented out)
     // 4. Create Note
     console.log('[DailyNote] Creating note...')
     const timeZone = config.timezone || 'Asia/Shanghai'
     const title = new Date().toLocaleDateString('zh-CN', { timeZone, year: 'numeric', month: 'long', day: 'numeric' })
     const didaNote: any = await createDidaNote(config.dida_token, config.dida_project_id, title, plan, timeZone)
     console.log('[DailyNote] Note created')
-
+    
+    // ... DB Saving ...
+    
     const noteDate = new Date().toLocaleDateString('en-CA', { timeZone })
     const didaTaskId = didaNote?.id || didaNote?.taskId || didaNote?.data?.id || null
-    const adminClient = getAdminClient()
-    const { error: insertError } = await adminClient
-      .from('dida_master_daily_notes')
+
+    // 5. Save to Supabase DB (History)
+    const client = await serverSupabaseServiceRole(event)
+    const { error: insertError } = await client
+      .from('daily_notes')
       .insert({
         user_id: config.user_id,
-        title,
+        date: noteDate,
         content: plan,
         dida_task_id: didaTaskId,
-        dida_project_id: config.dida_project_id,
-        note_date: noteDate
+        title: title
       })
 
     if (insertError) {
-      throw createError({ statusCode: 500, message: insertError.message })
+      console.error('DB Insert Error:', insertError)
     }
-
-    return { message: 'Success' }
+    
+    return { status: 'success', noteId: didaTaskId }
+    */
   } catch (e: any) {
     console.error('[DailyNote] Fatal Error:', e)
     return {

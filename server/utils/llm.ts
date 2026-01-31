@@ -35,7 +35,7 @@ const extractContent = (response: any) => {
   )
 }
 
-const callAiGateway = async (serviceKey: string, input: Record<string, any>, userToken?: string) => {
+const callAiGateway = async (serviceKey: string, input: Record<string, any>, userToken?: string, userId?: string, callbackUrl?: string, callbackPayload?: Record<string, any>) => {
   const url = getAiGatewayUrl()
   
   // Ensure userToken is a valid string if provided
@@ -51,18 +51,33 @@ const callAiGateway = async (serviceKey: string, input: Record<string, any>, use
     const authType = validUserToken ? 'User Token' : 'System Key'
     console.log(`[AiGateway] Calling ${serviceKey} with ${authType}`)
   }
+
+  const body: any = {
+    service_key: serviceKey,
+    input
+  }
+  if (userId) {
+    body.user_id = userId
+  }
+  if (callbackUrl) {
+    body.callback_url = callbackUrl
+    body.callback_payload = callbackPayload
+  }
   
   try {
     const response = await $fetch(url, {
       method: 'POST',
       headers,
-      body: {
-        service_key: serviceKey,
-        input
-      },
+      body,
       // Increase timeout for LLM calls
       timeout: 60000 
     }) as any
+
+    if (callbackUrl) {
+      // In async mode, return the full response (e.g. { status: 'queued' })
+      return response
+    }
+    
     return extractContent(response)
   } catch (e: any) {
     console.error(`[AiGateway] Error calling ${serviceKey}:`, e.response?.status, e.response?.statusText)
@@ -73,7 +88,7 @@ const callAiGateway = async (serviceKey: string, input: Record<string, any>, use
   }
 }
 
-export const generateDailyPlan = async (tasksContext: string, calendarContext: string, timezone: string = 'Asia/Shanghai', userToken?: string, mbti?: string) => {
+export const generateDailyPlan = async (tasksContext: string, calendarContext: string, timezone: string = 'Asia/Shanghai', userToken?: string, mbti?: string, userId?: string, callbackUrl?: string, callbackPayload?: Record<string, any>) => {
   const todayStr = new Date().toLocaleDateString('zh-CN', { 
     timeZone: timezone,
     year: 'numeric', 
@@ -93,10 +108,12 @@ ${constraint}
 近日行程：
 ${calendarContext}
 
-任务列表：
+待办任务：
 ${tasksContext}
-`
-  return await callAiGateway('DIDA_DAILY_NOTE', { type: 'text', prompt }, userToken)
+
+请直接输出内容，不要使用markdown代码块包裹。`
+
+  return await callAiGateway('DIDA_DAILY_NOTE', { type: 'text', prompt }, userToken, userId, callbackUrl, callbackPayload)
 }
 
 export const generateWeeklyReport = async (
@@ -106,39 +123,46 @@ export const generateWeeklyReport = async (
   nextWeekCalendarContext: string,
   timezone: string = 'Asia/Shanghai',
   userToken?: string,
-  mbti?: string
+  mbti?: string,
+  userId?: string,
+  callbackUrl?: string,
+  callbackPayload?: Record<string, any>
 ) => {
-  const now = new Date()
-  const endStr = now.toLocaleDateString('zh-CN', { timeZone: timezone })
-  const start = new Date(now)
+  const today = new Date()
+  const start = new Date(today)
   start.setDate(start.getDate() - 7)
-  const startStr = start.toLocaleDateString('zh-CN', { timeZone: timezone })
+  const dateStr = `${start.toLocaleDateString('zh-CN', { timeZone: timezone })} - ${today.toLocaleDateString('zh-CN', { timeZone: timezone })}`
 
-  const constraint = mbti ? `（本人为${mbti}人格类型，但回复中无需提到${mbti}属性；返回格式中不使用表格、无需一级标题）` : '（返回格式中不使用表格、无需一级标题）'
+  const persona = mbti ? `，专门为${mbti}人格类型撰写周报` : ''
+  const constraint = mbti ? `（但回复中无需提到${mbti}属性；返回格式中不使用表格、无需一级标题）` : '（返回格式中不使用表格、无需一级标题）'
 
-  const prompt = `你是一个高效的时间管理专家。
-请根据过去一周（${startStr} 至 ${endStr}）的完成任务、日程，以及当前未完成的任务和下周的日程安排，为我生成一份周报。
+  const prompt = `你是一个专业的项目经理${persona}。
+今天是${today.toLocaleDateString('zh-CN', { timeZone: timezone })}。
+请根据以下信息，为我撰写一份本周工作周报。
+周报周期：${dateStr}
+${constraint}
 
-过去一周行程：
-${calendarContext}
-
-已完成任务列表：
+本周完成任务：
 ${completedTasksContext}
 
-当前未完成任务列表（待办）：
+本周未完成任务：
 ${uncompletedTasksContext}
+
+本周行程记录：
+${calendarContext}
 
 下周行程预览：
 ${nextWeekCalendarContext}
 
-请总结我的工作成就、时间分配情况，并给出下周的建议。周报格式要求：
-1. 本周工作总结（按项目或类别）
-2. 时间利用分析（基于日程和任务量）
-3. 待办事项分析（基于未完成任务）
-4. 下周规划建议（结合下周行程和待办任务）
-5. 保持简洁专业，使用Markdown格式。${constraint}
-`
-  return await callAiGateway('DIDA_WEEKLY_REPORT', { type: 'text', prompt }, userToken)
+请按以下结构输出：
+1. 本周工作总结
+2. 完成情况分析
+3. 下周工作计划
+4. 改进建议
+
+请直接输出内容，不要使用markdown代码块包裹。`
+
+  return await callAiGateway('DIDA_WEEKLY_REPORT', { type: 'text', prompt }, userToken, userId, callbackUrl, callbackPayload)
 }
 
 export const parseTextToCalendar = async (text: string, calendars: string[], todayDate: string, userToken?: string) => {

@@ -28,7 +28,11 @@ async function triggerWeeklyReport() {
             Authorization: session?.access_token ? `Bearer ${session.access_token}` : ''
         }
     })
-    toast.add({ title: '周报生成成功', description: res.message, color: 'success' })
+    if (res.status === 'queued') {
+      toast.add({ title: '请求已提交', description: '周报正在后台生成中，请稍候... 完成后将自动推送到滴答清单。', color: 'success' })
+    } else {
+      toast.add({ title: '周报生成成功', description: res.message, color: 'success' })
+    }
   } catch (e: any) {
     toast.add({ title: '生成失败', description: e.message, color: 'error' })
   } finally {
