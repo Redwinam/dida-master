@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "build": "nuxt build",
-    "build:edgeone": "node tools/build-edgeone.mjs",
+    "build:edgeone": "node scripts/build-edgeone.mjs",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
