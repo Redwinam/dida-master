@@ -6,8 +6,9 @@ import { parseTextToTemplateFields } from '../../utils/llm'
 interface UserConfig {
   user_id: string
   cal_enable: boolean
-  icloud_username: string
-  icloud_app_password: string
+  cal_username: string
+  cal_password: string
+  cal_server_url: string
   calendar_target: string
   timezone?: string
 }
@@ -109,8 +110,9 @@ export default defineEventHandler(async (event) => {
   if (config.cal_enable) {
     const targetCal = merged.calendar || calendars[0]
     await addEventToCalendar({
-      icloud_username: config.icloud_username,
-      icloud_app_password: config.icloud_app_password
+      cal_username: config.cal_username,
+      cal_password: config.cal_password,
+      cal_server_url: config.cal_server_url
     }, merged, targetCal)
   }
 

@@ -1,4 +1,4 @@
-import { defineEventHandler, createError } from 'h3'
+import { defineEventHandler, createError, getQuery } from 'h3'
 
 export default defineEventHandler(async (event) => {
   const client = getUserClient(event)
@@ -8,50 +8,39 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 401, message: 'Unauthorized' })
   }
 
-  // We need the credentials. They should be in the config.
-  // However, the user might be in the process of configuring them.
-  // So we check body first (if testing connection), then DB.
-  
   let credentials: any = null
   const query = getQuery(event)
   const username = query.username as string
   const password = query.password as string
+  const serverUrl = query.server_url as string
 
-  if (username && password) {
-    credentials = { icloud_username: username, icloud_app_password: password }
+  if (username && password && serverUrl) {
+    credentials = { cal_username: username, cal_password: password, cal_server_url: serverUrl }
   } else {
     const { data: rawData } = await client
       .from('dida_master_user_config')
-      .select('icloud_username, icloud_app_password')
+      .select('settings')
       .eq('user_id', user.id)
       .single()
       
-    const data = rawData as any
-    if (data && data.icloud_username && data.icloud_app_password) {
-      credentials = data
+    const settings = rawData?.settings as any
+    if (settings && settings.cal_username && settings.cal_password && settings.cal_server_url) {
+      credentials = settings
     }
   }
 
   if (!credentials) {
-    throw createError({ statusCode: 400, message: 'iCloud credentials missing' })
+    throw createError({ statusCode: 400, message: 'CalDAV credentials missing' })
   }
 
-  // Reuse the logic from getCalendarEvents but just to list calendars
-  // Since getCalendarEvents logic is a bit mixed (it fetches events), 
-  // we should probably expose a `getCalendars` function in utils/caldav.ts
-  // But for now, I can import the same libraries and do it here or refactor.
-  // Refactoring is cleaner. Let's check if I can modify utils/caldav.ts easily.
-  // Wait, I cannot easily modify utils without context. 
-  // I'll implement the fetch logic here directly using the same libs since I know they are installed.
-  
   try {
     const { createDAVClient } = await import('tsdav')
     
     const client = await createDAVClient({
-        serverUrl: 'https://caldav.icloud.com/',
+        serverUrl: credentials.cal_server_url,
         credentials: {
-        username: credentials.icloud_username,
-        password: credentials.icloud_app_password,
+          username: credentials.cal_username,
+          password: credentials.cal_password,
         },
         authMethod: 'Basic',
         defaultAccountType: 'caldav',

@@ -101,6 +101,13 @@ export const getUserConfig = async (event: H3Event) => {
 
   if (!data) {
     const rc = useRuntimeConfig()
+    
+    // Resolve credentials from generic or legacy env vars
+    const calUsername = (rc.calUsername || rc.icloudUsername || '') as string
+    const calPassword = (rc.calPassword || rc.icloudAppPassword || '') as string
+    const calServerUrl = (rc.calServerUrl || (rc.icloudUsername ? 'https://caldav.icloud.com/' : '') || '') as string
+    const calEnable = !!(calUsername && calPassword && calServerUrl)
+
     const fallback = {
       user_id: userId,
       dida_token: rc.didaToken || '',
@@ -111,9 +118,10 @@ export const getUserConfig = async (event: H3Event) => {
       vision_model: 'Qwen/Qwen3-VL-32B-Instruct',
       vision_api_key: '',
       vision_api_url: '',
-      cal_enable: !!(rc.icloudUsername && rc.icloudAppPassword),
-      icloud_username: rc.icloudUsername || '',
-      icloud_app_password: rc.icloudAppPassword || '',
+      cal_enable: calEnable,
+      cal_username: calUsername,
+      cal_password: calPassword,
+      cal_server_url: calServerUrl,
       cal_lookahead_days: 2,
       calendar_target: '',
       timezone: 'Asia/Shanghai'

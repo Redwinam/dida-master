@@ -10,8 +10,9 @@ interface UserConfig {
   weekly_report_project_id?: string
   exclude_project_name: string
   cal_enable: boolean
-  icloud_username: string
-  icloud_app_password: string
+  cal_username: string
+  cal_password: string
+  cal_server_url: string
   cal_lookahead_days: number
   calendar_target: string
   timezone?: string
@@ -65,8 +66,9 @@ export default defineEventHandler(async (event) => {
     if (config.cal_enable) {
         console.log('[DailyNote] Fetching calendar...')
         const events = await getCalendarEvents({
-            icloud_username: config.icloud_username,
-            icloud_app_password: config.icloud_app_password
+            cal_username: config.cal_username,
+            cal_password: config.cal_password,
+            cal_server_url: config.cal_server_url
         }, config.cal_lookahead_days)
         
         const timeZone = config.timezone || 'Asia/Shanghai'

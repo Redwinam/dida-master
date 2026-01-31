@@ -4,16 +4,17 @@ import { getUserConfig } from '../../../utils/userConfig'
 
 interface UserConfig {
   user_id: string
-  icloud_username: string
-  icloud_app_password: string
+  cal_username: string
+  cal_password: string
+  cal_server_url: string
   timezone?: string
 }
 
 export default defineEventHandler(async (event) => {
   const config = await getUserConfig(event) as unknown as UserConfig
 
-  if (!config.icloud_username || !config.icloud_app_password) {
-    throw createError({ statusCode: 400, message: 'iCloud credentials missing' })
+  if (!config.cal_username || !config.cal_password || !config.cal_server_url) {
+    throw createError({ statusCode: 400, message: 'CalDAV credentials missing' })
   }
 
   const query = getQuery(event)
@@ -25,8 +26,9 @@ export default defineEventHandler(async (event) => {
   start.setDate(start.getDate() - lookbackDays)
 
   const events = await getCalendarEvents({
-    icloud_username: config.icloud_username,
-    icloud_app_password: config.icloud_app_password
+    cal_username: config.cal_username,
+    cal_password: config.cal_password,
+    cal_server_url: config.cal_server_url
   }, 0, { start, end })
 
   const sorted = events

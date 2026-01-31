@@ -73,6 +73,11 @@ export default defineNuxtConfig({
     didaProjectId: process.env.DIDA_PROJECT_ID,
     didaClientId: process.env.DIDA_CLIENT_ID,
     didaClientSecret: process.env.DIDA_CLIENT_SECRET,
+    // Generic CalDAV
+    calUsername: process.env.CAL_USERNAME,
+    calPassword: process.env.CAL_PASSWORD,
+    calServerUrl: process.env.CAL_SERVER_URL,
+    // Legacy iCloud (for backward compatibility)
     icloudUsername: process.env.ICLOUD_USERNAME,
     icloudAppPassword: process.env.ICLOUD_APP_PASSWORD,
     supabaseServiceKey: process.env.NUXT_SUPABASE_SERVICE_ROLE_KEY,
