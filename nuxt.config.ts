@@ -6,6 +6,7 @@ export default defineNuxtConfig({
 
   modules: ['@nuxt/eslint'],
   devtools: { enabled: true },
+  devServer: { port: 7006 },
 
   app: {
     head: {
