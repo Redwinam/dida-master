@@ -11,7 +11,6 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
-    "@edgeone/nuxt-pages": "^1.0.14",
     "@nuxt/eslint": "^1.14.0",
     "@nuxt/icon": "^2.2.1",
     "@redwinam/if9-supabase-auth": "^0.2.14",
@@ -33,6 +32,7 @@
   },
   "devDependencies": {
     "@types/markdown-it": "^14.1.2",
-    "buffer": "^6.0.3"
+    "buffer": "^6.0.3",
+    "@edgeone/nuxt-pages": "^1.0.14"
   }
 }
