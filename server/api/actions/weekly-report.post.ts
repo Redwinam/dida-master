@@ -168,7 +168,10 @@ export default defineEventHandler(async event => {
       const token = getHeader(event, 'Authorization')?.replace('Bearer ', '') || getCookie(event, 'sb-access-token')
 
       const runtimeConfig = useRuntimeConfig()
-      const siteUrl = runtimeConfig.siteUrl || 'https://dida-master.if9.cool'
+      if (!runtimeConfig.siteUrl) {
+        throw createError({ statusCode: 500, message: 'Server Configuration Error: siteUrl is not configured.' })
+      }
+      const siteUrl = runtimeConfig.siteUrl
       const callbackUrl = `${siteUrl}/api/callbacks/weekly-report`
 
       const callbackPayload = {

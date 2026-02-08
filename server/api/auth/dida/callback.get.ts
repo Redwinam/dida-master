@@ -14,7 +14,11 @@ export default defineEventHandler(async event => {
 
   const clientId = config.didaClientId
   const clientSecret = config.didaClientSecret
-  const siteUrl = config.siteUrl || 'https://dida-master.if9.cool'
+  
+  if (!config.siteUrl) {
+    throw createError({ statusCode: 500, statusMessage: 'Server Configuration Error: siteUrl is not configured.' })
+  }
+  const siteUrl = config.siteUrl
   const redirectUri = `${siteUrl}/api/auth/dida/callback`
 
   if (!clientId || !clientSecret) {

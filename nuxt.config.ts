@@ -29,7 +29,7 @@ export default defineNuxtConfig({
     calServerUrl: process.env.CAL_SERVER_URL,
     supabaseServiceKey: process.env.NUXT_SUPABASE_SERVICE_ROLE_KEY,
     supabaseServiceRoleKey: process.env.NUXT_SUPABASE_SERVICE_ROLE_KEY,
-    siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://dida-master.if9.cool',
+    siteUrl: process.env.NUXT_PUBLIC_SITE_URL,
 
     public: {
       supabaseUrl: process.env.NUXT_PUBLIC_SUPABASE_URL,
