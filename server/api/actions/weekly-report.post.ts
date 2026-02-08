@@ -167,7 +167,8 @@ export default defineEventHandler(async event => {
     try {
       const token = getHeader(event, 'Authorization')?.replace('Bearer ', '') || getCookie(event, 'sb-access-token')
 
-      const siteUrl = process.env.NUXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+      const runtimeConfig = useRuntimeConfig()
+      const siteUrl = runtimeConfig.siteUrl || 'https://dida-master.if9.cool'
       const callbackUrl = `${siteUrl}/api/callbacks/weekly-report`
 
       const callbackPayload = {

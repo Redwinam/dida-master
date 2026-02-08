@@ -14,7 +14,7 @@ export default defineEventHandler(async event => {
 
   const clientId = config.didaClientId
   const clientSecret = config.didaClientSecret
-  const siteUrl = config.siteUrl || 'http://localhost:3000'
+  const siteUrl = config.siteUrl || 'https://dida-master.if9.cool'
   const redirectUri = `${siteUrl}/api/auth/dida/callback`
 
   if (!clientId || !clientSecret) {
