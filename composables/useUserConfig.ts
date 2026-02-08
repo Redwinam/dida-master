@@ -21,7 +21,7 @@ export const useUserConfig = () => {
     cal_lookahead_days: 2,
     calendar_target: '',
     timezone: 'Asia/Shanghai',
-    mbti: ''
+    mbti: '',
   }))
 
   const loading = useState('user-config-loading', () => false)
@@ -32,7 +32,7 @@ export const useUserConfig = () => {
   const client = $supabase as any
 
   const load = async (force = false) => {
-    // If already fetching or fetched, might skip? 
+    // If already fetching or fetched, might skip?
     // But user might want to refresh. Let's check if loading.
     if (loading.value && !force) return
 
@@ -41,23 +41,23 @@ export const useUserConfig = () => {
     try {
       const { data: { session } } = await client.auth.getSession()
       const headers: Record<string, string> = {}
-      
+
       // On server side, pass the cookie
       if (import.meta.server) {
         const reqHeaders = useRequestHeaders(['cookie'])
         if (reqHeaders.cookie) {
-            headers.cookie = reqHeaders.cookie
+          headers.cookie = reqHeaders.cookie
         }
       }
-      
+
       if (session?.access_token) {
         headers.Authorization = `Bearer ${session.access_token}`
       }
 
-      const data: any = await $fetch('/api/config', { 
+      const data: any = await $fetch('/api/config', {
         headers,
         timeout: 15000, // 15s timeout to prevent infinite loading
-        retry: 1
+        retry: 1,
       })
       if (data) {
         const flatData = { ...data, ...(data.settings || {}) }
@@ -66,7 +66,8 @@ export const useUserConfig = () => {
         config.value = { ...config.value, ...flatData }
       }
       fetched.value = true
-    } catch (e: any) {
+    }
+    catch (e: any) {
       const errorMsg = e.message || ''
       // Check for refresh token error and force logout
       if (errorMsg.includes('Invalid Refresh Token') || errorMsg.includes('Refresh Token Not Found')) {
@@ -79,7 +80,8 @@ export const useUserConfig = () => {
       if (e.response?.status !== 401) {
         error.value = errorMsg || '加载配置失败'
       }
-    } finally {
+    }
+    finally {
       loading.value = false
     }
   }
@@ -92,13 +94,12 @@ export const useUserConfig = () => {
         method: 'POST',
         body: config.value,
         headers: {
-          Authorization: session?.access_token ? `Bearer ${session.access_token}` : ''
-        }
+          Authorization: session?.access_token ? `Bearer ${session.access_token}` : '',
+        },
       })
       return true
-    } catch (e: any) {
-      throw e
-    } finally {
+    }
+    finally {
       loading.value = false
     }
   }
@@ -109,6 +110,6 @@ export const useUserConfig = () => {
     fetched,
     error,
     load,
-    save
+    save,
   }
 }

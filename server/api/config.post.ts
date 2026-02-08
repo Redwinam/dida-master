@@ -1,4 +1,4 @@
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async event => {
   const client = getUserClient(event)
   const userId = await getCurrentUserId(event)
 
@@ -6,9 +6,9 @@ export default defineEventHandler(async (event) => {
 
   // Everything goes into settings
   const dbData = {
-      user_id: userId,
-      updated_at: new Date(),
-      settings: body
+    user_id: userId,
+    updated_at: new Date(),
+    settings: body,
   }
 
   const { data, error } = await client

@@ -10,7 +10,7 @@ interface UserConfig {
   timezone?: string
 }
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async event => {
   const config = await getUserConfig(event) as unknown as UserConfig
 
   if (!config.cal_username || !config.cal_password || !config.cal_server_url) {
@@ -28,7 +28,7 @@ export default defineEventHandler(async (event) => {
   const events = await getCalendarEvents({
     cal_username: config.cal_username,
     cal_password: config.cal_password,
-    cal_server_url: config.cal_server_url
+    cal_server_url: config.cal_server_url,
   }, 0, { start, end })
 
   const sorted = events

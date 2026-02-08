@@ -5,5 +5,5 @@ export {
   getCurrentUser,
   isAdminUser,
   requireAdmin,
-  requireAdminUser
-} from "@redwinam/if9-supabase-auth/server/lib/supabase";
+  requireAdminUser,
+} from '@redwinam/if9-supabase-auth/server/lib/supabase'

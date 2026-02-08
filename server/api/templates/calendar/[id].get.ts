@@ -1,6 +1,6 @@
 import { defineEventHandler, createError } from 'h3'
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async event => {
   const client = getUserClient(event)
   const { data: { user }, error: authError } = await client.auth.getUser()
 

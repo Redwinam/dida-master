@@ -4,7 +4,7 @@ function generateKey() {
   return `sk-${hex}`
 }
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async event => {
   // Use getUser to verify session from Supabase explicitly
   const client = getUserClient(event)
   const { data: { user }, error: userError } = await client.auth.getUser()
@@ -14,26 +14,25 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 401, message: 'Unauthorized: ' + (userError?.message || 'No user') })
   }
 
-
   const body = await readBody(event)
   // Allow manual setting of API key if provided in body, otherwise generate new one
   const key = body?.apiKey || generateKey()
-  
+
   const supabaseAdmin = getAdminClient()
-  
+
   console.log('API Key Post: User Object:', JSON.stringify(user, null, 2))
-  
+
   if (!user?.id) {
-      throw createError({ statusCode: 400, statusMessage: 'User ID missing from session' })
+    throw createError({ statusCode: 400, statusMessage: 'User ID missing from session' })
   }
 
-  const { error } = await supabaseAdmin.auth.admin.updateUserById(user.id, { 
-    user_metadata: { ...user.user_metadata, api_key: key } 
+  const { error } = await supabaseAdmin.auth.admin.updateUserById(user.id, {
+    user_metadata: { ...user.user_metadata, api_key: key },
   })
-  
+
   if (error) {
     throw createError({ statusCode: 500, statusMessage: error.message })
   }
-  
+
   return { apiKey: key }
 })

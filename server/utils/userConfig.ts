@@ -1,4 +1,4 @@
-import { H3Event } from 'h3'
+import type { H3Event } from 'h3'
 import type { Database } from '../../types/database.types'
 
 export const getUserConfig = async (event: H3Event) => {
@@ -6,31 +6,32 @@ export const getUserConfig = async (event: H3Event) => {
 
   // 1. Check for API Key in Header or Query
   const apiKey = getHeader(event, 'x-api-key') || getQuery(event).api_key as string
-  
+
   let client
-  
+
   if (apiKey) {
     // Verify API Key via Admin Client (since we need to search users)
     console.log('[UserConfig] Validating API Key...')
     let supabaseAdmin
     try {
-       // @ts-ignore
-       supabaseAdmin = getAdminClient()
-    } catch (e) {
-       console.error('[UserConfig] getAdminClient failed:', e)
-       // Fallback to manual creation if auto-import fails (ReferenceError)
-       const config = useRuntimeConfig()
-       const { createClient } = await import('@supabase/supabase-js')
-       supabaseAdmin = createClient(config.public.supabaseUrl as string, config.supabaseServiceKey, {
-         auth: { autoRefreshToken: false, persistSession: false }
-       })
+      // @ts-ignore
+      supabaseAdmin = getAdminClient()
+    }
+    catch (e) {
+      console.error('[UserConfig] getAdminClient failed:', e)
+      // Fallback to manual creation if auto-import fails (ReferenceError)
+      const config = useRuntimeConfig()
+      const { createClient } = await import('@supabase/supabase-js')
+      supabaseAdmin = createClient(config.public.supabaseUrl as string, config.supabaseServiceKey, {
+        auth: { autoRefreshToken: false, persistSession: false },
+      })
     }
 
     const { data: { users }, error } = await supabaseAdmin.auth.admin.listUsers()
-    
+
     if (error) {
-        console.error('API Key validation error:', error)
-        throw createError({ statusCode: 500, message: 'Internal Auth Error' })
+      console.error('API Key validation error:', error)
+      throw createError({ statusCode: 500, message: 'Internal Auth Error' })
     }
 
     // Find user with matching API Key
@@ -38,27 +39,30 @@ export const getUserConfig = async (event: H3Event) => {
     // For production, better to store API keys in a separate table or use a more efficient lookup
     // But following the requested reference implementation:
     const foundUser = users.find((u: any) => u.user_metadata?.api_key === apiKey)
-    
+
     if (foundUser) {
-        userId = foundUser.id
-    } else {
-        throw createError({ statusCode: 401, message: 'Invalid API Key' })
+      userId = foundUser.id
     }
-    
+    else {
+      throw createError({ statusCode: 401, message: 'Invalid API Key' })
+    }
+
     // Set client for later use
     client = supabaseAdmin
-  } else {
+  }
+  else {
     // 2. Fallback to Session Authentication
     try {
-        client = getUserClient(event)
-        const { data: { user }, error } = await client.auth.getUser()
-        
-        if (user && !error) {
-            userId = user.id
-        }
-    } catch (e) {
-        console.error('Session Auth Error:', e)
-        throw createError({ statusCode: 401, message: 'Session Auth Failed or Missing' })
+      client = getUserClient(event)
+      const { data: { user }, error } = await client.auth.getUser()
+
+      if (user && !error) {
+        userId = user.id
+      }
+    }
+    catch (e) {
+      console.error('Session Auth Error:', e)
+      throw createError({ statusCode: 401, message: 'Session Auth Failed or Missing' })
     }
   }
 
@@ -69,22 +73,24 @@ export const getUserConfig = async (event: H3Event) => {
   // Fetch Config for the identified user
   // Reuse client if we have it
   if (!client) {
+    try {
+      client = getUserClient(event)
+    }
+    catch (e) {
+      console.warn('Failed to get Supabase client for config fetch, trying admin fallback')
       try {
-          client = getUserClient(event)
-      } catch (e) {
-           console.warn('Failed to get Supabase client for config fetch, trying admin fallback')
-           try {
-               // @ts-ignore
-               client = getAdminClient()
-           } catch (e2) {
-                // Manual fallback again
-               const config = useRuntimeConfig()
-               const { createClient } = await import('@supabase/supabase-js')
-               client = createClient(config.public.supabaseUrl as string, config.supabaseServiceKey, {
-                    auth: { autoRefreshToken: false, persistSession: false }
-               })
-           }
+        // @ts-ignore
+        client = getAdminClient()
       }
+      catch (e2) {
+        // Manual fallback again
+        const config = useRuntimeConfig()
+        const { createClient } = await import('@supabase/supabase-js')
+        client = createClient(config.public.supabaseUrl as string, config.supabaseServiceKey, {
+          auth: { autoRefreshToken: false, persistSession: false },
+        })
+      }
+    }
   }
 
   const { data: rawData, error } = await client
@@ -101,7 +107,7 @@ export const getUserConfig = async (event: H3Event) => {
 
   if (!data) {
     const rc = useRuntimeConfig()
-    
+
     // Resolve credentials from generic env vars
     const calUsername = (rc.calUsername || '') as string
     const calPassword = (rc.calPassword || '') as string
@@ -124,7 +130,7 @@ export const getUserConfig = async (event: H3Event) => {
       cal_server_url: calServerUrl,
       cal_lookahead_days: 2,
       calendar_target: '',
-      timezone: 'Asia/Shanghai'
+      timezone: 'Asia/Shanghai',
     }
 
     const hasMinimum = fallback.dida_token && fallback.dida_project_id
@@ -139,6 +145,6 @@ export const getUserConfig = async (event: H3Event) => {
   return {
     user_id: rest.user_id,
     updated_at: rest.updated_at,
-    ...(settings as Record<string, any> || {})
+    ...(settings as Record<string, any> || {}),
   }
 }

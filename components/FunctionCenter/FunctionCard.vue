@@ -14,7 +14,7 @@ const props = withDefaults(defineProps<{
     description: string
     params?: Record<string, string>
     example?: string
-    options?: { label: string; value: string }[]
+    options?: { label: string, value: string }[]
     optionLabel?: string
     getExample?: (value?: string) => string
   }
@@ -22,7 +22,7 @@ const props = withDefaults(defineProps<{
   missingConfigText?: string
 }>(), {
   missingConfig: false,
-  missingConfigText: ''
+  missingConfigText: '',
 })
 
 defineEmits<{
@@ -42,12 +42,12 @@ const exampleText = computed(() => {
 
 watch(
   () => showApiModal.value,
-  (open) => {
+  open => {
     if (!open) return
     const options = props.apiGuide?.options || []
     const firstOption = options[0]
     selectedApiOption.value = firstOption?.value || ''
-  }
+  },
 )
 </script>
 
@@ -56,7 +56,7 @@ watch(
     <div class="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity pointer-events-none">
       <Icon :icon="icon" class="w-48 h-48" :class="colorClass" />
     </div>
-    
+
     <div class="p-6 relative z-10 flex flex-col h-full">
       <div class="flex justify-between items-start mb-4">
         <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
@@ -65,11 +65,11 @@ watch(
           </div>
           {{ title }}
         </h3>
-        <button 
+        <button
           v-if="apiGuide"
-          @click="showApiModal = true"
           class="text-xs text-gray-500 hover:text-primary-600 dark:text-gray-400 dark:hover:text-primary-400 flex items-center gap-1.5 px-2 py-1 rounded-md  hover:bg-gray-50 dark:hover:bg-gray-700/50 border border-transparent dark:border-gray-600 hover:border-primary-200 dark:hover:border-primary-800 transition-all"
           title="API 使用说明"
+          @click="showApiModal = true"
         >
           <Icon icon="heroicons:code-bracket" class="w-3.5 h-3.5" />
           API
@@ -79,16 +79,16 @@ watch(
       <p class="text-gray-500 dark:text-gray-400 text-sm mb-6 leading-relaxed grow">
         {{ description }}
       </p>
-      
+
       <div class="mt-auto">
         <div v-if="missingConfig" class="flex flex-col gap-3">
           <div class="p-3 bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 text-sm rounded-lg flex items-start gap-2">
             <Icon icon="heroicons:exclamation-triangle" class="w-5 h-5 shrink-0 mt-0.5" />
             <span>{{ missingConfigText || '功能未配置，请先完成配置。' }}</span>
           </div>
-          <button 
-            @click="$emit('configure')"
+          <button
             class="w-full py-2.5 px-4 bg-amber-100 hover:bg-amber-200 dark:bg-amber-900/40 dark:hover:bg-amber-900/60 text-amber-700 dark:text-amber-300 rounded-lg text-sm font-medium shadow-sm transition-all flex justify-center items-center gap-2"
+            @click="$emit('configure')"
           >
             <Icon icon="heroicons:cog-6-tooth" class="w-5 h-5" />
             去配置
@@ -102,38 +102,44 @@ watch(
     <Modal v-if="apiGuide" v-model="showApiModal" :title="`${title} - API 指南`">
       <div class="space-y-4 text-sm text-gray-700 dark:text-gray-300">
         <p>{{ apiGuide.description }}</p>
-        
+
         <div class="space-y-2">
-            <div class="flex items-center gap-2">
-                <span class="px-2 py-0.5 rounded bg-gray-200 dark:bg-gray-700 font-mono text-xs font-bold">{{ apiGuide.method }}</span>
-                <code class="bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded text-primary-600 dark:text-primary-400 font-mono">{{ apiGuide.endpoint }}</code>
-            </div>
+          <div class="flex items-center gap-2">
+            <span class="px-2 py-0.5 rounded bg-gray-200 dark:bg-gray-700 font-mono text-xs font-bold">{{ apiGuide.method }}</span>
+            <code class="bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded text-primary-600 dark:text-primary-400 font-mono">{{ apiGuide.endpoint }}</code>
+          </div>
         </div>
 
         <div v-if="apiGuide.params" class="space-y-2">
-            <h5 class="font-medium text-gray-900 dark:text-white">参数说明</h5>
-            <ul class="list-disc pl-5 space-y-1 text-xs text-gray-600 dark:text-gray-400">
-                <li v-for="(desc, name) in apiGuide.params" :key="name">
-                    <code class="font-bold">{{ name }}</code>: {{ desc }}
-                </li>
-            </ul>
+          <h5 class="font-medium text-gray-900 dark:text-white">
+            参数说明
+          </h5>
+          <ul class="list-disc pl-5 space-y-1 text-xs text-gray-600 dark:text-gray-400">
+            <li v-for="(desc, name) in apiGuide.params" :key="name">
+              <code class="font-bold">{{ name }}</code>: {{ desc }}
+            </li>
+          </ul>
         </div>
 
         <div v-if="apiGuide.options && apiGuide.options.length > 0" class="space-y-2">
-            <h5 class="font-medium text-gray-900 dark:text-white">{{ apiGuide.optionLabel || '选择模板' }}</h5>
-            <select
-              v-model="selectedApiOption"
-              class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900/50 text-sm text-gray-900 dark:text-white"
-            >
-              <option v-for="option in apiGuide.options" :key="option.value || option.label" :value="option.value">
-                {{ option.label }}
-              </option>
-            </select>
+          <h5 class="font-medium text-gray-900 dark:text-white">
+            {{ apiGuide.optionLabel || '选择模板' }}
+          </h5>
+          <select
+            v-model="selectedApiOption"
+            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900/50 text-sm text-gray-900 dark:text-white"
+          >
+            <option v-for="option in apiGuide.options" :key="option.value || option.label" :value="option.value">
+              {{ option.label }}
+            </option>
+          </select>
         </div>
 
         <div v-if="exampleText" class="space-y-2">
-            <h5 class="font-medium text-gray-900 dark:text-white">接口示例 (cURL)</h5>
-            <pre class="bg-gray-900 text-gray-200 p-3 rounded-lg overflow-x-auto text-xs font-mono whitespace-pre-wrap">{{ exampleText }}</pre>
+          <h5 class="font-medium text-gray-900 dark:text-white">
+            接口示例 (cURL)
+          </h5>
+          <pre class="bg-gray-900 text-gray-200 p-3 rounded-lg overflow-x-auto text-xs font-mono whitespace-pre-wrap">{{ exampleText }}</pre>
         </div>
       </div>
     </Modal>

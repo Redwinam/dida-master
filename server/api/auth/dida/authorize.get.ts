@@ -1,13 +1,13 @@
 import { defineEventHandler, sendRedirect, getRequestURL } from 'h3'
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async event => {
   const config = useRuntimeConfig()
   const clientId = config.didaClientId
-  
+
   if (!clientId) {
     return createError({
       statusCode: 500,
-      statusMessage: 'Dida Client ID is not configured'
+      statusMessage: 'Dida Client ID is not configured',
     })
   }
 
@@ -16,16 +16,16 @@ export default defineEventHandler(async (event) => {
   const redirectUri = `${siteUrl}/api/auth/dida/callback`
   const state = Math.random().toString(36).substring(7)
   const scope = 'tasks:write tasks:read'
-  
+
   const params = new URLSearchParams({
     client_id: clientId as string,
     scope,
     state,
     redirect_uri: redirectUri,
-    response_type: 'code'
+    response_type: 'code',
   })
 
   const url = `https://dida365.com/oauth/authorize?${params.toString()}`
-  
+
   return sendRedirect(event, url)
 })

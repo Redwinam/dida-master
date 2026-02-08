@@ -10,15 +10,17 @@ const getAiGatewayUrl = () => {
 const getAiGatewayAuthHeader = () => {
   const config = useRuntimeConfig()
   const token = (config.supabaseServiceRoleKey || config.supabaseServiceKey || config.public.supabaseKey || config.public.supabaseAnonKey) as string | undefined
-  
+
   if (config.supabaseServiceRoleKey) {
     console.log('[LLM] Using Service Role Key (Starts with):', config.supabaseServiceRoleKey.substring(0, 10) + '...')
-  } else if (config.supabaseServiceKey) {
+  }
+  else if (config.supabaseServiceKey) {
     console.log('[LLM] Using Service Key')
-  } else if (config.public.supabaseKey) {
+  }
+  else if (config.public.supabaseKey) {
     console.log('[LLM] Using Public Key')
   }
-  
+
   if (!token) {
     throw createError({ statusCode: 500, message: 'Supabase key missing' })
   }
@@ -27,25 +29,25 @@ const getAiGatewayAuthHeader = () => {
 
 const extractContent = (response: any) => {
   return (
-    response?.content ||
-    response?.data?.content ||
-    response?.result?.content ||
-    response?.choices?.[0]?.message?.content ||
-    ''
+    response?.content
+    || response?.data?.content
+    || response?.result?.content
+    || response?.choices?.[0]?.message?.content
+    || ''
   )
 }
 
 const callAiGateway = async (serviceKey: string, input: Record<string, any>, userToken?: string, userId?: string, callbackUrl?: string, callbackPayload?: Record<string, any>) => {
   const url = getAiGatewayUrl()
-  
+
   // Ensure userToken is a valid string if provided
   const validUserToken = userToken && userToken.length > 20 ? userToken : undefined
-  
+
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
-    Authorization: validUserToken ? `Bearer ${validUserToken}` : getAiGatewayAuthHeader()
+    'Authorization': validUserToken ? `Bearer ${validUserToken}` : getAiGatewayAuthHeader(),
   }
-  
+
   // Debug log (masked)
   if (process.env.NODE_ENV === 'development') {
     const authType = validUserToken ? 'User Token' : 'System Key'
@@ -54,7 +56,7 @@ const callAiGateway = async (serviceKey: string, input: Record<string, any>, use
 
   const body: any = {
     service_key: serviceKey,
-    input
+    input,
   }
   if (userId) {
     body.user_id = userId
@@ -63,38 +65,39 @@ const callAiGateway = async (serviceKey: string, input: Record<string, any>, use
     body.callback_url = callbackUrl
     body.callback_payload = callbackPayload
   }
-  
+
   try {
     const response = await $fetch(url, {
       method: 'POST',
       headers,
       body,
       // Increase timeout for LLM calls
-      timeout: 60000 
+      timeout: 60000,
     }) as any
 
     if (callbackUrl) {
       // In async mode, return the full response (e.g. { status: 'queued' })
       return response
     }
-    
+
     return extractContent(response)
-  } catch (e: any) {
+  }
+  catch (e: any) {
     console.error(`[AiGateway] Error calling ${serviceKey}:`, e.response?.status, e.response?.statusText)
     if (e.response?.status === 401) {
-       console.error('[AiGateway] 401 Unauthorized. Token used:', headers.Authorization?.substring(0, 20) + '...')
+      console.error('[AiGateway] 401 Unauthorized. Token used:', headers.Authorization?.substring(0, 20) + '...')
     }
     throw e
   }
 }
 
 export const generateDailyPlan = async (tasksContext: string, calendarContext: string, timezone: string = 'Asia/Shanghai', userToken?: string, mbti?: string, userId?: string, callbackUrl?: string, callbackPayload?: Record<string, any>) => {
-  const todayStr = new Date().toLocaleDateString('zh-CN', { 
+  const todayStr = new Date().toLocaleDateString('zh-CN', {
     timeZone: timezone,
-    year: 'numeric', 
-    month: 'long', 
-    day: 'numeric', 
-    weekday: 'long' 
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    weekday: 'long',
   })
 
   const persona = mbti ? `，专门为${mbti}人格类型设计日程安排` : ''
@@ -117,16 +120,16 @@ ${tasksContext}
 }
 
 export const generateWeeklyReport = async (
-  completedTasksContext: string, 
+  completedTasksContext: string,
   uncompletedTasksContext: string,
-  calendarContext: string, 
+  calendarContext: string,
   nextWeekCalendarContext: string,
   timezone: string = 'Asia/Shanghai',
   userToken?: string,
   mbti?: string,
   userId?: string,
   callbackUrl?: string,
-  callbackPayload?: Record<string, any>
+  callbackPayload?: Record<string, any>,
 ) => {
   const today = new Date()
   const start = new Date(today)
@@ -184,7 +187,8 @@ export const parseTextToCalendar = async (text: string, calendars: string[], tod
   const jsonStr = content.replace(/```json\n?|\n?```/g, '').trim()
   try {
     return JSON.parse(jsonStr)
-  } catch (e) {
+  }
+  catch (e) {
     console.error('Failed to parse JSON from LLM', content)
     return []
   }
@@ -196,12 +200,12 @@ export const parseTextToTemplateFields = async (
   todayDate: string,
   timezone: string,
   template: any,
-  userToken?: string
+  userToken?: string,
 ) => {
   const rules = template?.rules || {}
   const fixedFields = Array.isArray(rules.fixed_fields) ? rules.fixed_fields : []
   const allowedFields = ['title', 'start', 'end', 'location', 'calendar', 'allDay', 'description', 'reminders'].filter(
-    (field) => !fixedFields.includes(field)
+    field => !fixedFields.includes(field),
   )
   const titleRule = rules?.title_rule || ''
   const titleRuleLine = titleRule ? `标题规则: ${titleRule}` : ''
@@ -221,7 +225,8 @@ ${titleRuleLine}
   try {
     const parsed = JSON.parse(jsonStr)
     return parsed
-  } catch (e) {
+  }
+  catch (e) {
     console.error('Failed to parse JSON from LLM', content)
     return {}
   }
@@ -246,7 +251,8 @@ export const parseImageToCalendar = async (imageBase64: string, calendars: strin
   const jsonStr = content.replace(/```json\n?|\n?```/g, '').trim()
   try {
     return JSON.parse(jsonStr)
-  } catch (e) {
+  }
+  catch (e) {
     console.error('Failed to parse JSON from LLM', content)
     return []
   }

@@ -16,11 +16,12 @@ interface UserConfig {
 const getAdminSupabase = async () => {
   try {
     return getAdminClient()
-  } catch (e) {
+  }
+  catch (e) {
     const config = useRuntimeConfig()
     const { createClient } = await import('@supabase/supabase-js')
     return createClient(config.public.supabaseUrl as string, config.supabaseServiceKey, {
-      auth: { autoRefreshToken: false, persistSession: false }
+      auth: { autoRefreshToken: false, persistSession: false },
     })
   }
 }
@@ -40,7 +41,7 @@ const mergeEventFields = (parsed: any, baseEvent: any, fixedFields: string[]) =>
   return merged
 }
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async event => {
   const config = await getUserConfig(event) as unknown as UserConfig
   const body = await readBody(event)
   const text = body?.text
@@ -81,13 +82,13 @@ export default defineEventHandler(async (event) => {
     calendars,
     fixedFields,
     titleRule,
-    baseEvent
+    baseEvent,
   })
 
   const rawParsed = await parseTextToTemplateFields(text, calendars, todayDate, timeZone, template, token)
   console.log('[TemplateCalendar] Parsed', rawParsed)
   const parsed = Array.isArray(rawParsed) ? rawParsed[0] : rawParsed
-  let merged = mergeEventFields(parsed, baseEvent, fixedFields)
+  const merged = mergeEventFields(parsed, baseEvent, fixedFields)
 
   if (!merged.description && parsed?.notes) {
     merged.description = parsed.notes
@@ -112,7 +113,7 @@ export default defineEventHandler(async (event) => {
     await addEventToCalendar({
       cal_username: config.cal_username,
       cal_password: config.cal_password,
-      cal_server_url: config.cal_server_url
+      cal_server_url: config.cal_server_url,
     }, merged, targetCal)
   }
 

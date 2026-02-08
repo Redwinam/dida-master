@@ -13,7 +13,8 @@ export const useSession = () => {
       const { data, error: err } = await supabase.auth.getUser()
       if (err) throw err
       user.value = data?.user || null
-    } catch (e: any) {
+    }
+    catch (e: any) {
       error.value = e.message
       user.value = null
     }
@@ -39,9 +40,11 @@ export const useSession = () => {
       if (err) throw err
       user.value = null
       router.push('/login')
-    } catch (e: any) {
+    }
+    catch (e: any) {
       error.value = e.message
-    } finally {
+    }
+    finally {
       loading.value = false
     }
   }
@@ -51,6 +54,6 @@ export const useSession = () => {
     logout,
     loading,
     error,
-    refreshUser
+    refreshUser,
   }
 }

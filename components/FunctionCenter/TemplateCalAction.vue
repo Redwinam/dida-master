@@ -42,7 +42,7 @@ const baseEvent = reactive({
   calendar: '',
   allDay: false,
   description: '',
-  reminders: ''
+  reminders: '',
 })
 const editBaseEvent = reactive({
   title: '',
@@ -52,7 +52,7 @@ const editBaseEvent = reactive({
   calendar: '',
   allDay: false,
   description: '',
-  reminders: ''
+  reminders: '',
 })
 
 const fieldOptions = [
@@ -63,7 +63,7 @@ const fieldOptions = [
   { value: 'calendar', label: '日历' },
   { value: 'allDay', label: '全天' },
   { value: 'description', label: '备注' },
-  { value: 'reminders', label: '提醒' }
+  { value: 'reminders', label: '提醒' },
 ]
 
 const apiGuideExample = `curl -X POST https://your-domain.com/api/actions/template-calendar \\
@@ -73,7 +73,7 @@ const apiGuideExample = `curl -X POST https://your-domain.com/api/actions/templa
 
 const apiGuide = computed(() => {
   const options = templates.value.length
-    ? [{ label: '未选择模板', value: '' }, ...templates.value.map((tpl) => ({ label: tpl.name, value: tpl.id }))]
+    ? [{ label: '未选择模板', value: '' }, ...templates.value.map(tpl => ({ label: tpl.name, value: tpl.id }))]
     : undefined
   return {
     endpoint: '/api/actions/template-calendar',
@@ -81,7 +81,7 @@ const apiGuide = computed(() => {
     description: '根据模板与文本创建日历事件。',
     params: {
       template_id: 'Required. 模板 ID',
-      text: 'Required. 本次日程描述'
+      text: 'Required. 本次日程描述',
     },
     options,
     optionLabel: '日程模板',
@@ -89,7 +89,7 @@ const apiGuide = computed(() => {
       const id = value || 'TEMPLATE_ID'
       return apiGuideExample.replace('TEMPLATE_ID', id)
     },
-    example: apiGuideExample
+    example: apiGuideExample,
   }
 })
 
@@ -101,7 +101,7 @@ const missingConfig = computed(() => {
 const resetTemplateForm = () => {
   selectedEventId.value = ''
   templateName.value = ''
-  fixedFields.value = fieldOptions.map((field) => field.value)
+  fixedFields.value = fieldOptions.map(field => field.value)
   titleRule.value = ''
   baseEvent.title = ''
   baseEvent.start = ''
@@ -143,14 +143,14 @@ const applyEventToBase = (ev: any) => {
 const getReminders = () => {
   return baseEvent.reminders
     .split(',')
-    .map((v) => parseInt(v.trim(), 10))
-    .filter((v) => Number.isFinite(v) && v > 0)
+    .map(v => parseInt(v.trim(), 10))
+    .filter(v => Number.isFinite(v) && v > 0)
 }
 const getEditReminders = () => {
   return editBaseEvent.reminders
     .split(',')
-    .map((v) => parseInt(v.trim(), 10))
-    .filter((v) => Number.isFinite(v) && v > 0)
+    .map(v => parseInt(v.trim(), 10))
+    .filter(v => Number.isFinite(v) && v > 0)
 }
 
 const fetchTemplates = async () => {
@@ -159,16 +159,18 @@ const fetchTemplates = async () => {
     const { data: { session } } = await client.auth.getSession()
     const res: any = await $fetch('/api/templates/calendar', {
       headers: {
-        Authorization: session?.access_token ? `Bearer ${session.access_token}` : ''
-      }
+        Authorization: session?.access_token ? `Bearer ${session.access_token}` : '',
+      },
     })
     templates.value = res?.data || []
     if (templates.value.length > 0 && !templateId.value) {
       templateId.value = templates.value[0].id
     }
-  } catch (e: any) {
+  }
+  catch (e: any) {
     toast.add({ title: '模板加载失败', description: e.message, color: 'error' })
-  } finally {
+  }
+  finally {
     loadingTemplates.value = false
   }
 }
@@ -179,13 +181,15 @@ const fetchRecentEvents = async () => {
     const { data: { session } } = await client.auth.getSession()
     const res: any = await $fetch('/api/templates/calendar/recent', {
       headers: {
-        Authorization: session?.access_token ? `Bearer ${session.access_token}` : ''
-      }
+        Authorization: session?.access_token ? `Bearer ${session.access_token}` : '',
+      },
     })
     recentEvents.value = res?.events || []
-  } catch (e: any) {
+  }
+  catch (e: any) {
     toast.add({ title: '获取最近日程失败', description: e.message, color: 'error' })
-  } finally {
+  }
+  finally {
     loadingRecent.value = false
   }
 }
@@ -204,8 +208,8 @@ const openTemplateDetail = async () => {
     const { data: { session } } = await client.auth.getSession()
     const res: any = await $fetch(`/api/templates/calendar/${templateId.value}`, {
       headers: {
-        Authorization: session?.access_token ? `Bearer ${session.access_token}` : ''
-      }
+        Authorization: session?.access_token ? `Bearer ${session.access_token}` : '',
+      },
     })
     editTemplateName.value = res?.name || ''
     editFixedFields.value = Array.isArray(res?.rules?.fixed_fields) ? res.rules.fixed_fields : []
@@ -218,9 +222,11 @@ const openTemplateDetail = async () => {
     editBaseEvent.allDay = !!res?.base_event?.allDay
     editBaseEvent.description = res?.base_event?.description || ''
     editBaseEvent.reminders = Array.isArray(res?.base_event?.reminders) ? res.base_event.reminders.join(', ') : ''
-  } catch (e: any) {
+  }
+  catch (e: any) {
     toast.add({ title: '模板详情加载失败', description: e.message, color: 'error' })
-  } finally {
+  }
+  finally {
     loadingTemplateDetail.value = false
   }
 }
@@ -230,7 +236,7 @@ const createTemplate = async () => {
     toast.add({ title: '请输入模板名称', color: 'warning' })
     return
   }
-  const requiresBaseInfo = fixedFields.value.some((field) => ['title', 'location', 'calendar'].includes(field))
+  const requiresBaseInfo = fixedFields.value.some(field => ['title', 'location', 'calendar'].includes(field))
   if (requiresBaseInfo && !baseEvent.title && !baseEvent.location && !baseEvent.calendar) {
     toast.add({ title: '模板基础信息不足', description: '请选择日程或补充基础字段', color: 'warning' })
     return
@@ -248,26 +254,28 @@ const createTemplate = async () => {
         calendar: baseEvent.calendar,
         allDay: baseEvent.allDay,
         description: baseEvent.description,
-        reminders: getReminders()
+        reminders: getReminders(),
       },
       rules: {
         fixed_fields: fixedFields.value,
-        title_rule: titleRule.value
-      }
+        title_rule: titleRule.value,
+      },
     }
     await $fetch('/api/templates/calendar', {
       method: 'POST',
       headers: {
-        Authorization: session?.access_token ? `Bearer ${session.access_token}` : ''
+        Authorization: session?.access_token ? `Bearer ${session.access_token}` : '',
       },
-      body: payload
+      body: payload,
     })
     toast.add({ title: '模板创建成功', color: 'success' })
     showTemplateModal.value = false
     await fetchTemplates()
-  } catch (e: any) {
+  }
+  catch (e: any) {
     toast.add({ title: '模板创建失败', description: e.message, color: 'error' })
-  } finally {
+  }
+  finally {
     creatingTemplate.value = false
   }
 }
@@ -291,26 +299,28 @@ const updateTemplate = async () => {
         calendar: editBaseEvent.calendar,
         allDay: editBaseEvent.allDay,
         description: editBaseEvent.description,
-        reminders: getEditReminders()
+        reminders: getEditReminders(),
       },
       rules: {
         fixed_fields: editFixedFields.value,
-        title_rule: editTitleRule.value
-      }
+        title_rule: editTitleRule.value,
+      },
     }
     await $fetch(`/api/templates/calendar/${templateId.value}`, {
       method: 'PATCH' as any,
       headers: {
-        Authorization: session?.access_token ? `Bearer ${session.access_token}` : ''
+        Authorization: session?.access_token ? `Bearer ${session.access_token}` : '',
       },
-      body: payload
+      body: payload,
     })
     toast.add({ title: '模板已更新', color: 'success' })
     showTemplateDetailModal.value = false
     await fetchTemplates()
-  } catch (e: any) {
+  }
+  catch (e: any) {
     toast.add({ title: '模板更新失败', description: e.message, color: 'error' })
-  } finally {
+  }
+  finally {
     savingTemplate.value = false
   }
 }
@@ -323,15 +333,17 @@ const triggerTemplateCalendar = async () => {
     const res: any = await $fetch('/api/actions/template-calendar', {
       method: 'POST',
       headers: {
-        Authorization: session?.access_token ? `Bearer ${session.access_token}` : ''
+        Authorization: session?.access_token ? `Bearer ${session.access_token}` : '',
       },
-      body: { template_id: templateId.value, text: inputText.value }
+      body: { template_id: templateId.value, text: inputText.value },
     })
     toast.add({ title: '日历事件已添加', description: res?.event?.title || '创建成功', color: 'success' })
     inputText.value = ''
-  } catch (e: any) {
+  }
+  catch (e: any) {
     toast.add({ title: '处理失败', description: e.message, color: 'error' })
-  } finally {
+  }
+  finally {
     creatingEvent.value = false
   }
 }
@@ -346,11 +358,11 @@ onMounted(() => {
     title="模板日程添加"
     description="基于固定模板快速生成日历事件，例如普拉提、课程、固定地点等高重复日程。"
     icon="heroicons:bookmark-square"
-    colorClass="text-amber-600 dark:text-amber-400"
-    bgClass="bg-amber-100 dark:bg-amber-900/50"
-    :apiGuide="apiGuide"
-    :missingConfig="missingConfig"
-    missingConfigText="需要配置日历。"
+    color-class="text-amber-600 dark:text-amber-400"
+    bg-class="bg-amber-100 dark:bg-amber-900/50"
+    :api-guide="apiGuide"
+    :missing-config="missingConfig"
+    missing-config-text="需要配置日历。"
     @configure="$emit('configure')"
   >
     <div class="space-y-4">
@@ -359,23 +371,25 @@ onMounted(() => {
           v-model="templateId"
           class="flex-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900/50 text-sm text-gray-900 dark:text-white"
         >
-          <option value="" disabled>请选择模板</option>
+          <option value="" disabled>
+            请选择模板
+          </option>
           <option v-for="tpl in templates" :key="tpl.id" :value="tpl.id">
             {{ tpl.name }}
           </option>
         </select>
         <button
-          @click="fetchTemplates"
           :disabled="loadingTemplates"
           class="px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-700 dark:text-gray-200"
+          @click="fetchTemplates"
         >
           <Icon v-if="loadingTemplates" icon="line-md:loading-twotone-loop" class="w-4 h-4" />
           <Icon v-else icon="heroicons:arrow-path" class="w-4 h-4" />
         </button>
         <button
-          @click="openTemplateDetail"
           :disabled="!templateId"
           class="px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-700 dark:text-gray-200 disabled:opacity-50"
+          @click="openTemplateDetail"
         >
           <Icon icon="heroicons:pencil-square" class="w-4 h-4" />
         </button>
@@ -390,9 +404,9 @@ onMounted(() => {
 
       <div class="flex w-full rounded-xl shadow-sm overflow-hidden mt-2 border border-gray-200 dark:border-gray-700">
         <button
-          @click="triggerTemplateCalendar"
           :disabled="creatingEvent || !templateId || !inputText"
           class="flex-[2] py-2.5 px-4 bg-amber-600 hover:bg-amber-700 text-white text-sm font-medium transition-all flex justify-center items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          @click="triggerTemplateCalendar"
         >
           <Icon v-if="creatingEvent" icon="line-md:loading-twotone-loop" class="w-5 h-5" />
           <Icon v-else icon="heroicons:sparkles" class="w-5 h-5" />
@@ -400,8 +414,8 @@ onMounted(() => {
         </button>
 
         <button
-          @click="openTemplateModal"
           class="flex-1 py-2.5 px-4 bg-white hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 text-sm font-medium transition-colors border-l border-gray-200 dark:border-gray-700"
+          @click="openTemplateModal"
         >
           新建模板
         </button>
@@ -409,7 +423,7 @@ onMounted(() => {
     </div>
   </FunctionCard>
 
-  <Modal v-model="showTemplateModal" title="创建日程模板" maxWidth="max-w-3xl">
+  <Modal v-model="showTemplateModal" title="创建日程模板" max-width="max-w-3xl">
     <div class="space-y-5">
       <div class="space-y-2">
         <label class="text-sm font-medium text-gray-700 dark:text-gray-300">模板名称</label>
@@ -423,16 +437,22 @@ onMounted(() => {
       <div class="space-y-2">
         <label class="text-sm font-medium text-gray-700 dark:text-gray-300">最近日程</label>
         <div class="max-h-40 overflow-y-auto border border-gray-200 dark:border-gray-700 rounded-lg divide-y divide-gray-100 dark:divide-gray-700">
-          <div v-if="loadingRecent" class="p-3 text-sm text-gray-500">加载中...</div>
+          <div v-if="loadingRecent" class="p-3 text-sm text-gray-500">
+            加载中...
+          </div>
           <button
             v-for="ev in recentEvents"
             :key="ev.start + ev.title"
-            @click="selectedEventId = ev.start + ev.title; applyEventToBase(ev)"
             class="w-full text-left px-3 py-2 text-sm hover:bg-gray-50 dark:hover:bg-gray-700/50"
             :class="selectedEventId === ev.start + ev.title ? 'bg-amber-50 dark:bg-amber-900/20' : ''"
+            @click="selectedEventId = ev.start + ev.title; applyEventToBase(ev)"
           >
-            <div class="font-medium text-gray-900 dark:text-white">{{ ev.title || '未命名' }}</div>
-            <div class="text-xs text-gray-500">{{ ev.start ? new Date(ev.start).toLocaleString('zh-CN', { hour12: false }) : '' }} {{ ev.location || '' }}</div>
+            <div class="font-medium text-gray-900 dark:text-white">
+              {{ ev.title || '未命名' }}
+            </div>
+            <div class="text-xs text-gray-500">
+              {{ ev.start ? new Date(ev.start).toLocaleString('zh-CN', { hour12: false }) : '' }} {{ ev.location || '' }}
+            </div>
           </button>
           <div v-if="!loadingRecent && recentEvents.length === 0" class="p-3 text-sm text-gray-500">
             暂无最近日程
@@ -444,7 +464,12 @@ onMounted(() => {
         <label class="text-sm font-medium text-gray-700 dark:text-gray-300">固定字段</label>
         <div class="flex flex-wrap gap-2">
           <label v-for="field in fieldOptions" :key="field.value" class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
-            <input type="checkbox" :value="field.value" v-model="fixedFields" class="rounded border-gray-300 dark:border-gray-600 text-amber-600" />
+            <input
+              v-model="fixedFields"
+              type="checkbox"
+              :value="field.value"
+              class="rounded border-gray-300 dark:border-gray-600 text-amber-600"
+            />
             {{ field.label }}
           </label>
         </div>
@@ -458,42 +483,74 @@ onMounted(() => {
             标题
             <span v-if="!fixedFields.includes('title')" class="text-xs text-gray-400 ml-2">AI识别</span>
           </label>
-          <input v-model="baseEvent.title" :disabled="!fixedFields.includes('title')" type="text" class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900/50 text-sm text-gray-900 dark:text-white disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed dark:disabled:bg-gray-800/50" />
+          <input
+            v-model="baseEvent.title"
+            :disabled="!fixedFields.includes('title')"
+            type="text"
+            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900/50 text-sm text-gray-900 dark:text-white disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed dark:disabled:bg-gray-800/50"
+          />
         </div>
         <div class="space-y-2">
           <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
             地点
             <span v-if="!fixedFields.includes('location')" class="text-xs text-gray-400 ml-2">AI识别</span>
           </label>
-          <input v-model="baseEvent.location" :disabled="!fixedFields.includes('location')" type="text" class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900/50 text-sm text-gray-900 dark:text-white disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed dark:disabled:bg-gray-800/50" />
+          <input
+            v-model="baseEvent.location"
+            :disabled="!fixedFields.includes('location')"
+            type="text"
+            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900/50 text-sm text-gray-900 dark:text-white disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed dark:disabled:bg-gray-800/50"
+          />
         </div>
         <div class="space-y-2">
           <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
             开始时间
             <span v-if="!fixedFields.includes('start')" class="text-xs text-gray-400 ml-2">AI识别</span>
           </label>
-          <input v-model="baseEvent.start" :disabled="!fixedFields.includes('start')" type="text" placeholder="ISO 时间" class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900/50 text-sm text-gray-900 dark:text-white disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed dark:disabled:bg-gray-800/50" />
+          <input
+            v-model="baseEvent.start"
+            :disabled="!fixedFields.includes('start')"
+            type="text"
+            placeholder="ISO 时间"
+            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900/50 text-sm text-gray-900 dark:text-white disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed dark:disabled:bg-gray-800/50"
+          />
         </div>
         <div class="space-y-2">
           <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
             结束时间
             <span v-if="!fixedFields.includes('end')" class="text-xs text-gray-400 ml-2">AI识别</span>
           </label>
-          <input v-model="baseEvent.end" :disabled="!fixedFields.includes('end')" type="text" placeholder="ISO 时间" class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900/50 text-sm text-gray-900 dark:text-white disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed dark:disabled:bg-gray-800/50" />
+          <input
+            v-model="baseEvent.end"
+            :disabled="!fixedFields.includes('end')"
+            type="text"
+            placeholder="ISO 时间"
+            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900/50 text-sm text-gray-900 dark:text-white disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed dark:disabled:bg-gray-800/50"
+          />
         </div>
         <div class="space-y-2">
           <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
             日历
             <span v-if="!fixedFields.includes('calendar')" class="text-xs text-gray-400 ml-2">AI识别</span>
           </label>
-          <input v-model="baseEvent.calendar" :disabled="!fixedFields.includes('calendar')" type="text" class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900/50 text-sm text-gray-900 dark:text-white disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed dark:disabled:bg-gray-800/50" />
+          <input
+            v-model="baseEvent.calendar"
+            :disabled="!fixedFields.includes('calendar')"
+            type="text"
+            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900/50 text-sm text-gray-900 dark:text-white disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed dark:disabled:bg-gray-800/50"
+          />
         </div>
         <div class="space-y-2">
           <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
             提醒 (分钟, 逗号分隔)
             <span v-if="!fixedFields.includes('reminders')" class="text-xs text-gray-400 ml-2">AI识别</span>
           </label>
-          <input v-model="baseEvent.reminders" :disabled="!fixedFields.includes('reminders')" type="text" class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900/50 text-sm text-gray-900 dark:text-white disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed dark:disabled:bg-gray-800/50" />
+          <input
+            v-model="baseEvent.reminders"
+            :disabled="!fixedFields.includes('reminders')"
+            type="text"
+            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900/50 text-sm text-gray-900 dark:text-white disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed dark:disabled:bg-gray-800/50"
+          />
         </div>
         <div class="space-y-2">
           <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -501,7 +558,12 @@ onMounted(() => {
             <span v-if="!fixedFields.includes('allDay')" class="text-xs text-gray-400 ml-2">AI识别</span>
           </label>
           <label class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
-            <input v-model="baseEvent.allDay" :disabled="!fixedFields.includes('allDay')" type="checkbox" class="rounded border-gray-300 dark:border-gray-600 text-amber-600 disabled:opacity-50" />
+            <input
+              v-model="baseEvent.allDay"
+              :disabled="!fixedFields.includes('allDay')"
+              type="checkbox"
+              class="rounded border-gray-300 dark:border-gray-600 text-amber-600 disabled:opacity-50"
+            />
             全天日程
           </label>
         </div>
@@ -512,27 +574,37 @@ onMounted(() => {
           备注
           <span v-if="!fixedFields.includes('description')" class="text-xs text-gray-400 ml-2">AI识别</span>
         </label>
-        <textarea v-model="baseEvent.description" :disabled="!fixedFields.includes('description')" rows="2" class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900/50 text-sm text-gray-900 dark:text-white disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed dark:disabled:bg-gray-800/50"></textarea>
+        <textarea
+          v-model="baseEvent.description"
+          :disabled="!fixedFields.includes('description')"
+          rows="2"
+          class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900/50 text-sm text-gray-900 dark:text-white disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed dark:disabled:bg-gray-800/50"
+        ></textarea>
       </div>
 
       <div class="border-t border-gray-200 dark:border-gray-700"></div>
 
       <div class="space-y-2">
         <label class="text-sm font-medium text-gray-700 dark:text-gray-300">标题规则</label>
-        <textarea v-model="titleRule" rows="3" placeholder="例如：标题以“普拉提：”开头，包含课程类型，语气简洁" class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900/50 text-sm text-gray-900 dark:text-white"></textarea>
+        <textarea
+          v-model="titleRule"
+          rows="3"
+          placeholder="例如：标题以“普拉提：”开头，包含课程类型，语气简洁"
+          class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900/50 text-sm text-gray-900 dark:text-white"
+        ></textarea>
       </div>
 
       <div class="flex justify-end gap-3">
         <button
-          @click="showTemplateModal = false"
           class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-700 dark:text-gray-200"
+          @click="showTemplateModal = false"
         >
           取消
         </button>
         <button
-          @click="createTemplate"
           :disabled="creatingTemplate"
           class="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-sm font-medium"
+          @click="createTemplate"
         >
           <Icon v-if="creatingTemplate" icon="line-md:loading-twotone-loop" class="w-4 h-4" />
           <span v-else>创建模板</span>
@@ -541,9 +613,11 @@ onMounted(() => {
     </div>
   </Modal>
 
-  <Modal v-model="showTemplateDetailModal" title="模板详情与编辑" maxWidth="max-w-3xl">
+  <Modal v-model="showTemplateDetailModal" title="模板详情与编辑" max-width="max-w-3xl">
     <div class="space-y-5">
-      <div v-if="loadingTemplateDetail" class="py-6 text-center text-sm text-gray-500">加载中...</div>
+      <div v-if="loadingTemplateDetail" class="py-6 text-center text-sm text-gray-500">
+        加载中...
+      </div>
       <div v-else class="space-y-5">
         <div class="space-y-2">
           <label class="text-sm font-medium text-gray-700 dark:text-gray-300">模板名称</label>
@@ -558,7 +632,12 @@ onMounted(() => {
           <label class="text-sm font-medium text-gray-700 dark:text-gray-300">固定字段</label>
           <div class="flex flex-wrap gap-2">
             <label v-for="field in fieldOptions" :key="field.value" class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
-              <input type="checkbox" :value="field.value" v-model="editFixedFields" class="rounded border-gray-300 dark:border-gray-600 text-amber-600" />
+              <input
+                v-model="editFixedFields"
+                type="checkbox"
+                :value="field.value"
+                class="rounded border-gray-300 dark:border-gray-600 text-amber-600"
+              />
               {{ field.label }}
             </label>
           </div>
@@ -572,42 +651,74 @@ onMounted(() => {
               标题
               <span v-if="!editFixedFields.includes('title')" class="text-xs text-gray-400 ml-2">AI识别</span>
             </label>
-            <input v-model="editBaseEvent.title" :disabled="!editFixedFields.includes('title')" type="text" class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900/50 text-sm text-gray-900 dark:text-white disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed dark:disabled:bg-gray-800/50" />
+            <input
+              v-model="editBaseEvent.title"
+              :disabled="!editFixedFields.includes('title')"
+              type="text"
+              class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900/50 text-sm text-gray-900 dark:text-white disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed dark:disabled:bg-gray-800/50"
+            />
           </div>
           <div class="space-y-2">
             <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
               地点
               <span v-if="!editFixedFields.includes('location')" class="text-xs text-gray-400 ml-2">AI识别</span>
             </label>
-            <input v-model="editBaseEvent.location" :disabled="!editFixedFields.includes('location')" type="text" class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900/50 text-sm text-gray-900 dark:text-white disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed dark:disabled:bg-gray-800/50" />
+            <input
+              v-model="editBaseEvent.location"
+              :disabled="!editFixedFields.includes('location')"
+              type="text"
+              class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900/50 text-sm text-gray-900 dark:text-white disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed dark:disabled:bg-gray-800/50"
+            />
           </div>
           <div class="space-y-2">
             <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
               开始时间
               <span v-if="!editFixedFields.includes('start')" class="text-xs text-gray-400 ml-2">AI识别</span>
             </label>
-            <input v-model="editBaseEvent.start" :disabled="!editFixedFields.includes('start')" type="text" placeholder="ISO 时间" class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900/50 text-sm text-gray-900 dark:text-white disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed dark:disabled:bg-gray-800/50" />
+            <input
+              v-model="editBaseEvent.start"
+              :disabled="!editFixedFields.includes('start')"
+              type="text"
+              placeholder="ISO 时间"
+              class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900/50 text-sm text-gray-900 dark:text-white disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed dark:disabled:bg-gray-800/50"
+            />
           </div>
           <div class="space-y-2">
             <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
               结束时间
               <span v-if="!editFixedFields.includes('end')" class="text-xs text-gray-400 ml-2">AI识别</span>
             </label>
-            <input v-model="editBaseEvent.end" :disabled="!editFixedFields.includes('end')" type="text" placeholder="ISO 时间" class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900/50 text-sm text-gray-900 dark:text-white disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed dark:disabled:bg-gray-800/50" />
+            <input
+              v-model="editBaseEvent.end"
+              :disabled="!editFixedFields.includes('end')"
+              type="text"
+              placeholder="ISO 时间"
+              class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900/50 text-sm text-gray-900 dark:text-white disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed dark:disabled:bg-gray-800/50"
+            />
           </div>
           <div class="space-y-2">
             <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
               日历
               <span v-if="!editFixedFields.includes('calendar')" class="text-xs text-gray-400 ml-2">AI识别</span>
             </label>
-            <input v-model="editBaseEvent.calendar" :disabled="!editFixedFields.includes('calendar')" type="text" class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900/50 text-sm text-gray-900 dark:text-white disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed dark:disabled:bg-gray-800/50" />
+            <input
+              v-model="editBaseEvent.calendar"
+              :disabled="!editFixedFields.includes('calendar')"
+              type="text"
+              class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900/50 text-sm text-gray-900 dark:text-white disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed dark:disabled:bg-gray-800/50"
+            />
           </div>
           <div class="space-y-2">
             <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
               提醒 (分钟, 逗号分隔)
               <span v-if="!editFixedFields.includes('reminders')" class="text-xs text-gray-400 ml-2">AI识别</span>
             </label>
-            <input v-model="editBaseEvent.reminders" :disabled="!editFixedFields.includes('reminders')" type="text" class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900/50 text-sm text-gray-900 dark:text-white disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed dark:disabled:bg-gray-800/50" />
+            <input
+              v-model="editBaseEvent.reminders"
+              :disabled="!editFixedFields.includes('reminders')"
+              type="text"
+              class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900/50 text-sm text-gray-900 dark:text-white disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed dark:disabled:bg-gray-800/50"
+            />
           </div>
           <div class="space-y-2">
             <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -615,7 +726,12 @@ onMounted(() => {
               <span v-if="!editFixedFields.includes('allDay')" class="text-xs text-gray-400 ml-2">AI识别</span>
             </label>
             <label class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
-              <input v-model="editBaseEvent.allDay" :disabled="!editFixedFields.includes('allDay')" type="checkbox" class="rounded border-gray-300 dark:border-gray-600 text-amber-600 disabled:opacity-50" />
+              <input
+                v-model="editBaseEvent.allDay"
+                :disabled="!editFixedFields.includes('allDay')"
+                type="checkbox"
+                class="rounded border-gray-300 dark:border-gray-600 text-amber-600 disabled:opacity-50"
+              />
               全天日程
             </label>
           </div>
@@ -626,27 +742,37 @@ onMounted(() => {
             备注
             <span v-if="!editFixedFields.includes('description')" class="text-xs text-gray-400 ml-2">AI识别</span>
           </label>
-          <textarea v-model="editBaseEvent.description" :disabled="!editFixedFields.includes('description')" rows="2" class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900/50 text-sm text-gray-900 dark:text-white disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed dark:disabled:bg-gray-800/50"></textarea>
+          <textarea
+            v-model="editBaseEvent.description"
+            :disabled="!editFixedFields.includes('description')"
+            rows="2"
+            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900/50 text-sm text-gray-900 dark:text-white disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed dark:disabled:bg-gray-800/50"
+          ></textarea>
         </div>
 
         <div class="border-t border-gray-200 dark:border-gray-700"></div>
 
         <div class="space-y-2">
           <label class="text-sm font-medium text-gray-700 dark:text-gray-300">标题规则</label>
-          <textarea v-model="editTitleRule" rows="3" placeholder="例如：标题以“普拉提：”开头，包含课程类型，语气简洁" class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900/50 text-sm text-gray-900 dark:text-white"></textarea>
+          <textarea
+            v-model="editTitleRule"
+            rows="3"
+            placeholder="例如：标题以“普拉提：”开头，包含课程类型，语气简洁"
+            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900/50 text-sm text-gray-900 dark:text-white"
+          ></textarea>
         </div>
 
         <div class="flex justify-end gap-3">
           <button
-            @click="showTemplateDetailModal = false"
             class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-700 dark:text-gray-200"
+            @click="showTemplateDetailModal = false"
           >
             取消
           </button>
           <button
-            @click="updateTemplate"
             :disabled="savingTemplate"
             class="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-sm font-medium"
+            @click="updateTemplate"
           >
             <Icon v-if="savingTemplate" icon="line-md:loading-twotone-loop" class="w-4 h-4" />
             <span v-else>保存</span>

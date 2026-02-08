@@ -1,4 +1,4 @@
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async event => {
   const client = getUserClient(event)
   const { data: { user }, error: userError } = await client.auth.getUser()
   if (userError || !user?.id) {

@@ -1,6 +1,6 @@
 import { defineEventHandler, readBody, createError } from 'h3'
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async event => {
   const client = getUserClient(event)
   const { data: { user }, error: authError } = await client.auth.getUser()
 
@@ -20,7 +20,7 @@ export default defineEventHandler(async (event) => {
       .order('service_order')
 
     if (skError) {
-        console.error('Error fetching service keys', skError)
+      console.error('Error fetching service keys', skError)
     }
 
     // 2. Fetch user's LLM configs
@@ -30,7 +30,7 @@ export default defineEventHandler(async (event) => {
       .eq('user_id', user.id)
 
     if (lcError) {
-        console.error('Error fetching llm configs', lcError)
+      console.error('Error fetching llm configs', lcError)
     }
 
     // 3. Fetch current mappings
@@ -40,13 +40,13 @@ export default defineEventHandler(async (event) => {
       .eq('user_id', user.id)
 
     if (mError) {
-        console.error('Error fetching mappings', mError)
+      console.error('Error fetching mappings', mError)
     }
 
     return {
       serviceKeys: serviceKeys || [],
       llmConfigs: llmConfigs || [],
-      mappings: mappings || []
+      mappings: mappings || [],
     }
   }
 
@@ -63,7 +63,7 @@ export default defineEventHandler(async (event) => {
       user_id: user.id,
       service_key: m.service_key,
       llm_config_id: m.llm_config_id || null,
-      model_name: m.model_name || null
+      model_name: m.model_name || null,
     }))
 
     const { error } = await client

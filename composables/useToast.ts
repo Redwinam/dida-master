@@ -24,6 +24,6 @@ export const useToast = () => {
   return {
     add,
     notifications,
-    remove
+    remove,
   }
 }

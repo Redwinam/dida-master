@@ -1,6 +1,6 @@
 import { defineEventHandler, readBody, createError } from 'h3'
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async event => {
   const client = getUserClient(event)
   const { data: { user }, error: authError } = await client.auth.getUser()
 
@@ -24,7 +24,7 @@ export default defineEventHandler(async (event) => {
   const normalizedRules = {
     ...rules,
     fixed_fields: Array.isArray(rules?.fixed_fields) ? rules.fixed_fields : (rules?.fixed_fields ? [rules.fixed_fields] : []),
-    title_rule: typeof rules?.title_rule === 'string' ? rules.title_rule.trim() : ''
+    title_rule: typeof rules?.title_rule === 'string' ? rules.title_rule.trim() : '',
   }
 
   const fixedFields = normalizedRules.fixed_fields || []
@@ -40,7 +40,7 @@ export default defineEventHandler(async (event) => {
     name,
     base_event: sanitizedBaseEvent,
     rules: normalizedRules,
-    updated_at: new Date()
+    updated_at: new Date(),
   }
 
   const { data, error } = await client
