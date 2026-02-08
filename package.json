@@ -13,6 +13,7 @@
   "dependencies": {
     "@edgeone/nuxt-pages": "^1.0.14",
     "@nuxt/eslint": "^1.14.0",
+    "@nuxt/icon": "^2.2.1",
     "@redwinam/if9-supabase-auth": "^0.2.14",
     "@supabase/supabase-js": "^2.89.0",
     "@tailwindcss/typography": "^0.5.19",
@@ -23,6 +24,7 @@
     "markdown-it": "^14.1.0",
     "nuxt": "^4.2.1",
     "path-browserify": "^1.0.1",
+    "reka-ui": "^2.8.0",
     "stream-browserify": "^3.0.0",
     "tailwindcss": "^4.1.17",
     "tsdav": "^2.1.6",
@@ -30,7 +32,6 @@
     "vue-router": "^4.6.3"
   },
   "devDependencies": {
-    "@iconify/vue": "^5.0.0",
     "@types/markdown-it": "^14.1.2",
     "buffer": "^6.0.3"
   }

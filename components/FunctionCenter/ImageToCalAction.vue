@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { Icon } from '@iconify/vue'
 import FunctionCard from './FunctionCard.vue'
 
 const { $supabase } = useNuxtApp()
@@ -101,7 +100,7 @@ const apiGuide = {
         />
 
         <div v-if="!imagePreview" class="py-4">
-          <Icon icon="heroicons:cloud-arrow-up" class="w-10 h-10 text-gray-400 mx-auto mb-2" />
+          <Icon name="heroicons:cloud-arrow-up" class="w-10 h-10 text-gray-400 mx-auto mb-2" />
           <p class="text-sm text-gray-500">
             点击或拖拽上传图片
           </p>
@@ -112,7 +111,7 @@ const apiGuide = {
             class="absolute top-1 right-1 p-1 bg-black/50 text-white rounded-full hover:bg-red-500 transition-colors opacity-0 group-hover/preview:opacity-100"
             @click.stop="clearImage"
           >
-            <Icon icon="heroicons:x-mark" class="w-4 h-4" />
+            <Icon name="heroicons:x-mark" class="w-4 h-4" />
           </button>
         </div>
       </div>
@@ -122,8 +121,8 @@ const apiGuide = {
         class="w-full py-2.5 px-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-medium shadow-sm transition-all flex justify-center items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
         @click="triggerImageToCalendar"
       >
-        <Icon v-if="loadingAction" icon="line-md:loading-twotone-loop" class="w-5 h-5" />
-        <Icon v-else icon="heroicons:sparkles" class="w-5 h-5" />
+        <Icon v-if="loadingAction" name="line-md:loading-twotone-loop" class="w-5 h-5" />
+        <Icon v-else name="heroicons:sparkles" class="w-5 h-5" />
         开始识别并添加
       </button>
     </div>

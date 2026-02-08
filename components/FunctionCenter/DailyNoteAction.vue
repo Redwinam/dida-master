@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { Icon } from '@iconify/vue'
 import FunctionCard from './FunctionCard.vue'
 
 const { $supabase } = useNuxtApp()
@@ -69,8 +68,8 @@ const apiGuide = {
       class="w-full py-2.5 px-4 bg-primary-600 hover:bg-primary-700 text-white rounded-lg text-sm font-medium shadow-sm transition-all flex justify-center items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
       @click="triggerDailyNote"
     >
-      <Icon v-if="loadingAction" icon="line-md:loading-twotone-loop" class="w-5 h-5" />
-      <Icon v-else icon="heroicons:play" class="w-5 h-5" />
+      <Icon v-if="loadingAction" name="line-md:loading-twotone-loop" class="w-5 h-5" />
+      <Icon v-else name="heroicons:play" class="w-5 h-5" />
       立即执行
     </button>
 

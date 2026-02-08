@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { Icon } from '@iconify/vue'
 
 const { user } = useSession()
 const { $supabase } = useNuxtApp()
@@ -97,8 +96,8 @@ async function revokeApiKey() {
         class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors flex items-center gap-2"
         @click="generateApiKey"
       >
-        <Icon v-if="loadingApiKey" icon="line-md:loading-twotone-loop" class="w-4 h-4" />
-        <Icon v-else icon="heroicons:sparkles" class="w-4 h-4" />
+        <Icon v-if="loadingApiKey" name="line-md:loading-twotone-loop" class="w-4 h-4" />
+        <Icon v-else name="heroicons:sparkles" class="w-4 h-4" />
         随机生成
       </button>
     </div>
@@ -117,7 +116,7 @@ async function revokeApiKey() {
             class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
             @click.prevent="showApiKey = !showApiKey"
           >
-            <Icon :icon="showApiKey ? 'heroicons:eye-slash' : 'heroicons:eye'" class="w-4 h-4" />
+            <Icon :name="showApiKey ? 'heroicons:eye-slash' : 'heroicons:eye'" class="w-4 h-4" />
           </button>
         </div>
         <button
@@ -125,14 +124,14 @@ async function revokeApiKey() {
           title="复制"
           @click.prevent="copyApiKey"
         >
-          <Icon icon="heroicons:clipboard" class="w-5 h-5" />
+          <Icon name="heroicons:clipboard" class="w-5 h-5" />
         </button>
         <button
           class="px-3 py-2 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
           title="撤销 Key"
           @click="revokeApiKey"
         >
-          <Icon icon="heroicons:trash" class="w-5 h-5" />
+          <Icon name="heroicons:trash" class="w-5 h-5" />
         </button>
       </div>
       <p class="text-xs text-gray-500 mt-2">

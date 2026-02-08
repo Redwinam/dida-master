@@ -1,5 +1,13 @@
 <script setup lang="ts">
-import { Icon } from '@iconify/vue'
+import {
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogOverlay,
+  DialogPortal,
+  DialogRoot,
+  DialogTitle,
+} from 'reka-ui'
 
 const props = withDefaults(defineProps<{
   modelValue: boolean
@@ -14,36 +22,40 @@ const props = withDefaults(defineProps<{
 
 const emit = defineEmits(['update:modelValue'])
 
-function close() {
-  emit('update:modelValue', false)
-}
+const open = computed({
+  get: () => props.modelValue,
+  set: val => emit('update:modelValue', val),
+})
 </script>
 
 <template>
-  <Teleport to="body">
-    <div v-if="modelValue" class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
-      <!-- Backdrop -->
-      <div class="absolute inset-0 bg-gray-900/50 backdrop-blur-sm transition-opacity" @click="close"></div>
+  <DialogRoot v-model:open="open">
+    <DialogPortal>
+      <DialogOverlay class="fixed inset-0 z-50 bg-gray-900/50 backdrop-blur-sm transition-opacity data-[state=open]:animate-fade-in" />
 
-      <!-- Modal Panel -->
-      <div
+      <DialogContent
         :class="[
-          'relative w-full transform rounded-2xl bg-white dark:bg-gray-800 overflow-hidden text-left shadow-xl transition-all border border-gray-100 dark:border-gray-700',
+          'fixed left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2 w-[calc(100%-2rem)] sm:w-[calc(100%-3rem)] transform rounded-2xl bg-white dark:bg-gray-800 overflow-hidden text-left shadow-xl transition-all border border-gray-100 dark:border-gray-700',
           maxWidth || 'max-w-lg',
           padding ? 'p-6' : '',
         ]"
       >
+        <!-- Hidden description for accessibility -->
+        <DialogDescription class="sr-only">
+          {{ title }}
+        </DialogDescription>
+
         <div v-if="props.showHeader" class="flex items-center justify-between mb-5">
-          <h3 class="text-lg font-semibold leading-6 text-gray-900 dark:text-white">
+          <DialogTitle class="text-lg font-semibold leading-6 text-gray-900 dark:text-white">
             {{ title }}
-          </h3>
-          <button class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300 transition-colors" @click="close">
-            <Icon icon="heroicons:x-mark" class="w-5 h-5" />
-          </button>
+          </DialogTitle>
+          <DialogClose class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300 transition-colors">
+            <Icon name="heroicons:x-mark" class="w-5 h-5" />
+          </DialogClose>
         </div>
 
         <slot></slot>
-      </div>
-    </div>
-  </Teleport>
+      </DialogContent>
+    </DialogPortal>
+  </DialogRoot>
 </template>

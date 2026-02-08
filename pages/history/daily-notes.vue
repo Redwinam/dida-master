@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { Icon } from '@iconify/vue'
 import MarkdownIt from 'markdown-it'
 
 definePageMeta({
@@ -60,7 +59,7 @@ watch(() => route.query.page, newPage => {
       <div class="flex items-center justify-between mb-8">
         <div class="flex items-center gap-4">
           <NuxtLink to="/" class="p-2 hover:bg-gray-200 dark:hover:bg-gray-800 rounded-lg transition-colors">
-            <Icon icon="heroicons:arrow-left" class="w-6 h-6 text-gray-600 dark:text-gray-400" />
+            <Icon name="heroicons:arrow-left" class="w-6 h-6 text-gray-600 dark:text-gray-400" />
           </NuxtLink>
           <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
             每日笔记历史

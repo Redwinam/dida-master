@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { Icon } from '@iconify/vue'
 
 const { config } = useUserConfig()
 
@@ -125,7 +124,7 @@ const selectType = (type: string) => {
               {{ type }}
               <Icon
                 v-if="config.mbti === type"
-                icon="heroicons:check-circle-solid"
+                name="heroicons:check-circle-solid"
                 class="absolute -top-2 -right-2 w-5 h-5 text-white bg-inherit rounded-full"
               />
             </button>

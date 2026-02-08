@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { Icon } from '@iconify/vue'
 import Modal from '@/components/ui/Modal.vue'
 
 const { config } = useUserConfig()
@@ -135,7 +134,7 @@ function toggleTargetCalendar(name: string) {
         <label class="text-sm font-medium text-gray-700 dark:text-gray-300">服务器地址 (Server URL)</label>
         <div class="relative">
           <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <Icon icon="heroicons:server" class="w-5 h-5 text-gray-400" />
+            <Icon name="heroicons:server" class="w-5 h-5 text-gray-400" />
           </div>
           <input
             v-model="config.cal_server_url"
@@ -151,7 +150,7 @@ function toggleTargetCalendar(name: string) {
           <label class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ calProvider === 'icloud' ? 'Apple ID' : '邮箱地址' }}</label>
           <div class="relative">
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Icon icon="heroicons:user-circle" class="w-5 h-5 text-gray-400" />
+              <Icon name="heroicons:user-circle" class="w-5 h-5 text-gray-400" />
             </div>
             <input
               v-model="config.cal_username"
@@ -165,7 +164,7 @@ function toggleTargetCalendar(name: string) {
           <label class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ calProvider === 'icloud' ? '应用专用密码' : '密码' }}</label>
           <div class="relative">
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Icon icon="heroicons:key" class="w-5 h-5 text-gray-400" />
+              <Icon name="heroicons:key" class="w-5 h-5 text-gray-400" />
             </div>
             <input v-model="config.cal_password" type="password" class="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700/50 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 sm:text-sm" />
           </div>
@@ -177,7 +176,7 @@ function toggleTargetCalendar(name: string) {
           <label class="text-sm font-medium text-gray-700 dark:text-gray-300">时区</label>
           <div class="relative">
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Icon icon="heroicons:globe-alt" class="w-5 h-5 text-gray-400" />
+              <Icon name="heroicons:globe-alt" class="w-5 h-5 text-gray-400" />
             </div>
             <input
               v-model="config.timezone"
@@ -191,7 +190,7 @@ function toggleTargetCalendar(name: string) {
           <label class="text-sm font-medium text-gray-700 dark:text-gray-300">周报前瞻天数</label>
           <div class="relative">
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Icon icon="heroicons:calendar" class="w-5 h-5 text-gray-400" />
+              <Icon name="heroicons:calendar" class="w-5 h-5 text-gray-400" />
             </div>
             <input v-model="config.cal_lookahead_days" type="number" class="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700/50 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 sm:text-sm" />
           </div>
@@ -222,7 +221,7 @@ function toggleTargetCalendar(name: string) {
     <!-- Calendar Selection Modal -->
     <Modal v-model="showCalModal" title="选择目标日历">
       <div v-if="fetchingCalendars" class="flex justify-center py-8">
-        <Icon icon="line-md:loading-twotone-loop" class="w-8 h-8 text-primary-500" />
+        <Icon name="line-md:loading-twotone-loop" class="w-8 h-8 text-primary-500" />
       </div>
       <div v-else class="max-h-60 overflow-y-auto space-y-2 p-1">
         <label v-for="c in calendars" :key="c.name" class="flex items-center gap-3 px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg cursor-pointer">

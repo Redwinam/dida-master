@@ -4,7 +4,7 @@ import tailwindcss from '@tailwindcss/vite'
 export default defineNuxtConfig({
   extends: ['@redwinam/if9-supabase-auth'],
 
-  modules: ['@nuxt/eslint'],
+  modules: ['@nuxt/eslint', '@nuxt/icon'],
   devtools: { enabled: true },
   devServer: { port: 7006 },
 

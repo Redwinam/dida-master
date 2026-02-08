@@ -1,5 +1,16 @@
 <script setup lang="ts">
-import { Icon } from '@iconify/vue'
+import {
+  SelectContent,
+  SelectIcon,
+  SelectItem,
+  SelectItemIndicator,
+  SelectItemText,
+  SelectPortal,
+  SelectRoot,
+  SelectTrigger,
+  SelectValue,
+  SelectViewport,
+} from 'reka-ui'
 import FunctionCard from './FunctionCard.vue'
 import Modal from '@/components/ui/Modal.vue'
 
@@ -367,31 +378,40 @@ onMounted(() => {
   >
     <div class="space-y-4">
       <div class="flex items-center gap-2">
-        <select
-          v-model="templateId"
-          class="flex-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900/50 text-sm text-gray-900 dark:text-white"
-        >
-          <option value="" disabled>
-            请选择模板
-          </option>
-          <option v-for="tpl in templates" :key="tpl.id" :value="tpl.id">
-            {{ tpl.name }}
-          </option>
-        </select>
+        <SelectRoot v-model="templateId" class="flex-1">
+          <SelectTrigger class="inline-flex items-center justify-between w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900/50 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors">
+            <SelectValue placeholder="请选择模板" />
+            <SelectIcon>
+              <Icon name="heroicons:chevron-down" class="w-4 h-4 text-gray-400" />
+            </SelectIcon>
+          </SelectTrigger>
+          <SelectPortal>
+            <SelectContent class="z-[200] bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg overflow-hidden" position="popper" :side-offset="4">
+              <SelectViewport class="p-1 max-h-48">
+                <SelectItem v-for="tpl in templates" :key="tpl.id" :value="tpl.id" class="relative flex items-center px-3 py-2 text-sm rounded-md text-gray-900 dark:text-white cursor-pointer select-none hover:bg-gray-100 dark:hover:bg-gray-700 data-[highlighted]:bg-gray-100 dark:data-[highlighted]:bg-gray-700 outline-none">
+                  <SelectItemText>{{ tpl.name }}</SelectItemText>
+                  <SelectItemIndicator class="absolute right-2">
+                    <Icon name="heroicons:check" class="w-4 h-4 text-amber-600" />
+                  </SelectItemIndicator>
+                </SelectItem>
+              </SelectViewport>
+            </SelectContent>
+          </SelectPortal>
+        </SelectRoot>
         <button
           :disabled="loadingTemplates"
           class="px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-700 dark:text-gray-200"
           @click="fetchTemplates"
         >
-          <Icon v-if="loadingTemplates" icon="line-md:loading-twotone-loop" class="w-4 h-4" />
-          <Icon v-else icon="heroicons:arrow-path" class="w-4 h-4" />
+          <Icon v-if="loadingTemplates" name="line-md:loading-twotone-loop" class="w-4 h-4" />
+          <Icon v-else name="heroicons:arrow-path" class="w-4 h-4" />
         </button>
         <button
           :disabled="!templateId"
           class="px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-700 dark:text-gray-200 disabled:opacity-50"
           @click="openTemplateDetail"
         >
-          <Icon icon="heroicons:pencil-square" class="w-4 h-4" />
+          <Icon name="heroicons:pencil-square" class="w-4 h-4" />
         </button>
       </div>
 
@@ -408,8 +428,8 @@ onMounted(() => {
           class="flex-[2] py-2.5 px-4 bg-amber-600 hover:bg-amber-700 text-white text-sm font-medium transition-all flex justify-center items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
           @click="triggerTemplateCalendar"
         >
-          <Icon v-if="creatingEvent" icon="line-md:loading-twotone-loop" class="w-5 h-5" />
-          <Icon v-else icon="heroicons:sparkles" class="w-5 h-5" />
+          <Icon v-if="creatingEvent" name="line-md:loading-twotone-loop" class="w-5 h-5" />
+          <Icon v-else name="heroicons:sparkles" class="w-5 h-5" />
           基于模板创建
         </button>
 
@@ -606,7 +626,7 @@ onMounted(() => {
           class="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-sm font-medium"
           @click="createTemplate"
         >
-          <Icon v-if="creatingTemplate" icon="line-md:loading-twotone-loop" class="w-4 h-4" />
+          <Icon v-if="creatingTemplate" name="line-md:loading-twotone-loop" class="w-4 h-4" />
           <span v-else>创建模板</span>
         </button>
       </div>
@@ -774,7 +794,7 @@ onMounted(() => {
             class="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-sm font-medium"
             @click="updateTemplate"
           >
-            <Icon v-if="savingTemplate" icon="line-md:loading-twotone-loop" class="w-4 h-4" />
+            <Icon v-if="savingTemplate" name="line-md:loading-twotone-loop" class="w-4 h-4" />
             <span v-else>保存</span>
           </button>
         </div>

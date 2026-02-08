@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { Icon } from '@iconify/vue'
 
 const connect = () => {
   window.location.href = '/api/auth/dida/authorize'
@@ -12,7 +11,7 @@ const connect = () => {
       <!-- Header -->
       <div class="px-8 pt-8 pb-6 text-center">
         <div class="flex justify-center mb-4">
-          <Icon icon="simple-icons:ticktick" class="w-16 h-16 text-blue-500" />
+          <Icon name="simple-icons:ticktick" class="w-16 h-16 text-blue-500" />
         </div>
         <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2 tracking-tight">
           Connect Dida365
@@ -28,7 +27,7 @@ const connect = () => {
           class="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-base font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200"
           @click="connect"
         >
-          <Icon icon="heroicons:link" class="w-5 h-5 mr-2" />
+          <Icon name="heroicons:link" class="w-5 h-5 mr-2" />
           Connect Now
         </button>
       </div>

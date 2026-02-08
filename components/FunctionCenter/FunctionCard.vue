@@ -1,5 +1,16 @@
 <script setup lang="ts">
-import { Icon } from '@iconify/vue'
+import {
+  SelectContent,
+  SelectIcon,
+  SelectItem,
+  SelectItemIndicator,
+  SelectItemText,
+  SelectPortal,
+  SelectRoot,
+  SelectTrigger,
+  SelectValue,
+  SelectViewport,
+} from 'reka-ui'
 import Modal from '@/components/ui/Modal.vue'
 
 const props = withDefaults(defineProps<{
@@ -54,14 +65,14 @@ watch(
 <template>
   <div class="group relative bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden hover:shadow-md transition-all duration-300 h-full flex flex-col">
     <div class="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity pointer-events-none">
-      <Icon :icon="icon" class="w-48 h-48" :class="colorClass" />
+      <Icon :name="icon" class="w-48 h-48" :class="colorClass" />
     </div>
 
     <div class="p-6 relative z-10 flex flex-col h-full">
       <div class="flex justify-between items-start mb-4">
         <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
           <div class="p-2 rounded-lg" :class="[bgClass, colorClass]">
-            <Icon :icon="icon" class="w-6 h-6" />
+            <Icon :name="icon" class="w-6 h-6" />
           </div>
           {{ title }}
         </h3>
@@ -71,7 +82,7 @@ watch(
           title="API 使用说明"
           @click="showApiModal = true"
         >
-          <Icon icon="heroicons:code-bracket" class="w-3.5 h-3.5" />
+          <Icon name="heroicons:code-bracket" class="w-3.5 h-3.5" />
           API
         </button>
       </div>
@@ -83,14 +94,14 @@ watch(
       <div class="mt-auto">
         <div v-if="missingConfig" class="flex flex-col gap-3">
           <div class="p-3 bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 text-sm rounded-lg flex items-start gap-2">
-            <Icon icon="heroicons:exclamation-triangle" class="w-5 h-5 shrink-0 mt-0.5" />
+            <Icon name="heroicons:exclamation-triangle" class="w-5 h-5 shrink-0 mt-0.5" />
             <span>{{ missingConfigText || '功能未配置，请先完成配置。' }}</span>
           </div>
           <button
             class="w-full py-2.5 px-4 bg-amber-100 hover:bg-amber-200 dark:bg-amber-900/40 dark:hover:bg-amber-900/60 text-amber-700 dark:text-amber-300 rounded-lg text-sm font-medium shadow-sm transition-all flex justify-center items-center gap-2"
             @click="$emit('configure')"
           >
-            <Icon icon="heroicons:cog-6-tooth" class="w-5 h-5" />
+            <Icon name="heroicons:cog-6-tooth" class="w-5 h-5" />
             去配置
           </button>
         </div>
@@ -125,14 +136,26 @@ watch(
           <h5 class="font-medium text-gray-900 dark:text-white">
             {{ apiGuide.optionLabel || '选择模板' }}
           </h5>
-          <select
-            v-model="selectedApiOption"
-            class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900/50 text-sm text-gray-900 dark:text-white"
-          >
-            <option v-for="option in apiGuide.options" :key="option.value || option.label" :value="option.value">
-              {{ option.label }}
-            </option>
-          </select>
+          <SelectRoot v-model="selectedApiOption">
+            <SelectTrigger class="inline-flex items-center justify-between w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900/50 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors">
+              <SelectValue placeholder="请选择" />
+              <SelectIcon>
+                <Icon name="heroicons:chevron-down" class="w-4 h-4 text-gray-400" />
+              </SelectIcon>
+            </SelectTrigger>
+            <SelectPortal>
+              <SelectContent class="z-[200] bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg overflow-hidden" position="popper" :side-offset="4">
+                <SelectViewport class="p-1 max-h-48">
+                  <SelectItem v-for="option in apiGuide.options" :key="option.value || option.label" :value="option.value" class="relative flex items-center px-3 py-2 text-sm rounded-md text-gray-900 dark:text-white cursor-pointer select-none hover:bg-gray-100 dark:hover:bg-gray-700 data-[highlighted]:bg-gray-100 dark:data-[highlighted]:bg-gray-700 outline-none">
+                    <SelectItemText>{{ option.label }}</SelectItemText>
+                    <SelectItemIndicator class="absolute right-2">
+                      <Icon name="heroicons:check" class="w-4 h-4 text-primary-600" />
+                    </SelectItemIndicator>
+                  </SelectItem>
+                </SelectViewport>
+              </SelectContent>
+            </SelectPortal>
+          </SelectRoot>
         </div>
 
         <div v-if="exampleText" class="space-y-2">
