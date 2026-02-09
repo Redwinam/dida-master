@@ -54,7 +54,7 @@ const open = computed({
             {{ title }}
           </DialogTitle>
           <DialogClose class="rounded-lg p-1.5 text-gray-400 hover:text-gray-500 hover:bg-gray-100 dark:hover:text-gray-300 dark:hover:bg-gray-700 transition-colors">
-            <Icon name="heroicons:x-mark" class="w-5 h-5" />
+            <Icon name="lucide:x" class="w-5 h-5" />
           </DialogClose>
         </div>
         <VisuallyHidden v-else as-child>

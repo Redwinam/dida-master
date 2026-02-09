@@ -81,7 +81,7 @@ watch(() => route.query.page, newPage => {
       <div class="flex items-center justify-between mb-8">
         <div class="flex items-center gap-4">
           <NuxtLink to="/" class="p-2 hover:bg-gray-200 dark:hover:bg-gray-800 rounded-lg transition-colors">
-            <Icon name="heroicons:arrow-left" class="w-6 h-6 text-gray-600 dark:text-gray-400" />
+            <Icon name="lucide:arrow-left" class="w-6 h-6 text-gray-600 dark:text-gray-400" />
           </NuxtLink>
           <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
             每日笔记历史
@@ -140,7 +140,7 @@ watch(() => route.query.page, newPage => {
                 class="px-3 py-1.5 text-sm rounded-lg border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                 @click="onPageChange(page - 1)"
               >
-                <Icon name="heroicons:chevron-left" class="w-4 h-4" />
+                <Icon name="lucide:chevron-left" class="w-4 h-4" />
               </button>
               <span class="px-3 py-1.5 text-sm font-medium text-gray-700 dark:text-gray-300 min-w-[2rem] text-center">{{ page }}</span>
               <button
@@ -148,7 +148,7 @@ watch(() => route.query.page, newPage => {
                 class="px-3 py-1.5 text-sm rounded-lg border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                 @click="onPageChange(page + 1)"
               >
-                <Icon name="heroicons:chevron-right" class="w-4 h-4" />
+                <Icon name="lucide:chevron-right" class="w-4 h-4" />
               </button>
             </div>
           </div>

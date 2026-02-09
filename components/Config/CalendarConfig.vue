@@ -132,7 +132,7 @@ function toggleTargetCalendar(name: string) {
         <label class="text-sm font-medium text-gray-700 dark:text-gray-300">服务器地址 (Server URL)</label>
         <div class="relative">
           <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <Icon name="heroicons:server" class="w-5 h-5 text-gray-400" />
+            <Icon name="lucide:server" class="w-5 h-5 text-gray-400" />
           </div>
           <input
             v-model="config.cal_server_url"
@@ -148,7 +148,7 @@ function toggleTargetCalendar(name: string) {
           <label class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ calProvider === 'icloud' ? 'Apple ID' : '邮箱地址' }}</label>
           <div class="relative">
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Icon name="heroicons:user-circle" class="w-5 h-5 text-gray-400" />
+              <Icon name="lucide:circle-user" class="w-5 h-5 text-gray-400" />
             </div>
             <input
               v-model="config.cal_username"
@@ -162,7 +162,7 @@ function toggleTargetCalendar(name: string) {
           <label class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ calProvider === 'icloud' ? '应用专用密码' : '密码' }}</label>
           <div class="relative">
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Icon name="heroicons:key" class="w-5 h-5 text-gray-400" />
+              <Icon name="lucide:key-round" class="w-5 h-5 text-gray-400" />
             </div>
             <input v-model="config.cal_password" type="password" class="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700/50 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 sm:text-sm" />
           </div>
@@ -174,7 +174,7 @@ function toggleTargetCalendar(name: string) {
           <label class="text-sm font-medium text-gray-700 dark:text-gray-300">时区</label>
           <div class="relative">
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Icon name="heroicons:globe-alt" class="w-5 h-5 text-gray-400" />
+              <Icon name="lucide:globe" class="w-5 h-5 text-gray-400" />
             </div>
             <input
               v-model="config.timezone"
@@ -188,7 +188,7 @@ function toggleTargetCalendar(name: string) {
           <label class="text-sm font-medium text-gray-700 dark:text-gray-300">周报前瞻天数</label>
           <div class="relative">
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Icon name="heroicons:calendar" class="w-5 h-5 text-gray-400" />
+              <Icon name="lucide:calendar" class="w-5 h-5 text-gray-400" />
             </div>
             <input v-model="config.cal_lookahead_days" type="number" class="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700/50 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 sm:text-sm" />
           </div>

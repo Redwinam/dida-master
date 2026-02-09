@@ -361,7 +361,7 @@ onMounted(() => {
   <FunctionCard
     title="模板日程添加"
     description="基于固定模板快速生成日历事件，例如普拉提、课程、固定地点等高重复日程。"
-    icon="heroicons:bookmark-square"
+    icon="lucide:bookmark"
     color-class="text-amber-600 dark:text-amber-400"
     bg-class="bg-amber-100 dark:bg-amber-900/50"
     :api-guide="apiGuide"
@@ -385,14 +385,14 @@ onMounted(() => {
           @click="fetchTemplates"
         >
           <Icon v-if="loadingTemplates" name="line-md:loading-twotone-loop" class="w-4 h-4" />
-          <Icon v-else name="heroicons:arrow-path" class="w-4 h-4" />
+          <Icon v-else name="lucide:refresh-cw" class="w-4 h-4" />
         </button>
         <button
           :disabled="!templateId"
           class="px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-700 dark:text-gray-200 disabled:opacity-50"
           @click="openTemplateDetail"
         >
-          <Icon name="heroicons:pencil-square" class="w-4 h-4" />
+          <Icon name="lucide:square-pen" class="w-4 h-4" />
         </button>
       </div>
 
@@ -410,14 +410,14 @@ onMounted(() => {
           @click="triggerTemplateCalendar"
         >
           <Icon v-if="creatingEvent" name="line-md:loading-twotone-loop" class="w-5 h-5" />
-          <Icon v-else name="heroicons:sparkles" class="w-5 h-5" />
+          <Icon v-else name="lucide:sparkles" class="w-5 h-5" />
           基于模板创建
         </button>
         <button
           class="py-2.5 px-4 bg-amber-50/50 dark:bg-amber-900/30 hover:bg-amber-100 dark:hover:bg-amber-900/50 text-amber-600 dark:text-amber-400 rounded-lg text-sm font-medium transition-all flex items-center gap-1.5 border border-amber-200 dark:border-amber-800"
           @click="openTemplateModal"
         >
-          <Icon name="heroicons:plus" class="w-4 h-4" />
+          <Icon name="lucide:plus" class="w-4 h-4" />
           新建模板
         </button>
       </div>

@@ -78,7 +78,7 @@ async function handleSubmit() {
             <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300">电子邮箱</label>
             <div class="relative">
               <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Icon name="heroicons:envelope" class="h-5 w-5 text-gray-400" />
+                <Icon name="lucide:mail" class="h-5 w-5 text-gray-400" />
               </div>
               <input
                 id="email"
@@ -96,7 +96,7 @@ async function handleSubmit() {
             <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300">密码</label>
             <div class="relative">
               <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Icon name="heroicons:lock-closed" class="h-5 w-5 text-gray-400" />
+                <Icon name="lucide:lock" class="h-5 w-5 text-gray-400" />
               </div>
               <input
                 id="password"
@@ -111,13 +111,13 @@ async function handleSubmit() {
 
           <!-- Error Message -->
           <div v-if="displayError" class="p-3 rounded-lg bg-red-50 text-red-600 text-sm border border-red-100 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800/30 flex items-center gap-2">
-            <Icon name="heroicons:exclamation-circle" class="w-5 h-5 shrink-0" />
+            <Icon name="lucide:circle-alert" class="w-5 h-5 shrink-0" />
             <span>{{ displayError }}</span>
           </div>
 
           <!-- Success Message (e.g. for OTP sent) -->
           <div v-if="success" class="p-3 rounded-lg bg-green-50 text-green-600 text-sm border border-green-100 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800/30 flex items-center gap-2">
-            <Icon name="heroicons:check-circle" class="w-5 h-5 shrink-0" />
+            <Icon name="lucide:circle-check" class="w-5 h-5 shrink-0" />
             <span>{{ success === 'auth/otp-sent' ? '确认邮件已发送，请检查收件箱。' : success }}</span>
           </div>
 

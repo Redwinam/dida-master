@@ -56,7 +56,7 @@ const apiGuide = {
   <FunctionCard
     title="周报生成"
     description="自动获取过去一周完成的任务和日程，利用 LLM 生成周报，推送到指定项目。"
-    icon="heroicons:presentation-chart-bar"
+    icon="lucide:presentation"
     color-class="text-teal-600 dark:text-teal-400"
     bg-class="bg-teal-100 dark:bg-teal-900/50"
     :api-guide="apiGuide"
@@ -71,14 +71,14 @@ const apiGuide = {
         @click="triggerWeeklyReport"
       >
         <Icon v-if="loadingAction" name="line-md:loading-twotone-loop" class="w-5 h-5" />
-        <Icon v-else name="heroicons:play" class="w-5 h-5" />
+        <Icon v-else name="lucide:play" class="w-5 h-5" />
         立即生成
       </button>
       <button
         class="py-2.5 px-4 bg-teal-50 dark:bg-teal-900/30 hover:bg-teal-100 dark:hover:bg-teal-900/50 text-teal-600 dark:text-teal-400 rounded-lg text-sm font-medium transition-all flex items-center gap-1.5 border border-teal-200 dark:border-teal-800"
         @click="emit('schedule')"
       >
-        <Icon name="heroicons:clock" class="w-4 h-4" />
+        <Icon name="lucide:clock" class="w-4 h-4" />
         定时执行
       </button>
     </div>

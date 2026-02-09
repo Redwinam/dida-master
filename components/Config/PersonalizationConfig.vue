@@ -67,6 +67,16 @@ const getColorClasses = (color: string, isSelected: boolean) => {
 const selectType = (type: string) => {
   config.value.mbti = type
 }
+
+const getCheckColorClass = (color: string) => {
+  const classes: Record<string, string> = {
+    purple: 'text-purple-600',
+    green: 'text-green-600',
+    blue: 'text-blue-600',
+    yellow: 'text-amber-500',
+  }
+  return classes[color] || 'text-primary-600'
+}
 </script>
 
 <template>
@@ -109,11 +119,12 @@ const selectType = (type: string) => {
               @click="selectType(type)"
             >
               {{ type }}
-              <Icon
+              <span
                 v-if="config.mbti === type"
-                name="heroicons:check-circle-solid"
-                class="absolute -top-2 -right-2 w-5 h-5 text-white bg-inherit rounded-full"
-              />
+                class="absolute -top-1.5 -right-1.5 flex items-center justify-center w-5 h-5 rounded-full bg-white shadow"
+              >
+                <Icon name="lucide:check" class="w-3.5 h-3.5" :class="getCheckColorClass(group.color)" />
+              </span>
             </button>
           </div>
         </div>

@@ -26,9 +26,9 @@ const { notifications, remove } = useToast()
           class="pointer-events-auto w-80 bg-white dark:bg-gray-800 shadow-lg rounded-xl border border-gray-100 dark:border-gray-700 p-4 flex items-start gap-3"
         >
           <div class="shrink-0 mt-0.5">
-            <Icon v-if="n.color === 'success'" name="heroicons:check-circle" class="w-5 h-5 text-green-500" />
-            <Icon v-else-if="n.color === 'error'" name="heroicons:x-circle" class="w-5 h-5 text-red-500" />
-            <Icon v-else name="heroicons:information-circle" class="w-5 h-5 text-primary-500" />
+            <Icon v-if="n.color === 'success'" name="lucide:circle-check" class="w-5 h-5 text-green-500" />
+            <Icon v-else-if="n.color === 'error'" name="lucide:circle-x" class="w-5 h-5 text-red-500" />
+            <Icon v-else name="lucide:info" class="w-5 h-5 text-primary-500" />
           </div>
           <div class="flex-1 min-w-0">
             <h3 class="text-sm font-medium text-gray-900 dark:text-white">
@@ -39,7 +39,7 @@ const { notifications, remove } = useToast()
             </p>
           </div>
           <button class="shrink-0 text-gray-400 hover:text-gray-500 dark:hover:text-gray-300 transition-colors" @click="remove(n.id)">
-            <Icon name="heroicons:x-mark" class="w-5 h-5" />
+            <Icon name="lucide:x" class="w-5 h-5" />
           </button>
         </div>
       </TransitionGroup>

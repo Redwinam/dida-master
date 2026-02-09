@@ -55,7 +55,7 @@ const weeklyMinute = computed({
   <div class="space-y-6">
     <!-- API Key Warning -->
     <div v-if="!hasApiKey" class="flex items-start gap-3 p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl">
-      <Icon name="heroicons:exclamation-triangle" class="w-5 h-5 text-amber-500 mt-0.5 shrink-0" />
+      <Icon name="lucide:triangle-alert" class="w-5 h-5 text-amber-500 mt-0.5 shrink-0" />
       <div>
         <p class="text-sm font-medium text-amber-800 dark:text-amber-300">
           需要先配置 API Key
@@ -68,7 +68,7 @@ const weeklyMinute = computed({
 
     <!-- Info Banner -->
     <div class="flex items-start gap-3 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl">
-      <Icon name="heroicons:information-circle" class="w-5 h-5 text-blue-500 mt-0.5 shrink-0" />
+      <Icon name="lucide:info" class="w-5 h-5 text-blue-500 mt-0.5 shrink-0" />
       <div>
         <p class="text-sm text-blue-700 dark:text-blue-300">
           定时任务将按照您设定的时间自动执行。为保证执行率和平台稳定性，实际执行时间可能有几分钟的偏差。
@@ -81,7 +81,7 @@ const weeklyMinute = computed({
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-3">
           <div class="p-2 bg-primary-100 dark:bg-primary-900/30 rounded-lg">
-            <Icon name="heroicons:sun" class="w-5 h-5 text-primary-600 dark:text-primary-400" />
+            <Icon name="lucide:sun" class="w-5 h-5 text-primary-600 dark:text-primary-400" />
           </div>
           <div>
             <span class="text-sm font-medium text-gray-700 dark:text-gray-300">每日日程</span>
@@ -126,7 +126,7 @@ const weeklyMinute = computed({
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-3">
           <div class="p-2 bg-teal-100 dark:bg-teal-900/30 rounded-lg">
-            <Icon name="heroicons:document-chart-bar" class="w-5 h-5 text-teal-600 dark:text-teal-400" />
+            <Icon name="lucide:file-chart-column-increasing" class="w-5 h-5 text-teal-600 dark:text-teal-400" />
           </div>
           <div>
             <span class="text-sm font-medium text-gray-700 dark:text-gray-300">每周周报</span>

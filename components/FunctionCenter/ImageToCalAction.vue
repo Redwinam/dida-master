@@ -79,7 +79,7 @@ const apiGuide = {
   <FunctionCard
     title="图片转日历事件"
     description="上传一张包含日程信息的图片（如海报、截图），AI 自动识别时间地点并添加到日历。"
-    icon="heroicons:photo"
+    icon="lucide:image"
     color-class="text-indigo-600 dark:text-indigo-400"
     bg-class="bg-indigo-100 dark:bg-indigo-900/50"
     :api-guide="apiGuide"
@@ -100,7 +100,7 @@ const apiGuide = {
         />
 
         <div v-if="!imagePreview" class="py-4">
-          <Icon name="heroicons:cloud-arrow-up" class="w-10 h-10 text-gray-400 mx-auto mb-2" />
+          <Icon name="lucide:cloud-upload" class="w-10 h-10 text-gray-400 mx-auto mb-2" />
           <p class="text-sm text-gray-500">
             点击或拖拽上传图片
           </p>
@@ -111,7 +111,7 @@ const apiGuide = {
             class="absolute top-1 right-1 p-1 bg-black/50 text-white rounded-full hover:bg-red-500 transition-colors opacity-0 group-hover/preview:opacity-100"
             @click.stop="clearImage"
           >
-            <Icon name="heroicons:x-mark" class="w-4 h-4" />
+            <Icon name="lucide:x" class="w-4 h-4" />
           </button>
         </div>
       </div>
@@ -122,7 +122,7 @@ const apiGuide = {
         @click="triggerImageToCalendar"
       >
         <Icon v-if="loadingAction" name="line-md:loading-twotone-loop" class="w-5 h-5" />
-        <Icon v-else name="heroicons:sparkles" class="w-5 h-5" />
+        <Icon v-else name="lucide:sparkles" class="w-5 h-5" />
         开始识别并添加
       </button>
     </div>

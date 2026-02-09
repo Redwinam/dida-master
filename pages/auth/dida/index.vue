@@ -27,7 +27,7 @@ const connect = () => {
           class="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-base font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200"
           @click="connect"
         >
-          <Icon name="heroicons:link" class="w-5 h-5 mr-2" />
+          <Icon name="lucide:link" class="w-5 h-5 mr-2" />
           Connect Now
         </button>
       </div>

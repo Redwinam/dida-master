@@ -59,7 +59,7 @@ const apiGuide = {
   <FunctionCard
     title="文本转日历事件"
     description="直接输入自然语言文本（如'明天下午3点在会议室开会'），AI 自动解析并添加到日历。"
-    icon="heroicons:chat-bubble-bottom-center-text"
+    icon="lucide:message-square-text"
     color-class="text-cyan-600 dark:text-cyan-400"
     bg-class="bg-cyan-100 dark:bg-cyan-900/50"
     :api-guide="apiGuide"
@@ -78,7 +78,7 @@ const apiGuide = {
         @click="triggerTextToCalendar"
       >
         <Icon v-if="loadingAction" name="line-md:loading-twotone-loop" class="w-5 h-5" />
-        <Icon v-else name="heroicons:sparkles" class="w-5 h-5" />
+        <Icon v-else name="lucide:sparkles" class="w-5 h-5" />
         开始解析并添加
       </button>
     </div>

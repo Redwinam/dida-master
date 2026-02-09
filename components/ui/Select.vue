@@ -68,7 +68,7 @@ const chevronSize = computed(() => {
     >
       <SelectValue :placeholder="placeholder" />
       <SelectIcon>
-        <Icon name="heroicons:chevron-down" :class="['text-gray-400', chevronSize]" />
+        <Icon name="lucide:chevron-down" :class="['text-gray-400', chevronSize]" />
       </SelectIcon>
     </SelectTrigger>
     <SelectPortal>
@@ -91,7 +91,7 @@ const chevronSize = computed(() => {
             <SelectItemText>{{ option.label }}</SelectItemText>
             <SelectItemIndicator class="absolute right-2">
               <Icon
-                name="heroicons:check"
+                name="lucide:check"
                 :class="[indicatorSize, `text-${accentColor}-600`]"
               />
             </SelectItemIndicator>

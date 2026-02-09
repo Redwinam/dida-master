@@ -71,7 +71,7 @@ watch(
           title="API 使用说明"
           @click="showApiModal = true"
         >
-          <Icon name="heroicons:code-bracket" class="w-3.5 h-3.5" />
+          <Icon name="lucide:code" class="w-3.5 h-3.5" />
           API
         </button>
       </div>
@@ -83,14 +83,14 @@ watch(
       <div class="mt-auto">
         <div v-if="missingConfig" class="flex flex-col gap-3">
           <div class="p-3 bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 text-sm rounded-lg flex items-start gap-2">
-            <Icon name="heroicons:exclamation-triangle" class="w-5 h-5 shrink-0 mt-0.5" />
+            <Icon name="lucide:triangle-alert" class="w-5 h-5 shrink-0 mt-0.5" />
             <span>{{ missingConfigText || '功能未配置，请先完成配置。' }}</span>
           </div>
           <button
             class="w-full py-2.5 px-4 bg-amber-100 hover:bg-amber-200 dark:bg-amber-900/40 dark:hover:bg-amber-900/60 text-amber-700 dark:text-amber-300 rounded-lg text-sm font-medium shadow-sm transition-all flex justify-center items-center gap-2"
             @click="$emit('configure')"
           >
-            <Icon name="heroicons:cog-6-tooth" class="w-5 h-5" />
+            <Icon name="lucide:settings" class="w-5 h-5" />
             去配置
           </button>
         </div>

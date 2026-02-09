@@ -56,7 +56,7 @@ const apiGuide = {
   <FunctionCard
     title="每日笔记生成"
     description="自动从滴答清单获取昨日完成的任务和今日待办事项，利用 LLM 总结并生成每日笔记，推送到指定位置。"
-    icon="heroicons:document-text"
+    icon="lucide:file-text"
     color-class="text-primary-600 dark:text-primary-400"
     bg-class="bg-primary-100 dark:bg-primary-900/50"
     :api-guide="apiGuide"
@@ -71,14 +71,14 @@ const apiGuide = {
         @click="triggerDailyNote"
       >
         <Icon v-if="loadingAction" name="line-md:loading-twotone-loop" class="w-5 h-5" />
-        <Icon v-else name="heroicons:play" class="w-5 h-5" />
+        <Icon v-else name="lucide:play" class="w-5 h-5" />
         立即执行
       </button>
       <button
         class="py-2.5 px-4 bg-primary-50 dark:bg-primary-900/30 hover:bg-primary-100 dark:hover:bg-primary-900/50 text-primary-600 dark:text-primary-400 rounded-lg text-sm font-medium transition-all flex items-center gap-1.5 border border-primary-200 dark:border-primary-800"
         @click="emit('schedule')"
       >
-        <Icon name="heroicons:clock" class="w-4 h-4" />
+        <Icon name="lucide:clock" class="w-4 h-4" />
         定时执行
       </button>
     </div>

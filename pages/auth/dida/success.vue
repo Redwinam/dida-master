@@ -18,7 +18,7 @@ const copyToken = () => {
       <div class="px-8 pt-8 pb-6 text-center">
         <div class="flex justify-center mb-4">
           <div class="w-16 h-16 rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center">
-            <Icon name="heroicons:check-circle" class="w-10 h-10 text-green-600 dark:text-green-400" />
+            <Icon name="lucide:circle-check" class="w-10 h-10 text-green-600 dark:text-green-400" />
           </div>
         </div>
         <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-2 tracking-tight">
@@ -43,7 +43,7 @@ const copyToken = () => {
             title="Copy Token"
             @click="copyToken"
           >
-            <Icon :name="copied ? 'heroicons:check' : 'heroicons:clipboard'" class="w-4 h-4" />
+            <Icon :name="copied ? 'lucide:check' : 'lucide:clipboard'" class="w-4 h-4" />
           </button>
         </div>
 

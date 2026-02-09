@@ -49,12 +49,12 @@ async function handleSave() {
 }
 
 const tabs = [
-  { id: 'dida', label: '滴答清单', icon: 'heroicons:check-circle' },
-  { id: 'calendar', label: '日历', icon: 'heroicons:calendar' },
-  { id: 'llm', label: 'AI 模型', icon: 'heroicons:sparkles' },
-  { id: 'api_key', label: 'API 凭证', icon: 'heroicons:key' },
-  { id: 'personalization', label: '个性化', icon: 'heroicons:user' },
-  { id: 'schedule', label: '定时任务', icon: 'heroicons:clock' },
+  { id: 'dida', label: '滴答清单', icon: 'lucide:circle-check' },
+  { id: 'calendar', label: '日历', icon: 'lucide:calendar' },
+  { id: 'llm', label: 'AI 模型', icon: 'lucide:sparkles' },
+  { id: 'api_key', label: 'API 凭证', icon: 'lucide:key-round' },
+  { id: 'personalization', label: '个性化', icon: 'lucide:user' },
+  { id: 'schedule', label: '定时任务', icon: 'lucide:clock' },
 ]
 </script>
 
@@ -73,7 +73,7 @@ const tabs = [
     <!-- Error State -->
     <div v-else-if="error" class="flex flex-col items-center justify-center py-20 animate-content-in">
       <div class="p-4 bg-red-50 dark:bg-red-900/20 rounded-full mb-4">
-        <Icon name="heroicons:exclamation-triangle" class="w-8 h-8 text-red-500" />
+        <Icon name="lucide:triangle-alert" class="w-8 h-8 text-red-500" />
       </div>
       <p class="text-gray-900 dark:text-white font-medium text-lg">
         加载配置失败
@@ -85,7 +85,7 @@ const tabs = [
         class="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors shadow-sm"
         @click="load(true)"
       >
-        <Icon name="heroicons:arrow-path" class="w-4 h-4" />
+        <Icon name="lucide:refresh-cw" class="w-4 h-4" />
         重试
       </button>
     </div>
@@ -99,7 +99,7 @@ const tabs = [
       <div class="w-full md:w-56 bg-gray-50 dark:bg-gray-900/50 border-b md:border-b-0 md:border-r border-gray-100 dark:border-gray-700 flex md:flex-col shrink-0">
         <div class="p-5 hidden md:block">
           <h3 class="text-base font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-            <Icon name="heroicons:adjustments-horizontal" class="w-5 h-5 text-gray-400" />
+            <Icon name="lucide:sliders-horizontal" class="w-5 h-5 text-gray-400" />
             系统配置
           </h3>
         </div>
@@ -134,14 +134,14 @@ const tabs = [
               @click="handleSave"
             >
               <Icon v-if="saving" name="line-md:loading-twotone-loop" class="w-4 h-4" />
-              <Icon v-else name="heroicons:check" class="w-4 h-4" />
+              <Icon v-else name="lucide:check" class="w-4 h-4" />
               保存
             </button>
             <button
               class="flex items-center justify-center w-9 h-9 rounded-lg border border-gray-200 dark:border-gray-600 text-gray-500 hover:text-gray-700 hover:bg-gray-50 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-700/60 transition-colors"
               @click="emit('close')"
             >
-              <Icon name="heroicons:x-mark" class="w-5 h-5" />
+              <Icon name="lucide:x" class="w-5 h-5" />
             </button>
           </div>
         </div>

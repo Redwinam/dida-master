@@ -100,7 +100,7 @@ const openConfig = (tab?: string) => {
                   {{ user?.user_metadata?.name || user?.user_metadata?.full_name || user?.email?.split('@')[0] }}
                 </div>
               </div>
-              <Icon name="heroicons:chevron-down" class="w-4 h-4 text-gray-400 group-hover:text-primary-500 transition-colors group-data-[state=open]:rotate-180" />
+              <Icon name="lucide:chevron-down" class="w-4 h-4 text-gray-400 group-hover:text-primary-500 transition-colors group-data-[state=open]:rotate-180" />
             </DropdownMenuTrigger>
 
             <DropdownMenuPortal>
@@ -124,7 +124,7 @@ const openConfig = (tab?: string) => {
                   @select="() => openConfig()"
                 >
                   <div class="p-1.5 rounded-lg bg-gray-100 dark:bg-gray-700 group-hover:bg-white dark:group-hover:bg-gray-800 text-gray-500 group-hover:text-primary-500 transition-colors">
-                    <Icon name="heroicons:cog-6-tooth" class="w-4 h-4" />
+                    <Icon name="lucide:settings" class="w-4 h-4" />
                   </div>
                   系统配置
                 </DropdownMenuItem>
@@ -136,7 +136,7 @@ const openConfig = (tab?: string) => {
                   @select="logout"
                 >
                   <div class="p-1.5 rounded-lg bg-red-50 dark:bg-red-900/30 group-hover:bg-white dark:group-hover:bg-gray-800 text-red-500 transition-colors">
-                    <Icon name="heroicons:arrow-right-on-rectangle" class="w-4 h-4" />
+                    <Icon name="lucide:log-out" class="w-4 h-4" />
                   </div>
                   退出登录
                 </DropdownMenuItem>
