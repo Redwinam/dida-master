@@ -75,12 +75,11 @@ const apiGuide = {
         立即执行
       </button>
       <button
-        class="py-2.5 px-3 bg-primary-50 dark:bg-primary-900/30 hover:bg-primary-100 dark:hover:bg-primary-900/50 text-primary-600 dark:text-primary-400 rounded-lg text-sm font-medium transition-all flex items-center gap-1.5 border border-primary-200 dark:border-primary-800"
-        title="配置定时执行"
+        class="py-2.5 px-4 bg-primary-50 dark:bg-primary-900/30 hover:bg-primary-100 dark:hover:bg-primary-900/50 text-primary-600 dark:text-primary-400 rounded-lg text-sm font-medium transition-all flex items-center gap-1.5 border border-primary-200 dark:border-primary-800"
         @click="emit('schedule')"
       >
         <Icon name="heroicons:clock" class="w-4 h-4" />
-        定时
+        定时执行
       </button>
     </div>
 

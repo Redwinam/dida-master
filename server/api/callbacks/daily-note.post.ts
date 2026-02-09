@@ -82,7 +82,7 @@ export default defineEventHandler(async event => {
 
     // 3. Create Dida Note
     console.log('[DailyNoteCallback] Creating Dida Note...')
-    const didaNote = await createDidaNote(dida_token, dida_project_id, title, content, timeZone)
+    const didaNote = await createDidaNote(dida_token, dida_project_id, title, content, timeZone) as Record<string, any> | null
     console.log('[DailyNoteCallback] Note created:', didaNote?.id)
 
     return { status: 'success', noteId: didaNote?.id }

@@ -75,12 +75,11 @@ const apiGuide = {
         立即生成
       </button>
       <button
-        class="py-2.5 px-3 bg-teal-50 dark:bg-teal-900/30 hover:bg-teal-100 dark:hover:bg-teal-900/50 text-teal-600 dark:text-teal-400 rounded-lg text-sm font-medium transition-all flex items-center gap-1.5 border border-teal-200 dark:border-teal-800"
-        title="配置定时执行"
+        class="py-2.5 px-4 bg-teal-50 dark:bg-teal-900/30 hover:bg-teal-100 dark:hover:bg-teal-900/50 text-teal-600 dark:text-teal-400 rounded-lg text-sm font-medium transition-all flex items-center gap-1.5 border border-teal-200 dark:border-teal-800"
         @click="emit('schedule')"
       >
         <Icon name="heroicons:clock" class="w-4 h-4" />
-        定时
+        定时执行
       </button>
     </div>
 

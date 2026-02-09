@@ -422,21 +422,21 @@ onMounted(() => {
         class="block w-full p-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-900/50 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 sm:text-sm resize-none"
       ></textarea>
 
-      <div class="flex w-full rounded-xl shadow-sm overflow-hidden mt-2 border border-gray-200 dark:border-gray-700">
+      <div class="flex gap-2 mt-2">
         <button
           :disabled="creatingEvent || !templateId || !inputText"
-          class="flex-[2] py-2.5 px-4 bg-amber-600 hover:bg-amber-700 text-white text-sm font-medium transition-all flex justify-center items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          class="flex-1 py-2.5 px-4 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-sm font-medium shadow-sm transition-all flex justify-center items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
           @click="triggerTemplateCalendar"
         >
           <Icon v-if="creatingEvent" name="line-md:loading-twotone-loop" class="w-5 h-5" />
           <Icon v-else name="heroicons:sparkles" class="w-5 h-5" />
           基于模板创建
         </button>
-
         <button
-          class="flex-1 py-2.5 px-4 bg-white hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 text-sm font-medium transition-colors border-l border-gray-200 dark:border-gray-700"
+          class="py-2.5 px-4 bg-amber-50/50 dark:bg-amber-900/30 hover:bg-amber-100 dark:hover:bg-amber-900/50 text-amber-600 dark:text-amber-400 rounded-lg text-sm font-medium transition-all flex items-center gap-1.5 border border-amber-200 dark:border-amber-800"
           @click="openTemplateModal"
         >
+          <Icon name="heroicons:plus" class="w-4 h-4" />
           新建模板
         </button>
       </div>
