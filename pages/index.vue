@@ -121,7 +121,7 @@ const openConfig = (tab?: string) => {
 
                 <DropdownMenuItem
                   class="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-primary-50 dark:hover:bg-primary-900/30 hover:text-primary-600 dark:hover:text-primary-400 rounded-xl transition-all group cursor-pointer outline-none data-[highlighted]:bg-primary-50 dark:data-[highlighted]:bg-primary-900/30"
-                  @select="openConfig"
+                  @select="() => openConfig()"
                 >
                   <div class="p-1.5 rounded-lg bg-gray-100 dark:bg-gray-700 group-hover:bg-white dark:group-hover:bg-gray-800 text-gray-500 group-hover:text-primary-500 transition-colors">
                     <Icon name="heroicons:cog-6-tooth" class="w-4 h-4" />

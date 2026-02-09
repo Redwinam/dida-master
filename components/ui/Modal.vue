@@ -7,6 +7,7 @@ import {
   DialogPortal,
   DialogRoot,
   DialogTitle,
+  VisuallyHidden,
 } from 'reka-ui'
 
 const props = withDefaults(defineProps<{
@@ -53,6 +54,9 @@ const open = computed({
             <Icon name="heroicons:x-mark" class="w-5 h-5" />
           </DialogClose>
         </div>
+        <VisuallyHidden v-else as-child>
+          <DialogTitle>{{ title }}</DialogTitle>
+        </VisuallyHidden>
 
         <slot></slot>
       </DialogContent>

@@ -189,8 +189,8 @@ defineExpose({
                     <!-- Config Selection -->
                     <div class="w-full sm:flex-1">
                       <SelectRoot
-                        :model-value="getMapping(sk.service_key).llm_config_id || ''"
-                        @update:model-value="(val: string) => updateMapping(sk.service_key, 'llm_config_id', val)"
+                        :model-value="getMapping(sk.service_key).llm_config_id || '__default__'"
+                        @update:model-value="(val: string) => updateMapping(sk.service_key, 'llm_config_id', val === '__default__' ? '' : val)"
                       >
                         <SelectTrigger class="inline-flex items-center justify-between w-full py-1.5 pl-3 pr-2 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900/50 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors">
                           <SelectValue placeholder="默认配置 (自动)" />
@@ -201,7 +201,7 @@ defineExpose({
                         <SelectPortal>
                           <SelectContent class="z-[200] bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg overflow-hidden" position="popper" :side-offset="4">
                             <SelectViewport class="p-1 max-h-48">
-                              <SelectItem value="" class="relative flex items-center px-3 py-1.5 text-xs rounded-md text-gray-900 dark:text-white cursor-pointer select-none hover:bg-gray-100 dark:hover:bg-gray-700 data-[highlighted]:bg-gray-100 dark:data-[highlighted]:bg-gray-700 outline-none">
+                              <SelectItem value="__default__" class="relative flex items-center px-3 py-1.5 text-xs rounded-md text-gray-900 dark:text-white cursor-pointer select-none hover:bg-gray-100 dark:hover:bg-gray-700 data-[highlighted]:bg-gray-100 dark:data-[highlighted]:bg-gray-700 outline-none">
                                 <SelectItemText>默认配置 (自动)</SelectItemText>
                                 <SelectItemIndicator class="absolute right-2">
                                   <Icon name="heroicons:check" class="w-3.5 h-3.5 text-primary-600" />
@@ -222,9 +222,9 @@ defineExpose({
                     <!-- Model Selection -->
                     <div class="w-full sm:flex-1">
                       <SelectRoot
-                        :model-value="getMapping(sk.service_key).model_name || ''"
+                        :model-value="getMapping(sk.service_key).model_name || '__default__'"
                         :disabled="!getMapping(sk.service_key).llm_config_id"
-                        @update:model-value="(val: string) => updateMapping(sk.service_key, 'model_name', val)"
+                        @update:model-value="(val: string) => updateMapping(sk.service_key, 'model_name', val === '__default__' ? '' : val)"
                       >
                         <SelectTrigger class="inline-flex items-center justify-between w-full py-1.5 pl-3 pr-2 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900/50 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
                           <SelectValue placeholder="默认模型 (自动)" />
@@ -235,7 +235,7 @@ defineExpose({
                         <SelectPortal>
                           <SelectContent class="z-[200] bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg overflow-hidden" position="popper" :side-offset="4">
                             <SelectViewport class="p-1 max-h-48">
-                              <SelectItem value="" class="relative flex items-center px-3 py-1.5 text-xs rounded-md text-gray-900 dark:text-white cursor-pointer select-none hover:bg-gray-100 dark:hover:bg-gray-700 data-[highlighted]:bg-gray-100 dark:data-[highlighted]:bg-gray-700 outline-none">
+                              <SelectItem value="__default__" class="relative flex items-center px-3 py-1.5 text-xs rounded-md text-gray-900 dark:text-white cursor-pointer select-none hover:bg-gray-100 dark:hover:bg-gray-700 data-[highlighted]:bg-gray-100 dark:data-[highlighted]:bg-gray-700 outline-none">
                                 <SelectItemText>默认模型 (自动)</SelectItemText>
                                 <SelectItemIndicator class="absolute right-2">
                                   <Icon name="heroicons:check" class="w-3.5 h-3.5 text-primary-600" />

@@ -11,7 +11,7 @@ const { notifications, remove } = useToast()
     </NuxtLayout>
 
     <!-- Toast Container -->
-    <div class="fixed bottom-4 right-4 z-50 flex flex-col gap-2 pointer-events-none">
+    <div class="fixed bottom-4 right-4 z-[9999] flex flex-col gap-2 pointer-events-none">
       <TransitionGroup
         enter-active-class="transition duration-300 ease-out"
         enter-from-class="transform translate-y-2 opacity-0"
