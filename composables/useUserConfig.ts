@@ -22,6 +22,12 @@ export const useUserConfig = () => {
     calendar_target: '',
     timezone: 'Asia/Shanghai',
     mbti: '',
+    // Schedule settings
+    schedule_daily_enabled: false,
+    schedule_daily_time: '08:30',
+    schedule_weekly_enabled: false,
+    schedule_weekly_day: 1,
+    schedule_weekly_time: '09:00',
   }))
 
   const loading = useState('user-config-loading', () => false)

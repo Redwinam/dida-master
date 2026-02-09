@@ -28,10 +28,38 @@ const { data, pending, refresh } = await useFetch('/api/dida/weekly-reports', {
 
 const selectedReport = ref<any>(null)
 const isModalOpen = ref(false)
+const detailLoading = ref(false)
 
-function openReport(report: any) {
-  selectedReport.value = report
+async function openReport(report: any) {
   isModalOpen.value = true
+  detailLoading.value = true
+  selectedReport.value = { title: report.title, content: null }
+
+  try {
+    const { data: { session } } = await client.auth.getSession()
+    const detail = await $fetch(`/api/dida/weekly-reports/${report.id}`, {
+      headers: {
+        Authorization: session?.access_token ? `Bearer ${session.access_token}` : '',
+      },
+    }) as any
+
+    // If we got a CDN URL instead of content, fetch from CDN
+    if (detail.cdn_url && !detail.content) {
+      const res = await fetch(detail.cdn_url)
+      const cosData = await res.json()
+      selectedReport.value = { ...detail, content: cosData.content || '' }
+    }
+    else {
+      selectedReport.value = detail
+    }
+  }
+  catch (e) {
+    console.error('Failed to load report detail:', e)
+    selectedReport.value = { ...report, content: '加载内容失败，请重试。' }
+  }
+  finally {
+    detailLoading.value = false
+  }
 }
 
 function onPageChange(newPage: number) {
@@ -131,8 +159,11 @@ watch(() => route.query.page, newPage => {
     <!-- Modal -->
     <UiModal v-model="isModalOpen" :title="selectedReport?.title || '详情'" max-width="max-w-4xl">
       <div class="max-h-[70vh] overflow-y-auto custom-scrollbar pr-2">
+        <div v-if="detailLoading" class="flex items-center justify-center py-12">
+          <Icon name="line-md:loading-twotone-loop" class="w-8 h-8 text-primary-600 dark:text-primary-400" />
+        </div>
         <div
-          v-if="selectedReport"
+          v-else-if="selectedReport"
           class="prose dark:prose-invert max-w-none text-sm text-gray-700 dark:text-gray-300"
           v-html="md.render(selectedReport.content || '')"
         ></div>

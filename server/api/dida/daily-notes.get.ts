@@ -13,10 +13,10 @@ export default defineEventHandler(async event => {
   const pageSize = parseInt(query.pageSize as string) || 10
   const offset = (page - 1) * pageSize
 
-  // Fetch data
+  // Fetch metadata only (exclude content to reduce payload)
   const { data, error, count } = await client
     .from('dida_master_daily_notes')
-    .select('*', { count: 'exact' })
+    .select('id, user_id, title, dida_task_id, dida_project_id, note_date, cos_key, created_at, updated_at', { count: 'exact' })
     .eq('user_id', user.id)
     .order('note_date', { ascending: false })
     .range(offset, offset + pageSize - 1)

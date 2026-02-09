@@ -26,18 +26,40 @@ const { data, pending, refresh } = await useFetch('/api/dida/daily-notes', {
   },
 })
 
-const columns = [
-  { key: 'note_date', label: '日期' },
-  { key: 'title', label: '标题' },
-  { key: 'actions', label: '操作' },
-]
-
 const selectedNote = ref<any>(null)
 const isModalOpen = ref(false)
+const detailLoading = ref(false)
 
-function openNote(note: any) {
-  selectedNote.value = note
+async function openNote(note: any) {
   isModalOpen.value = true
+  detailLoading.value = true
+  selectedNote.value = { title: note.title, content: null }
+
+  try {
+    const { data: { session } } = await client.auth.getSession()
+    const detail = await $fetch(`/api/dida/daily-notes/${note.id}`, {
+      headers: {
+        Authorization: session?.access_token ? `Bearer ${session.access_token}` : '',
+      },
+    }) as any
+
+    // If we got a CDN URL instead of content, fetch from CDN
+    if (detail.cdn_url && !detail.content) {
+      const res = await fetch(detail.cdn_url)
+      const cosData = await res.json()
+      selectedNote.value = { ...detail, content: cosData.content || '' }
+    }
+    else {
+      selectedNote.value = detail
+    }
+  }
+  catch (e) {
+    console.error('Failed to load note detail:', e)
+    selectedNote.value = { ...note, content: '加载内容失败，请重试。' }
+  }
+  finally {
+    detailLoading.value = false
+  }
 }
 
 function onPageChange(newPage: number) {
@@ -137,8 +159,11 @@ watch(() => route.query.page, newPage => {
     <!-- Modal -->
     <UiModal v-model="isModalOpen" :title="selectedNote?.title || '详情'" max-width="max-w-4xl">
       <div class="max-h-[70vh] overflow-y-auto custom-scrollbar pr-2">
+        <div v-if="detailLoading" class="flex items-center justify-center py-12">
+          <Icon name="line-md:loading-twotone-loop" class="w-8 h-8 text-primary-600 dark:text-primary-400" />
+        </div>
         <div
-          v-if="selectedNote"
+          v-else-if="selectedNote"
           class="prose dark:prose-invert max-w-none text-sm text-gray-700 dark:text-gray-300"
           v-html="md.render(selectedNote.content || '')"
         ></div>

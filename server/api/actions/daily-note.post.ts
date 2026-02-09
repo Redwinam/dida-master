@@ -96,6 +96,7 @@ export default defineEventHandler(async event => {
 
       // Payload for callback to resume execution (save note)
       const callbackPayload = {
+        user_id: config.user_id,
         dida_token: config.dida_token,
         dida_project_id: config.dida_project_id,
         timezone: config.timezone || 'Asia/Shanghai',

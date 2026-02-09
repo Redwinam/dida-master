@@ -175,6 +175,7 @@ export default defineEventHandler(async event => {
       const callbackUrl = `${siteUrl}/api/callbacks/weekly-report`
 
       const callbackPayload = {
+        user_id: config.user_id,
         dida_token: config.dida_token,
         dida_project_id: config.weekly_report_project_id,
         timezone: config.timezone || 'Asia/Shanghai',

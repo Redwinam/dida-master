@@ -30,11 +30,22 @@ export default defineNuxtConfig({
     supabaseServiceKey: process.env.NUXT_SUPABASE_SERVICE_ROLE_KEY,
     supabaseServiceRoleKey: process.env.NUXT_SUPABASE_SERVICE_ROLE_KEY,
     siteUrl: process.env.NUXT_PUBLIC_SITE_URL,
+    // Tencent Cloud COS
+    tencentCosSecretId: process.env.NUXT_TENCENT_COS_SECRET_ID,
+    tencentCosSecretKey: process.env.NUXT_TENCENT_COS_SECRET_KEY,
+    tencentCosBucket: process.env.NUXT_TENCENT_COS_BUCKET,
+    tencentCosRegion: process.env.NUXT_TENCENT_COS_REGION,
+    // Tencent Cloud CDN
+    tencentCdnAuthKey: process.env.NUXT_TENCENT_CDN_AUTH_KEY,
+    tencentCdnAuthTtl: process.env.NUXT_TENCENT_CDN_AUTH_TTL,
+    // Cron
+    cronSecret: process.env.NUXT_CRON_SECRET,
 
     public: {
       supabaseUrl: process.env.NUXT_PUBLIC_SUPABASE_URL,
       supabaseKey: process.env.NUXT_PUBLIC_SUPABASE_ANON_KEY,
       supabaseAnonKey: process.env.NUXT_PUBLIC_SUPABASE_ANON_KEY,
+      tencentCdnDomain: process.env.NUXT_PUBLIC_TENCENT_CDN_DOMAIN,
     },
   },
 

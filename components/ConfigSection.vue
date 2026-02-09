@@ -6,6 +6,7 @@ import LLMConfig from './Config/LLMConfig.vue'
 import ConfigPersonalization from './Config/PersonalizationConfig.vue'
 
 import ApiKeyManager from './Config/ApiKeyManager.vue'
+import ScheduleConfig from './Config/ScheduleConfig.vue'
 
 const { load, save, fetched, loading, error } = useUserConfig()
 const toast = useToast()
@@ -45,6 +46,7 @@ const tabs = [
   { id: 'llm', label: 'AI 模型', icon: 'heroicons:sparkles' },
   { id: 'api_key', label: 'API 凭证', icon: 'heroicons:key' },
   { id: 'personalization', label: '个性化', icon: 'heroicons:user' },
+  { id: 'schedule', label: '定时任务', icon: 'heroicons:clock' },
 ]
 </script>
 
@@ -151,6 +153,9 @@ const tabs = [
           </TabsContent>
           <TabsContent value="personalization" class="animate-fade-in outline-none">
             <ConfigPersonalization />
+          </TabsContent>
+          <TabsContent value="schedule" class="animate-fade-in outline-none">
+            <ScheduleConfig />
           </TabsContent>
         </div>
       </div>
