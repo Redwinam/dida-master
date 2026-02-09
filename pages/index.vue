@@ -60,7 +60,10 @@ onMounted(() => {
   }, 5000)
 })
 
-const openConfig = () => {
+const configInitialTab = ref('dida')
+
+const openConfig = (tab?: string) => {
+  configInitialTab.value = tab || 'dida'
   showConfigModal.value = true
 }
 </script>
@@ -144,8 +147,8 @@ const openConfig = () => {
 
         <!-- Function Center (Actions) -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <DailyNoteAction @configure="openConfig" />
-          <WeeklyReportAction @configure="openConfig" />
+          <DailyNoteAction @configure="openConfig" @schedule="openConfig('schedule')" />
+          <WeeklyReportAction @configure="openConfig" @schedule="openConfig('schedule')" />
           <TextToCalAction @configure="openConfig" />
           <ImageToCalAction @configure="openConfig" />
           <TemplateCalAction @configure="openConfig" />
@@ -159,7 +162,7 @@ const openConfig = () => {
           :show-header="false"
           :padding="false"
         >
-          <ConfigSection @close="showConfigModal = false" />
+          <ConfigSection :initial-tab="configInitialTab" @close="showConfigModal = false" />
         </Modal>
       </div>
     </ClientOnly>

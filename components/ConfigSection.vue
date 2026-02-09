@@ -8,6 +8,10 @@ import ConfigPersonalization from './Config/PersonalizationConfig.vue'
 import ApiKeyManager from './Config/ApiKeyManager.vue'
 import ScheduleConfig from './Config/ScheduleConfig.vue'
 
+const props = defineProps<{
+  initialTab?: string
+}>()
+
 const { load, save, fetched, loading, error } = useUserConfig()
 const toast = useToast()
 
@@ -19,7 +23,11 @@ const saving = ref(false)
 
 const llmConfigRef = ref<InstanceType<typeof LLMConfig> | null>(null)
 
-const activeTab = ref('dida')
+const activeTab = ref(props.initialTab || 'dida')
+
+watch(() => props.initialTab, val => {
+  if (val) activeTab.value = val
+})
 
 async function handleSave() {
   saving.value = true
