@@ -202,39 +202,6 @@ export default defineEventHandler(async event => {
       throw createError({ statusCode: 500, message: `LLM Error: ${e}` })
     }
 
-    /*
-    // Legacy Synchronous Code
-    // 5. Create Note
-    console.log('[WeeklyReport] Creating note...')
-    // ...
-
-    const timeZone = config.timezone || 'Asia/Shanghai'
-    const title = `周报 ${start.toLocaleDateString('zh-CN', { timeZone })} - ${now.toLocaleDateString('zh-CN', { timeZone })}`
-    const didaNote: any = await createDidaNote(config.dida_token, config.weekly_report_project_id, title, report, timeZone)
-    console.log('[WeeklyReport] Note created')
-
-    const periodStart = start.toLocaleDateString('en-CA', { timeZone })
-    const periodEnd = now.toLocaleDateString('en-CA', { timeZone })
-    const didaTaskId = didaNote?.id || didaNote?.taskId || didaNote?.data?.id || null
-    const adminClient = getAdminClient()
-    const { error: insertError } = await adminClient
-      .from('dida_master_weekly_reports')
-      .insert({
-        user_id: config.user_id,
-        title,
-        content: report,
-        dida_task_id: didaTaskId,
-        dida_project_id: config.weekly_report_project_id,
-        period_start: periodStart,
-        period_end: periodEnd
-      })
-
-    if (insertError) {
-      throw createError({ statusCode: 500, message: insertError.message })
-    }
-
-    return { message: 'Success' }
-    */
   }
   catch (e: any) {
     console.error('[WeeklyReport] Fatal Error:', e)

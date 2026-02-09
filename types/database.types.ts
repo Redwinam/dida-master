@@ -96,10 +96,10 @@ export interface Database {
           id: string
           user_id: string
           title: string
-          content: string
           dida_task_id: string | null
           dida_project_id: string | null
           note_date: string
+          cos_key: string | null
           created_at: string | null
           updated_at: string | null
         }
@@ -107,10 +107,10 @@ export interface Database {
           id?: string
           user_id: string
           title: string
-          content: string
           dida_task_id?: string | null
           dida_project_id?: string | null
           note_date?: string
+          cos_key?: string | null
           created_at?: string | null
           updated_at?: string | null
         }
@@ -118,10 +118,10 @@ export interface Database {
           id?: string
           user_id?: string
           title?: string
-          content?: string
           dida_task_id?: string | null
           dida_project_id?: string | null
           note_date?: string
+          cos_key?: string | null
           created_at?: string | null
           updated_at?: string | null
         }
@@ -131,11 +131,11 @@ export interface Database {
           id: string
           user_id: string
           title: string
-          content: string
           dida_task_id: string | null
           dida_project_id: string | null
           period_start: string
           period_end: string
+          cos_key: string | null
           created_at: string | null
           updated_at: string | null
         }
@@ -143,11 +143,11 @@ export interface Database {
           id?: string
           user_id: string
           title: string
-          content: string
           dida_task_id?: string | null
           dida_project_id?: string | null
           period_start: string
           period_end: string
+          cos_key?: string | null
           created_at?: string | null
           updated_at?: string | null
         }
@@ -155,11 +155,11 @@ export interface Database {
           id?: string
           user_id?: string
           title?: string
-          content?: string
           dida_task_id?: string | null
           dida_project_id?: string | null
           period_start?: string
           period_end?: string
+          cos_key?: string | null
           created_at?: string | null
           updated_at?: string | null
         }

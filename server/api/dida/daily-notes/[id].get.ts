@@ -25,32 +25,32 @@ export default defineEventHandler(async event => {
     throw createError({ statusCode: 404, message: 'Note not found' })
   }
 
-  // If content is stored in COS, fetch it
-  if (data.cos_key && (!data.content || data.content === '')) {
-    try {
-      const cosContent = await getFromCOS(data.cos_key)
-      const parsed = JSON.parse(cosContent)
-      return {
-        ...data,
-        content: parsed.content || cosContent,
-      }
-    }
-    catch (cosError) {
-      console.error('[DailyNoteDetail] Failed to fetch from COS:', cosError)
-      // Return with CDN URL as fallback
-      try {
-        const cdnUrl = generateCDNSignedUrl(data.cos_key)
-        return {
-          ...data,
-          content: null,
-          cdn_url: cdnUrl,
-        }
-      }
-      catch {
-        throw createError({ statusCode: 500, message: 'Failed to retrieve note content' })
-      }
-    }
+  // Fetch content from COS
+  if (!data.cos_key) {
+    throw createError({ statusCode: 404, message: 'Note content not available (no COS key)' })
   }
 
-  return data
+  try {
+    const cosContent = await getFromCOS(data.cos_key)
+    const parsed = JSON.parse(cosContent)
+    return {
+      ...data,
+      content: parsed.content || cosContent,
+    }
+  }
+  catch (cosError) {
+    console.error('[DailyNoteDetail] Failed to fetch from COS:', cosError)
+    // Fallback to CDN signed URL
+    try {
+      const cdnUrl = generateCDNSignedUrl(data.cos_key)
+      return {
+        ...data,
+        content: null,
+        cdn_url: cdnUrl,
+      }
+    }
+    catch {
+      throw createError({ statusCode: 500, message: 'Failed to retrieve note content' })
+    }
+  }
 })

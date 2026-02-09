@@ -39,41 +39,27 @@ export default defineEventHandler(async event => {
     // 1. Upload content to COS
     let cosKey: string | null = null
     if (user_id) {
-      try {
-        cosKey = getWeeklyReportCOSKey(user_id, periodStart, periodEnd, recordId)
-        const cosData = JSON.stringify({ title, content, created_at: new Date().toISOString() })
-        await uploadToCOS(cosKey, cosData)
-        console.log('[WeeklyReportCallback] Uploaded to COS:', cosKey)
-      }
-      catch (cosError) {
-        console.error('[WeeklyReportCallback] COS upload failed, saving content to DB instead:', cosError)
-        cosKey = null
-      }
+      cosKey = getWeeklyReportCOSKey(user_id, periodStart, periodEnd, recordId)
+      const cosData = JSON.stringify({ title, content, created_at: new Date().toISOString() })
+      await uploadToCOS(cosKey, cosData)
+      console.log('[WeeklyReportCallback] Uploaded to COS:', cosKey)
     }
 
     // 2. Save metadata to Supabase DB
     if (user_id) {
       try {
         const adminClient = getAdminClient()
-        const insertData: Record<string, any> = {
-          id: recordId,
-          user_id,
-          title,
-          dida_project_id,
-          period_start: periodStart,
-          period_end: periodEnd,
-        }
-        if (cosKey) {
-          insertData.cos_key = cosKey
-          insertData.content = '' // Content stored in COS
-        }
-        else {
-          insertData.content = content // Fallback: store in DB
-        }
-
         const { error: insertError } = await adminClient
           .from('dida_master_weekly_reports')
-          .insert(insertData)
+          .insert({
+            id: recordId,
+            user_id,
+            title,
+            dida_project_id,
+            period_start: periodStart,
+            period_end: periodEnd,
+            cos_key: cosKey,
+          })
 
         if (insertError) {
           console.error('[WeeklyReportCallback] DB insert failed:', insertError)
