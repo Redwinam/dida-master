@@ -27,20 +27,70 @@
 }
 
 @theme {
-  --animate-fade-in: fade-in 0.3s ease-out forwards;
+  /* ── Animations ── */
+
+  /* Fade */
+  --animate-fade-in: fade-in 0.2s ease-out forwards;
+  --animate-fade-out: fade-out 0.15s ease-in forwards;
 
   @keyframes fade-in {
-    0% {
-      opacity: 0;
-      transform: translateY(5px);
-    }
-    100% {
-      opacity: 1;
-      transform: translateY(0);
-    }
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+  @keyframes fade-out {
+    from { opacity: 1; }
+    to   { opacity: 0; }
   }
 
-  /* Custom Palette based on Logo */
+  /* Scale (for Dialog content) */
+  --animate-scale-in: scale-in 0.2s ease-out forwards;
+  --animate-scale-out: scale-out 0.15s ease-in forwards;
+
+  @keyframes scale-in {
+    from { opacity: 0; transform: translate(-50%, -50%) scale(0.96); }
+    to   { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  }
+  @keyframes scale-out {
+    from { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    to   { opacity: 0; transform: translate(-50%, -50%) scale(0.96); }
+  }
+
+  /* Slide from top (for DropdownMenu / Select) */
+  --animate-slide-in-from-top: slide-in-from-top 0.15s ease-out forwards;
+  --animate-slide-out-to-top: slide-out-to-top 0.1s ease-in forwards;
+
+  @keyframes slide-in-from-top {
+    from { opacity: 0; transform: translateY(-4px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes slide-out-to-top {
+    from { opacity: 1; transform: translateY(0); }
+    to   { opacity: 0; transform: translateY(-4px); }
+  }
+
+  /* Slide from bottom (for mobile select / sheets) */
+  --animate-slide-in-from-bottom: slide-in-from-bottom 0.2s ease-out forwards;
+  --animate-slide-out-to-bottom: slide-out-to-bottom 0.15s ease-in forwards;
+
+  @keyframes slide-in-from-bottom {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes slide-out-to-bottom {
+    from { opacity: 1; transform: translateY(0); }
+    to   { opacity: 0; transform: translateY(8px); }
+  }
+
+  /* Content fade-in with subtle lift (for page sections) */
+  --animate-content-in: content-in 0.3s ease-out forwards;
+
+  @keyframes content-in {
+    from { opacity: 0; transform: translateY(5px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── Custom Palette based on Logo ── */
+
   /* Logo Blue: #203255 */
   --color-primary-50: #f2f5f9;
   --color-primary-100: #e1e7f2;

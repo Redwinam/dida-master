@@ -115,7 +115,7 @@ function toggleExcludedProject(name: string) {
         </div>
       </div>
 
-      <div v-if="config.dida_token" class="space-y-4 animate-fade-in">
+      <div v-if="config.dida_token" class="space-y-4 animate-content-in">
         <!-- Target Project -->
         <div class="space-y-1.5">
           <label class="text-sm font-medium text-gray-700 dark:text-gray-300">

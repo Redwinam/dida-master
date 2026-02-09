@@ -105,7 +105,7 @@ const openConfig = (tab?: string) => {
 
             <DropdownMenuPortal>
               <DropdownMenuContent
-                class="w-56 bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl rounded-2xl shadow-xl border border-gray-100/50 dark:border-gray-700/50 overflow-hidden z-[100] animate-fade-in origin-top-right ring-1 ring-black/5 p-2"
+                class="w-56 bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl rounded-2xl shadow-xl border border-gray-100/50 dark:border-gray-700/50 overflow-hidden z-50 origin-top-right ring-1 ring-black/5 p-2 data-[state=open]:animate-slide-in-from-top data-[state=closed]:animate-slide-out-to-top"
                 :side-offset="12"
                 align="end"
               >

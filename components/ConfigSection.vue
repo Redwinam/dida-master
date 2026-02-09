@@ -61,7 +61,7 @@ const tabs = [
 <template>
   <div class="space-y-6">
     <!-- Loading State -->
-    <div v-if="loading && !fetched" class="flex flex-col items-center justify-center py-20 animate-fade-in">
+    <div v-if="loading && !fetched" class="flex flex-col items-center justify-center py-20 animate-content-in">
       <div class="p-4 bg-primary-50 dark:bg-primary-900/20 rounded-full mb-4">
         <Icon name="line-md:loading-twotone-loop" class="w-8 h-8 text-primary-600 dark:text-primary-400" />
       </div>
@@ -71,7 +71,7 @@ const tabs = [
     </div>
 
     <!-- Error State -->
-    <div v-else-if="error" class="flex flex-col items-center justify-center py-20 animate-fade-in">
+    <div v-else-if="error" class="flex flex-col items-center justify-center py-20 animate-content-in">
       <div class="p-4 bg-red-50 dark:bg-red-900/20 rounded-full mb-4">
         <Icon name="heroicons:exclamation-triangle" class="w-8 h-8 text-red-500" />
       </div>
@@ -93,29 +93,29 @@ const tabs = [
     <TabsRoot
       v-else
       v-model="activeTab"
-      class="bg-transparent rounded-none shadow-none border-0 overflow-hidden animate-fade-in flex flex-col h-[600px] md:flex-row"
+      class="bg-transparent rounded-none shadow-none border-0 overflow-hidden animate-content-in flex flex-col max-h-[80vh] md:flex-row"
     >
       <!-- Sidebar Tabs -->
-      <div class="w-full md:w-64 bg-gray-50 dark:bg-gray-900/50 border-b md:border-b-0 md:border-r border-gray-100 dark:border-gray-700 flex md:flex-col">
-        <div class="p-6 hidden md:block">
-          <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+      <div class="w-full md:w-56 bg-gray-50 dark:bg-gray-900/50 border-b md:border-b-0 md:border-r border-gray-100 dark:border-gray-700 flex md:flex-col shrink-0">
+        <div class="p-5 hidden md:block">
+          <h3 class="text-base font-semibold text-gray-900 dark:text-white flex items-center gap-2">
             <Icon name="heroicons:adjustments-horizontal" class="w-5 h-5 text-gray-400" />
             系统配置
           </h3>
         </div>
 
-        <TabsList class="flex-1 overflow-x-auto md:overflow-x-visible flex flex-wrap md:flex-col p-2 md:p-4 gap-1">
+        <TabsList class="flex-1 overflow-x-auto md:overflow-x-visible flex flex-nowrap md:flex-col p-2 md:px-3 md:pb-4 gap-0.5">
           <TabsTrigger
             v-for="tab in tabs"
             :key="tab.id"
             :value="tab.id"
             :class="[
-              'flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 whitespace-nowrap',
+              'flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 whitespace-nowrap',
               'data-[state=active]:bg-white data-[state=active]:dark:bg-gray-800 data-[state=active]:text-primary-600 data-[state=active]:dark:text-primary-400 data-[state=active]:shadow-sm',
               'data-[state=inactive]:text-gray-600 data-[state=inactive]:dark:text-gray-400 data-[state=inactive]:hover:bg-gray-100 data-[state=inactive]:dark:hover:bg-gray-800 data-[state=inactive]:hover:text-gray-900 data-[state=inactive]:dark:hover:text-gray-200',
             ]"
           >
-            <Icon :name="tab.icon" class="w-5 h-5" />
+            <Icon :name="tab.icon" class="w-4.5 h-4.5" />
             {{ tab.label }}
           </TabsTrigger>
         </TabsList>
@@ -123,8 +123,8 @@ const tabs = [
 
       <!-- Content Area -->
       <div class="flex-1 flex flex-col min-h-0">
-        <div class="p-6 flex justify-between items-center bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
-          <h2 class="text-xl font-bold text-gray-900 dark:text-white">
+        <div class="p-4 md:px-6 md:py-4 flex justify-between items-center bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700 shrink-0">
+          <h2 class="text-lg font-bold text-gray-900 dark:text-white">
             {{ tabs.find(t => t.id === activeTab)?.label }}
           </h2>
           <div class="flex items-center gap-2">
@@ -146,23 +146,23 @@ const tabs = [
           </div>
         </div>
 
-        <div class="flex-1 overflow-y-auto p-6 md:p-8">
-          <TabsContent value="dida" class="animate-fade-in outline-none">
+        <div class="flex-1 overflow-y-auto p-6 md:p-8 custom-scrollbar">
+          <TabsContent value="dida" class="animate-content-in outline-none">
             <DidaConfig />
           </TabsContent>
-          <TabsContent value="calendar" class="animate-fade-in outline-none">
+          <TabsContent value="calendar" class="animate-content-in outline-none">
             <CalendarConfig />
           </TabsContent>
-          <TabsContent value="llm" class="animate-fade-in outline-none">
+          <TabsContent value="llm" class="animate-content-in outline-none">
             <LLMConfig ref="llmConfigRef" />
           </TabsContent>
-          <TabsContent value="api_key" class="animate-fade-in outline-none">
+          <TabsContent value="api_key" class="animate-content-in outline-none">
             <ApiKeyManager />
           </TabsContent>
-          <TabsContent value="personalization" class="animate-fade-in outline-none">
+          <TabsContent value="personalization" class="animate-content-in outline-none">
             <ConfigPersonalization />
           </TabsContent>
-          <TabsContent value="schedule" class="animate-fade-in outline-none">
+          <TabsContent value="schedule" class="animate-content-in outline-none">
             <ScheduleConfig />
           </TabsContent>
         </div>

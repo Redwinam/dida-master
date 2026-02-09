@@ -1,16 +1,5 @@
 <script setup lang="ts">
-import {
-  SelectContent,
-  SelectIcon,
-  SelectItem,
-  SelectItemIndicator,
-  SelectItemText,
-  SelectPortal,
-  SelectRoot,
-  SelectTrigger,
-  SelectValue,
-  SelectViewport,
-} from 'reka-ui'
+import UiSelect from '@/components/ui/Select.vue'
 import Modal from '@/components/ui/Modal.vue'
 
 const props = withDefaults(defineProps<{
@@ -78,7 +67,7 @@ watch(
         </h3>
         <button
           v-if="apiGuide"
-          class="text-xs text-gray-500 hover:text-primary-600 dark:text-gray-400 dark:hover:text-primary-400 flex items-center gap-1.5 px-2 py-1 rounded-md  hover:bg-gray-50 dark:hover:bg-gray-700/50 border border-transparent dark:border-gray-600 hover:border-primary-200 dark:hover:border-primary-800 transition-all"
+          class="text-xs text-gray-500 hover:text-primary-600 dark:text-gray-400 dark:hover:text-primary-400 flex items-center gap-1.5 px-2 py-1 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700/50 border border-transparent dark:border-gray-600 hover:border-primary-200 dark:hover:border-primary-800 transition-all"
           title="API 使用说明"
           @click="showApiModal = true"
         >
@@ -136,26 +125,11 @@ watch(
           <h5 class="font-medium text-gray-900 dark:text-white">
             {{ apiGuide.optionLabel || '选择模板' }}
           </h5>
-          <SelectRoot v-model="selectedApiOption">
-            <SelectTrigger class="inline-flex items-center justify-between w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900/50 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors">
-              <SelectValue placeholder="请选择" />
-              <SelectIcon>
-                <Icon name="heroicons:chevron-down" class="w-4 h-4 text-gray-400" />
-              </SelectIcon>
-            </SelectTrigger>
-            <SelectPortal>
-              <SelectContent class="z-[200] bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg overflow-hidden" position="popper" :side-offset="4">
-                <SelectViewport class="p-1 max-h-48">
-                  <SelectItem v-for="option in apiGuide.options" :key="option.value || option.label" :value="option.value" class="relative flex items-center px-3 py-2 text-sm rounded-md text-gray-900 dark:text-white cursor-pointer select-none hover:bg-gray-100 dark:hover:bg-gray-700 data-[highlighted]:bg-gray-100 dark:data-[highlighted]:bg-gray-700 outline-none">
-                    <SelectItemText>{{ option.label }}</SelectItemText>
-                    <SelectItemIndicator class="absolute right-2">
-                      <Icon name="heroicons:check" class="w-4 h-4 text-primary-600" />
-                    </SelectItemIndicator>
-                  </SelectItem>
-                </SelectViewport>
-              </SelectContent>
-            </SelectPortal>
-          </SelectRoot>
+          <UiSelect
+            v-model="selectedApiOption"
+            :options="apiGuide.options"
+            placeholder="请选择"
+          />
         </div>
 
         <div v-if="exampleText" class="space-y-2">

@@ -11,7 +11,7 @@ const { notifications, remove } = useToast()
     </NuxtLayout>
 
     <!-- Toast Container -->
-    <div class="fixed bottom-4 right-4 z-[9999] flex flex-col gap-2 pointer-events-none">
+    <div class="fixed bottom-4 right-4 z-100 flex flex-col gap-2 pointer-events-none">
       <TransitionGroup
         enter-active-class="transition duration-300 ease-out"
         enter-from-class="transform translate-y-2 opacity-0"
@@ -34,7 +34,7 @@ const { notifications, remove } = useToast()
             <h3 class="text-sm font-medium text-gray-900 dark:text-white">
               {{ n.title }}
             </h3>
-            <p v-if="n.description" class="mt-1 text-sm text-gray-500 dark:text-gray-400 wrap-break-word">
+            <p v-if="n.description" class="mt-1 text-sm text-gray-500 dark:text-gray-400 break-words">
               {{ n.description }}
             </p>
           </div>

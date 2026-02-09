@@ -1,16 +1,5 @@
 <script setup lang="ts">
-import {
-  SelectContent,
-  SelectIcon,
-  SelectItem,
-  SelectItemIndicator,
-  SelectItemText,
-  SelectPortal,
-  SelectRoot,
-  SelectTrigger,
-  SelectValue,
-  SelectViewport,
-} from 'reka-ui'
+import UiSelect from '@/components/ui/Select.vue'
 
 const { $supabase } = useNuxtApp()
 const client = $supabase as any
@@ -139,6 +128,22 @@ function getModelsForConfig(configId: string) {
   return config?.models || []
 }
 
+function getConfigOptions() {
+  return [
+    { label: '默认配置 (自动)', value: '__default__' },
+    ...llmConfigs.value.map(c => ({ label: c.name, value: c.id })),
+  ]
+}
+
+function getModelOptions(serviceKey: string) {
+  const configId = getMapping(serviceKey).llm_config_id
+  const models = getModelsForConfig(configId)
+  return [
+    { label: '默认模型 (自动)', value: '__default__' },
+    ...models.map((m: string) => ({ label: m, value: m })),
+  ]
+}
+
 onMounted(() => {
   fetchData()
 })
@@ -188,69 +193,25 @@ defineExpose({
                   <div class="flex flex-col sm:flex-row gap-3 w-full">
                     <!-- Config Selection -->
                     <div class="w-full sm:flex-1">
-                      <SelectRoot
+                      <UiSelect
                         :model-value="getMapping(sk.service_key).llm_config_id || '__default__'"
+                        :options="getConfigOptions()"
+                        placeholder="默认配置 (自动)"
+                        size="sm"
                         @update:model-value="(val: string) => updateMapping(sk.service_key, 'llm_config_id', val === '__default__' ? '' : val)"
-                      >
-                        <SelectTrigger class="inline-flex items-center justify-between w-full py-1.5 pl-3 pr-2 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900/50 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors">
-                          <SelectValue placeholder="默认配置 (自动)" />
-                          <SelectIcon>
-                            <Icon name="heroicons:chevron-down" class="w-3.5 h-3.5 text-gray-400" />
-                          </SelectIcon>
-                        </SelectTrigger>
-                        <SelectPortal>
-                          <SelectContent class="z-[200] bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg overflow-hidden" position="popper" :side-offset="4">
-                            <SelectViewport class="p-1 max-h-48">
-                              <SelectItem value="__default__" class="relative flex items-center px-3 py-1.5 text-xs rounded-md text-gray-900 dark:text-white cursor-pointer select-none hover:bg-gray-100 dark:hover:bg-gray-700 data-[highlighted]:bg-gray-100 dark:data-[highlighted]:bg-gray-700 outline-none">
-                                <SelectItemText>默认配置 (自动)</SelectItemText>
-                                <SelectItemIndicator class="absolute right-2">
-                                  <Icon name="heroicons:check" class="w-3.5 h-3.5 text-primary-600" />
-                                </SelectItemIndicator>
-                              </SelectItem>
-                              <SelectItem v-for="config in llmConfigs" :key="config.id" :value="config.id" class="relative flex items-center px-3 py-1.5 text-xs rounded-md text-gray-900 dark:text-white cursor-pointer select-none hover:bg-gray-100 dark:hover:bg-gray-700 data-[highlighted]:bg-gray-100 dark:data-[highlighted]:bg-gray-700 outline-none">
-                                <SelectItemText>{{ config.name }}</SelectItemText>
-                                <SelectItemIndicator class="absolute right-2">
-                                  <Icon name="heroicons:check" class="w-3.5 h-3.5 text-primary-600" />
-                                </SelectItemIndicator>
-                              </SelectItem>
-                            </SelectViewport>
-                          </SelectContent>
-                        </SelectPortal>
-                      </SelectRoot>
+                      />
                     </div>
 
                     <!-- Model Selection -->
                     <div class="w-full sm:flex-1">
-                      <SelectRoot
+                      <UiSelect
                         :model-value="getMapping(sk.service_key).model_name || '__default__'"
+                        :options="getModelOptions(sk.service_key)"
+                        placeholder="默认模型 (自动)"
+                        size="sm"
                         :disabled="!getMapping(sk.service_key).llm_config_id"
                         @update:model-value="(val: string) => updateMapping(sk.service_key, 'model_name', val === '__default__' ? '' : val)"
-                      >
-                        <SelectTrigger class="inline-flex items-center justify-between w-full py-1.5 pl-3 pr-2 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900/50 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
-                          <SelectValue placeholder="默认模型 (自动)" />
-                          <SelectIcon>
-                            <Icon name="heroicons:chevron-down" class="w-3.5 h-3.5 text-gray-400" />
-                          </SelectIcon>
-                        </SelectTrigger>
-                        <SelectPortal>
-                          <SelectContent class="z-[200] bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg overflow-hidden" position="popper" :side-offset="4">
-                            <SelectViewport class="p-1 max-h-48">
-                              <SelectItem value="__default__" class="relative flex items-center px-3 py-1.5 text-xs rounded-md text-gray-900 dark:text-white cursor-pointer select-none hover:bg-gray-100 dark:hover:bg-gray-700 data-[highlighted]:bg-gray-100 dark:data-[highlighted]:bg-gray-700 outline-none">
-                                <SelectItemText>默认模型 (自动)</SelectItemText>
-                                <SelectItemIndicator class="absolute right-2">
-                                  <Icon name="heroicons:check" class="w-3.5 h-3.5 text-primary-600" />
-                                </SelectItemIndicator>
-                              </SelectItem>
-                              <SelectItem v-for="model in getModelsForConfig(getMapping(sk.service_key).llm_config_id)" :key="model" :value="model" class="relative flex items-center px-3 py-1.5 text-xs rounded-md text-gray-900 dark:text-white cursor-pointer select-none hover:bg-gray-100 dark:hover:bg-gray-700 data-[highlighted]:bg-gray-100 dark:data-[highlighted]:bg-gray-700 outline-none">
-                                <SelectItemText>{{ model }}</SelectItemText>
-                                <SelectItemIndicator class="absolute right-2">
-                                  <Icon name="heroicons:check" class="w-3.5 h-3.5 text-primary-600" />
-                                </SelectItemIndicator>
-                              </SelectItem>
-                            </SelectViewport>
-                          </SelectContent>
-                        </SelectPortal>
-                      </SelectRoot>
+                      />
                     </div>
                   </div>
                 </div>

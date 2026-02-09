@@ -131,24 +131,24 @@ watch(() => route.query.page, newPage => {
 
           <!-- Pagination -->
           <div class="px-6 py-4 border-t border-gray-100 dark:border-gray-700 flex justify-between items-center">
-            <div class="text-sm text-gray-500">
+            <div class="text-sm text-gray-500 dark:text-gray-400">
               共 {{ data.total }} 条
             </div>
-            <div class="flex gap-2">
+            <div class="flex items-center gap-1">
               <button
                 :disabled="page <= 1"
-                class="px-3 py-1 text-sm rounded-md bg-gray-100 dark:bg-gray-700 disabled:opacity-50"
+                class="px-3 py-1.5 text-sm rounded-lg border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                 @click="onPageChange(page - 1)"
               >
-                上一页
+                <Icon name="heroicons:chevron-left" class="w-4 h-4" />
               </button>
-              <span class="px-3 py-1 text-sm">{{ page }}</span>
+              <span class="px-3 py-1.5 text-sm font-medium text-gray-700 dark:text-gray-300 min-w-[2rem] text-center">{{ page }}</span>
               <button
                 :disabled="page * pageSize >= data.total"
-                class="px-3 py-1 text-sm rounded-md bg-gray-100 dark:bg-gray-700 disabled:opacity-50"
+                class="px-3 py-1.5 text-sm rounded-lg border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                 @click="onPageChange(page + 1)"
               >
-                下一页
+                <Icon name="heroicons:chevron-right" class="w-4 h-4" />
               </button>
             </div>
           </div>

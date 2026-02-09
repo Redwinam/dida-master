@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import UiSwitch from '@/components/ui/Switch.vue'
 
 const { config } = useUserConfig()
 
@@ -81,24 +82,10 @@ const selectType = (type: string) => {
           </p>
         </div>
 
-        <!-- Toggle Switch -->
-        <button
-          type="button"
-          class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900"
-          :class="[enabled ? 'bg-primary-600' : 'bg-gray-200 dark:bg-gray-700']"
-          role="switch"
-          :aria-checked="enabled"
-          @click="enabled = !enabled"
-        >
-          <span
-            aria-hidden="true"
-            class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
-            :class="[enabled ? 'translate-x-5' : 'translate-x-0']"
-          ></span>
-        </button>
+        <UiSwitch v-model="enabled" />
       </div>
 
-      <div v-if="enabled" class="grid grid-cols-1 gap-6 pt-4 animate-in fade-in slide-in-from-top-4 duration-300">
+      <div v-if="enabled" class="grid grid-cols-1 gap-6 pt-4 animate-content-in">
         <div v-for="group in mbtiGroups" :key="group.name" class="space-y-3">
           <h3 class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider flex items-center gap-2">
             <span

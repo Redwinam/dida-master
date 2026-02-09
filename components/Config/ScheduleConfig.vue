@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import UiSwitch from '@/components/ui/Switch.vue'
+
 const { config } = useUserConfig()
 const { user } = useSession()
 
@@ -88,18 +90,10 @@ const weeklyMinute = computed({
             </p>
           </div>
         </div>
-        <label class="inline-flex items-center cursor-pointer">
-          <input
-            v-model="config.schedule_daily_enabled"
-            type="checkbox"
-            :disabled="!hasApiKey"
-            class="sr-only peer"
-          />
-          <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 dark:peer-focus:ring-primary-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary-600 peer-disabled:opacity-50 peer-disabled:cursor-not-allowed"></div>
-        </label>
+        <UiSwitch v-model="config.schedule_daily_enabled" :disabled="!hasApiKey" />
       </div>
 
-      <div v-if="config.schedule_daily_enabled" class="ml-12 p-4 bg-gray-50 dark:bg-gray-700/30 rounded-xl border border-gray-100 dark:border-gray-700/50 animate-fade-in">
+      <div v-if="config.schedule_daily_enabled" class="ml-12 p-4 bg-gray-50 dark:bg-gray-700/30 rounded-xl border border-gray-100 dark:border-gray-700/50 animate-content-in">
         <label class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3 block">执行时间</label>
         <div class="flex items-center gap-2">
           <span class="text-sm text-gray-500 dark:text-gray-400">每天</span>
@@ -141,18 +135,10 @@ const weeklyMinute = computed({
             </p>
           </div>
         </div>
-        <label class="inline-flex items-center cursor-pointer">
-          <input
-            v-model="config.schedule_weekly_enabled"
-            type="checkbox"
-            :disabled="!hasApiKey"
-            class="sr-only peer"
-          />
-          <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-teal-300 dark:peer-focus:ring-teal-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-teal-600 peer-disabled:opacity-50 peer-disabled:cursor-not-allowed"></div>
-        </label>
+        <UiSwitch v-model="config.schedule_weekly_enabled" :disabled="!hasApiKey" color="teal" />
       </div>
 
-      <div v-if="config.schedule_weekly_enabled" class="ml-12 p-4 bg-gray-50 dark:bg-gray-700/30 rounded-xl border border-gray-100 dark:border-gray-700/50 animate-fade-in space-y-4">
+      <div v-if="config.schedule_weekly_enabled" class="ml-12 p-4 bg-gray-50 dark:bg-gray-700/30 rounded-xl border border-gray-100 dark:border-gray-700/50 animate-content-in space-y-4">
         <!-- Day of week -->
         <div>
           <label class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3 block">执行日</label>

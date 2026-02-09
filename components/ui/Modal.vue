@@ -32,11 +32,14 @@ const open = computed({
 <template>
   <DialogRoot v-model:open="open">
     <DialogPortal>
-      <DialogOverlay class="fixed inset-0 z-50 bg-gray-900/50 backdrop-blur-sm transition-opacity data-[state=open]:animate-fade-in" />
+      <DialogOverlay
+        class="fixed inset-0 z-50 bg-gray-900/50 backdrop-blur-sm data-[state=open]:animate-fade-in data-[state=closed]:animate-fade-out"
+      />
 
       <DialogContent
         :class="[
-          'fixed left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2 w-[calc(100%-2rem)] sm:w-[calc(100%-3rem)] transform rounded-2xl bg-white dark:bg-gray-800 overflow-hidden text-left shadow-xl transition-all border border-gray-100 dark:border-gray-700',
+          'fixed left-1/2 top-1/2 z-50 w-[calc(100%-2rem)] sm:w-[calc(100%-3rem)] rounded-2xl bg-white dark:bg-gray-800 overflow-hidden text-left shadow-xl border border-gray-100 dark:border-gray-700',
+          'data-[state=open]:animate-scale-in data-[state=closed]:animate-scale-out',
           maxWidth || 'max-w-lg',
           padding ? 'p-6' : '',
         ]"
@@ -50,7 +53,7 @@ const open = computed({
           <DialogTitle class="text-lg font-semibold leading-6 text-gray-900 dark:text-white">
             {{ title }}
           </DialogTitle>
-          <DialogClose class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300 transition-colors">
+          <DialogClose class="rounded-lg p-1.5 text-gray-400 hover:text-gray-500 hover:bg-gray-100 dark:hover:text-gray-300 dark:hover:bg-gray-700 transition-colors">
             <Icon name="heroicons:x-mark" class="w-5 h-5" />
           </DialogClose>
         </div>

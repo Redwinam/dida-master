@@ -1,16 +1,5 @@
 <script setup lang="ts">
-import {
-  SelectContent,
-  SelectIcon,
-  SelectItem,
-  SelectItemIndicator,
-  SelectItemText,
-  SelectPortal,
-  SelectRoot,
-  SelectTrigger,
-  SelectValue,
-  SelectViewport,
-} from 'reka-ui'
+import UiSelect from '@/components/ui/Select.vue'
 import FunctionCard from './FunctionCard.vue'
 import Modal from '@/components/ui/Modal.vue'
 
@@ -108,6 +97,10 @@ const missingConfig = computed(() => {
   if (loading.value || !fetched.value) return false
   return !config.value.cal_username || !config.value.cal_password
 })
+
+const templateSelectOptions = computed(() =>
+  templates.value.map(tpl => ({ label: tpl.name, value: tpl.id })),
+)
 
 const resetTemplateForm = () => {
   selectedEventId.value = ''
@@ -378,26 +371,14 @@ onMounted(() => {
   >
     <div class="space-y-4">
       <div class="flex items-center gap-2">
-        <SelectRoot v-model="templateId" class="flex-1">
-          <SelectTrigger class="inline-flex items-center justify-between w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900/50 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors">
-            <SelectValue placeholder="请选择模板" />
-            <SelectIcon>
-              <Icon name="heroicons:chevron-down" class="w-4 h-4 text-gray-400" />
-            </SelectIcon>
-          </SelectTrigger>
-          <SelectPortal>
-            <SelectContent class="z-[200] bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg overflow-hidden" position="popper" :side-offset="4">
-              <SelectViewport class="p-1 max-h-48">
-                <SelectItem v-for="tpl in templates" :key="tpl.id" :value="tpl.id" class="relative flex items-center px-3 py-2 text-sm rounded-md text-gray-900 dark:text-white cursor-pointer select-none hover:bg-gray-100 dark:hover:bg-gray-700 data-[highlighted]:bg-gray-100 dark:data-[highlighted]:bg-gray-700 outline-none">
-                  <SelectItemText>{{ tpl.name }}</SelectItemText>
-                  <SelectItemIndicator class="absolute right-2">
-                    <Icon name="heroicons:check" class="w-4 h-4 text-amber-600" />
-                  </SelectItemIndicator>
-                </SelectItem>
-              </SelectViewport>
-            </SelectContent>
-          </SelectPortal>
-        </SelectRoot>
+        <div class="flex-1">
+          <UiSelect
+            v-model="templateId"
+            :options="templateSelectOptions"
+            placeholder="请选择模板"
+            accent-color="amber"
+          />
+        </div>
         <button
           :disabled="loadingTemplates"
           class="px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-700 dark:text-gray-200"
@@ -616,14 +597,14 @@ onMounted(() => {
 
       <div class="flex justify-end gap-3">
         <button
-          class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-700 dark:text-gray-200"
+          class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
           @click="showTemplateModal = false"
         >
           取消
         </button>
         <button
           :disabled="creatingTemplate"
-          class="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-sm font-medium"
+          class="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
           @click="createTemplate"
         >
           <Icon v-if="creatingTemplate" name="line-md:loading-twotone-loop" class="w-4 h-4" />
@@ -784,14 +765,14 @@ onMounted(() => {
 
         <div class="flex justify-end gap-3">
           <button
-            class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-700 dark:text-gray-200"
+            class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
             @click="showTemplateDetailModal = false"
           >
             取消
           </button>
           <button
             :disabled="savingTemplate"
-            class="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-sm font-medium"
+            class="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
             @click="updateTemplate"
           >
             <Icon v-if="savingTemplate" name="line-md:loading-twotone-loop" class="w-4 h-4" />
