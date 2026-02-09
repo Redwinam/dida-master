@@ -21,8 +21,13 @@ export default defineEventHandler(async event => {
     const timeZone = timezone || 'Asia/Shanghai'
     const title = `周报 ${date_str}`
 
+    // Extract text content from LLM response (may be full OpenAI response object or plain string)
+    const content = typeof result === 'string'
+      ? result
+      : (result?.choices?.[0]?.message?.content || result?.content || JSON.stringify(result))
+
     console.log('[WeeklyReportCallback] Creating Dida Note...')
-    const didaNote = await createDidaNote(dida_token, dida_project_id, title, result, timeZone)
+    const didaNote = await createDidaNote(dida_token, dida_project_id, title, content, timeZone)
     console.log('[WeeklyReportCallback] Note created:', didaNote?.id)
 
     return { status: 'success', noteId: didaNote?.id }

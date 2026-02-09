@@ -189,7 +189,7 @@ export default defineEventHandler(async event => {
         config.timezone,
         token,
         config.mbti,
-        undefined, // userId
+        config.user_id,
         callbackUrl,
         callbackPayload,
       )
