@@ -60,20 +60,20 @@ const chevronSize = computed(() => {
   <SelectRoot v-model="value" :disabled="disabled">
     <SelectTrigger
       :class="[
-        'inline-flex items-center justify-between w-full border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900/50 text-gray-900 dark:text-white transition-colors',
-        'focus:ring-2 focus:ring-primary-500 focus:border-primary-500',
+        'inline-flex items-center justify-between w-full border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white transition-all duration-200 shadow-xs',
+        'focus:ring-2 focus:ring-primary-500/40 focus:border-primary-500',
         'disabled:opacity-50 disabled:cursor-not-allowed',
         sizeClasses,
       ]"
     >
       <SelectValue :placeholder="placeholder" />
       <SelectIcon>
-        <Icon name="heroicons:chevron-down" :class="['text-gray-400', chevronSize]" />
+        <Icon name="heroicons:chevron-up-down" :class="['text-gray-400', chevronSize]" />
       </SelectIcon>
     </SelectTrigger>
     <SelectPortal>
       <SelectContent
-        class="z-50 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg overflow-hidden data-[state=open]:animate-slide-in-from-top data-[state=closed]:animate-slide-out-to-top"
+        class="z-50 bg-white/95 dark:bg-gray-800/95 backdrop-blur-xl border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl overflow-hidden data-[state=open]:animate-slide-in-from-top data-[state=closed]:animate-slide-out-to-top"
         position="popper"
         :side-offset="4"
       >
@@ -83,8 +83,8 @@ const chevronSize = computed(() => {
             :key="option.value"
             :value="option.value"
             :class="[
-              'relative flex items-center rounded-md text-gray-900 dark:text-white cursor-pointer select-none',
-              'hover:bg-gray-100 dark:hover:bg-gray-700 data-[highlighted]:bg-gray-100 dark:data-[highlighted]:bg-gray-700 outline-none',
+              'relative flex items-center rounded-lg text-gray-900 dark:text-white cursor-pointer select-none',
+              'hover:bg-gray-100 dark:hover:bg-gray-700 data-[highlighted]:bg-gray-100 dark:data-[highlighted]:bg-gray-700 outline-none transition-colors',
               itemSizeClasses,
             ]"
           >

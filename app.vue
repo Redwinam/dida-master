@@ -4,14 +4,14 @@ const { notifications, remove } = useToast()
 </script>
 
 <template>
-  <div class="bg-gray-50 dark:bg-gray-950 min-h-screen text-gray-900 dark:text-gray-100 font-sans antialiased selection:bg-primary-500 selection:text-white">
+  <div class="bg-gray-50 dark:bg-gray-950 min-h-screen text-gray-900 dark:text-gray-100 font-sans antialiased">
     <NuxtRouteAnnouncer />
     <NuxtLayout>
       <NuxtPage />
     </NuxtLayout>
 
     <!-- Toast Container -->
-    <div class="fixed bottom-4 right-4 z-100 flex flex-col gap-2 pointer-events-none">
+    <div class="fixed bottom-4 right-4 z-100 flex flex-col gap-2.5 pointer-events-none">
       <TransitionGroup
         enter-active-class="transition duration-300 ease-out"
         enter-from-class="transform translate-y-2 opacity-0"
@@ -23,24 +23,36 @@ const { notifications, remove } = useToast()
         <div
           v-for="n in notifications"
           :key="n.id"
-          class="pointer-events-auto w-80 bg-white dark:bg-gray-800 shadow-lg rounded-xl border border-gray-100 dark:border-gray-700 p-4 flex items-start gap-3"
+          :class="[
+            'pointer-events-auto w-80 bg-white dark:bg-gray-800 shadow-xl dark:shadow-2xl rounded-xl border border-gray-100 dark:border-gray-700 overflow-hidden flex',
+          ]"
         >
-          <div class="shrink-0 mt-0.5">
-            <Icon v-if="n.color === 'success'" name="heroicons:check-circle" class="w-5 h-5 text-green-500" />
-            <Icon v-else-if="n.color === 'error'" name="heroicons:x-circle" class="w-5 h-5 text-red-500" />
-            <Icon v-else name="heroicons:information-circle" class="w-5 h-5 text-primary-500" />
+          <!-- Colored left accent bar -->
+          <div
+            :class="[
+              'w-1 shrink-0',
+              n.color === 'success' ? 'bg-green-500' : n.color === 'error' ? 'bg-red-500' : 'bg-primary-500',
+            ]"
+          ></div>
+
+          <div class="flex items-start gap-3 p-4 flex-1 min-w-0">
+            <div class="shrink-0 mt-0.5">
+              <Icon v-if="n.color === 'success'" name="heroicons:check-circle" class="w-5 h-5 text-green-500" />
+              <Icon v-else-if="n.color === 'error'" name="heroicons:x-circle" class="w-5 h-5 text-red-500" />
+              <Icon v-else name="heroicons:information-circle" class="w-5 h-5 text-primary-500" />
+            </div>
+            <div class="flex-1 min-w-0">
+              <h3 class="text-sm font-semibold text-gray-900 dark:text-white">
+                {{ n.title }}
+              </h3>
+              <p v-if="n.description" class="mt-1 text-sm text-gray-500 dark:text-gray-400 break-words leading-relaxed">
+                {{ n.description }}
+              </p>
+            </div>
+            <button class="shrink-0 text-gray-300 hover:text-gray-500 dark:text-gray-600 dark:hover:text-gray-300 transition-colors" @click="remove(n.id)">
+              <Icon name="heroicons:x-mark" class="w-4 h-4" />
+            </button>
           </div>
-          <div class="flex-1 min-w-0">
-            <h3 class="text-sm font-medium text-gray-900 dark:text-white">
-              {{ n.title }}
-            </h3>
-            <p v-if="n.description" class="mt-1 text-sm text-gray-500 dark:text-gray-400 break-words">
-              {{ n.description }}
-            </p>
-          </div>
-          <button class="shrink-0 text-gray-400 hover:text-gray-500 dark:hover:text-gray-300 transition-colors" @click="remove(n.id)">
-            <Icon name="heroicons:x-mark" class="w-5 h-5" />
-          </button>
         </div>
       </TransitionGroup>
     </div>

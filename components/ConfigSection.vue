@@ -110,12 +110,14 @@ const tabs = [
             :key="tab.id"
             :value="tab.id"
             :class="[
-              'flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 whitespace-nowrap',
+              'relative flex items-center gap-2.5 px-3 md:px-4 py-2 md:py-2.5 rounded-full md:rounded-lg text-sm font-medium transition-all duration-200 whitespace-nowrap',
               'data-[state=active]:bg-white data-[state=active]:dark:bg-gray-800 data-[state=active]:text-primary-600 data-[state=active]:dark:text-primary-400 data-[state=active]:shadow-sm',
-              'data-[state=inactive]:text-gray-600 data-[state=inactive]:dark:text-gray-400 data-[state=inactive]:hover:bg-gray-100 data-[state=inactive]:dark:hover:bg-gray-800 data-[state=inactive]:hover:text-gray-900 data-[state=inactive]:dark:hover:text-gray-200',
+              'data-[state=inactive]:text-gray-500 data-[state=inactive]:dark:text-gray-400 data-[state=inactive]:hover:bg-gray-100 data-[state=inactive]:dark:hover:bg-gray-800 data-[state=inactive]:hover:text-gray-800 data-[state=inactive]:dark:hover:text-gray-200',
             ]"
           >
-            <Icon :name="tab.icon" class="w-4.5 h-4.5" />
+            <!-- Active indicator bar (desktop) -->
+            <span class="hidden md:block absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-full bg-primary-500 transition-opacity duration-200 data-[state=inactive]:opacity-0" :data-state="activeTab === tab.id ? 'active' : 'inactive'"></span>
+            <Icon :name="tab.icon" class="w-4 h-4" />
             {{ tab.label }}
           </TabsTrigger>
         </TabsList>
@@ -124,13 +126,14 @@ const tabs = [
       <!-- Content Area -->
       <div class="flex-1 flex flex-col min-h-0">
         <div class="p-4 md:px-6 md:py-4 flex justify-between items-center bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700 shrink-0">
-          <h2 class="text-lg font-bold text-gray-900 dark:text-white">
+          <h2 class="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
+            <Icon :name="tabs.find(t => t.id === activeTab)?.icon || 'heroicons:cog-6-tooth'" class="w-5 h-5 text-primary-500" />
             {{ tabs.find(t => t.id === activeTab)?.label }}
           </h2>
           <div class="flex items-center gap-2">
             <button
               :disabled="saving"
-              class="flex items-center gap-2 px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              class="flex items-center gap-2 px-4 py-2 bg-primary-600 hover:bg-primary-700 hover:shadow-md text-white rounded-lg text-sm font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               @click="handleSave"
             >
               <Icon v-if="saving" name="line-md:loading-twotone-loop" class="w-4 h-4" />
@@ -138,7 +141,7 @@ const tabs = [
               保存
             </button>
             <button
-              class="flex items-center justify-center w-9 h-9 rounded-lg border border-gray-200 dark:border-gray-600 text-gray-500 hover:text-gray-700 hover:bg-gray-50 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-700/60 transition-colors"
+              class="flex items-center justify-center w-9 h-9 rounded-lg border border-gray-200 dark:border-gray-600 text-gray-400 hover:text-gray-600 hover:bg-gray-50 dark:hover:text-gray-200 dark:hover:bg-gray-700/60 transition-colors"
               @click="emit('close')"
             >
               <Icon name="heroicons:x-mark" class="w-5 h-5" />

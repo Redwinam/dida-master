@@ -62,6 +62,8 @@ const apiGuide = {
     icon="heroicons:chat-bubble-bottom-center-text"
     color-class="text-cyan-600 dark:text-cyan-400"
     bg-class="bg-cyan-100 dark:bg-cyan-900/50"
+    gradient-from="from-cyan-600"
+    gradient-to="to-cyan-300"
     :api-guide="apiGuide"
   >
     <div class="space-y-4">

@@ -82,6 +82,8 @@ const apiGuide = {
     icon="heroicons:photo"
     color-class="text-indigo-600 dark:text-indigo-400"
     bg-class="bg-indigo-100 dark:bg-indigo-900/50"
+    gradient-from="from-indigo-600"
+    gradient-to="to-indigo-300"
     :api-guide="apiGuide"
   >
     <div class="space-y-4">
