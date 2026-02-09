@@ -60,7 +60,7 @@ const chevronSize = computed(() => {
   <SelectRoot v-model="value" :disabled="disabled">
     <SelectTrigger
       :class="[
-        'inline-flex items-center justify-between w-full border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white transition-all duration-200 shadow-xs',
+        'inline-flex items-center justify-between w-full border border-gray-200 dark:border-gray-600 rounded-lg bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm text-gray-900 dark:text-white transition-all duration-200 shadow-xs',
         'focus:ring-2 focus:ring-primary-500/40 focus:border-primary-500',
         'disabled:opacity-50 disabled:cursor-not-allowed',
         sizeClasses,

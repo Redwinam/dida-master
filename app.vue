@@ -24,7 +24,7 @@ const { notifications, remove } = useToast()
           v-for="n in notifications"
           :key="n.id"
           :class="[
-            'pointer-events-auto w-80 bg-white dark:bg-gray-800 shadow-xl dark:shadow-2xl rounded-xl border border-gray-100 dark:border-gray-700 overflow-hidden flex',
+            'pointer-events-auto w-80 bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl shadow-xl dark:shadow-2xl rounded-xl border border-white/80 dark:border-gray-700/60 overflow-hidden flex',
           ]"
         >
           <!-- Colored left accent bar -->

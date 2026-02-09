@@ -75,7 +75,7 @@ watch(() => route.query.page, newPage => {
 </script>
 
 <template>
-  <div class="min-h-screen p-4 md:p-8 bg-gray-50 dark:bg-gray-900">
+  <div class="min-h-screen p-4 md:p-8 bg-gradient-to-br from-gray-50 via-primary-50/20 to-accent-50/10 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
     <div class="max-w-5xl mx-auto">
       <!-- Header -->
       <div class="flex items-center justify-between mb-8 mt-4">
@@ -93,7 +93,7 @@ watch(() => route.query.page, newPage => {
       </div>
 
       <!-- Table -->
-      <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+      <div class="bg-white/70 dark:bg-gray-800/60 backdrop-blur-md rounded-2xl shadow-sm border border-white/80 dark:border-gray-700/60 overflow-hidden">
         <!-- Loading State -->
         <div v-if="pending" class="flex flex-col items-center justify-center py-20">
           <div class="p-4 bg-primary-50 dark:bg-primary-900/20 rounded-full mb-4">

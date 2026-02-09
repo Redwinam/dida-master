@@ -56,13 +56,13 @@ watch(
 </script>
 
 <template>
-  <div class="group relative bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 h-full flex flex-col">
+  <div class="group relative bg-white/70 dark:bg-gray-800/60 backdrop-blur-md rounded-2xl shadow-sm border border-white/80 dark:border-gray-700/60 overflow-hidden hover:shadow-lg hover:bg-white/90 dark:hover:bg-gray-800/80 hover:-translate-y-0.5 transition-all duration-300 h-full flex flex-col">
     <!-- Colored gradient top bar -->
     <div class="h-1 bg-gradient-to-r" :class="[gradientFrom, gradientTo]"></div>
 
     <!-- Background watermark icon -->
-    <div class="absolute -top-4 -right-4 opacity-[0.04] group-hover:opacity-[0.08] transition-opacity duration-500 pointer-events-none">
-      <Icon :name="icon" class="w-44 h-44" :class="colorClass" />
+    <div class="absolute -top-4 -right-4 opacity-[0.03] group-hover:opacity-[0.06] transition-opacity duration-500 pointer-events-none">
+      <Icon :name="icon" class="w-40 h-40" :class="colorClass" />
     </div>
 
     <div class="p-6 relative z-10 flex flex-col h-full">
