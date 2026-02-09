@@ -29,6 +29,30 @@ const { data, pending, refresh } = await useFetch('/api/dida/weekly-reports', {
 const selectedReport = ref<any>(null)
 const isModalOpen = ref(false)
 const detailLoading = ref(false)
+const deletingId = ref<string | null>(null)
+
+async function deleteReport(report: any) {
+  if (!confirm(`确定要删除「${report.title}」吗？此操作不可恢复。`)) return
+
+  deletingId.value = report.id
+  try {
+    const { data: { session } } = await client.auth.getSession()
+    await $fetch(`/api/dida/weekly-reports/${report.id}`, {
+      method: 'DELETE',
+      headers: {
+        Authorization: session?.access_token ? `Bearer ${session.access_token}` : '',
+      },
+    })
+    await refresh()
+  }
+  catch (e) {
+    console.error('Failed to delete report:', e)
+    alert('删除失败，请重试。')
+  }
+  finally {
+    deletingId.value = null
+  }
+}
 
 async function openReport(report: any) {
   isModalOpen.value = true
@@ -120,9 +144,16 @@ watch(() => route.query.page, newPage => {
                 <td class="px-6 py-4 text-sm text-gray-900 dark:text-white font-medium">
                   {{ report.title }}
                 </td>
-                <td class="px-6 py-4 text-right">
+                <td class="px-6 py-4 text-right space-x-3">
                   <button class="text-primary-600 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-300 text-sm font-medium" @click="openReport(report)">
                     查看详情
+                  </button>
+                  <button
+                    class="text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 text-sm font-medium disabled:opacity-40"
+                    :disabled="deletingId === report.id"
+                    @click="deleteReport(report)"
+                  >
+                    {{ deletingId === report.id ? '删除中...' : '删除' }}
                   </button>
                 </td>
               </tr>

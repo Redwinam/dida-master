@@ -29,6 +29,30 @@ const { data, pending, refresh } = await useFetch('/api/dida/daily-notes', {
 const selectedNote = ref<any>(null)
 const isModalOpen = ref(false)
 const detailLoading = ref(false)
+const deletingId = ref<string | null>(null)
+
+async function deleteNote(note: any) {
+  if (!confirm(`确定要删除「${note.title}」吗？此操作不可恢复。`)) return
+
+  deletingId.value = note.id
+  try {
+    const { data: { session } } = await client.auth.getSession()
+    await $fetch(`/api/dida/daily-notes/${note.id}`, {
+      method: 'DELETE',
+      headers: {
+        Authorization: session?.access_token ? `Bearer ${session.access_token}` : '',
+      },
+    })
+    await refresh()
+  }
+  catch (e) {
+    console.error('Failed to delete note:', e)
+    alert('删除失败，请重试。')
+  }
+  finally {
+    deletingId.value = null
+  }
+}
 
 async function openNote(note: any) {
   isModalOpen.value = true
@@ -120,9 +144,16 @@ watch(() => route.query.page, newPage => {
                 <td class="px-6 py-4 text-sm text-gray-900 dark:text-white font-medium">
                   {{ note.title }}
                 </td>
-                <td class="px-6 py-4 text-right">
+                <td class="px-6 py-4 text-right space-x-3">
                   <button class="text-primary-600 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-300 text-sm font-medium" @click="openNote(note)">
                     查看详情
+                  </button>
+                  <button
+                    class="text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 text-sm font-medium disabled:opacity-40"
+                    :disabled="deletingId === note.id"
+                    @click="deleteNote(note)"
+                  >
+                    {{ deletingId === note.id ? '删除中...' : '删除' }}
                   </button>
                 </td>
               </tr>

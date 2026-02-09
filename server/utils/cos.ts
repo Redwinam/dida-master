@@ -327,6 +327,38 @@ export function generateCDNSignedUrl(key: string): string {
 }
 
 /**
+ * Delete an object from COS
+ */
+export async function deleteFromCOS(key: string): Promise<void> {
+  const cosConfig = getCOSConfig()
+  const host = getCOSHost(cosConfig.bucket, cosConfig.region)
+  const url = `https://${host}/${key}`
+
+  const headers: Record<string, string> = {
+    Host: host,
+  }
+
+  const authorization = await generateCOSAuthorization('DELETE', key, headers, cosConfig)
+
+  const response = await fetch(url, {
+    method: 'DELETE',
+    headers: {
+      ...headers,
+      Authorization: authorization,
+    },
+  })
+
+  // COS returns 204 No Content on successful delete
+  if (!response.ok && response.status !== 204) {
+    const text = await response.text()
+    console.error('[COS] Delete failed:', response.status, text)
+    throw new Error(`COS delete failed: ${response.status} ${text}`)
+  }
+
+  console.log(`[COS] Deleted: ${key}`)
+}
+
+/**
  * Generate COS key for daily note
  * Includes record ID to prevent collisions when multiple notes exist for the same date
  */
