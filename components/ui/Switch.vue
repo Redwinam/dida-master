@@ -14,11 +14,6 @@ const emit = defineEmits<{
   (e: 'update:modelValue', value: boolean): void
 }>()
 
-const checked = computed({
-  get: () => props.modelValue,
-  set: (val: boolean) => emit('update:modelValue', val),
-})
-
 const colorClasses = computed(() => {
   const colors: Record<string, string> = {
     primary: 'data-[state=checked]:bg-primary-600',
@@ -32,7 +27,7 @@ const colorClasses = computed(() => {
 
 <template>
   <SwitchRoot
-    v-model:checked="checked"
+    :model-value="!!modelValue"
     :disabled="disabled"
     :class="[
       'relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out',
@@ -41,6 +36,7 @@ const colorClasses = computed(() => {
       'disabled:opacity-50 disabled:cursor-not-allowed',
       colorClasses,
     ]"
+    @update:model-value="(val: boolean) => emit('update:modelValue', val)"
   >
     <SwitchThumb
       class="pointer-events-none block h-5 w-5 rounded-full bg-white shadow-sm ring-0 transition-transform duration-200 ease-in-out data-[state=checked]:translate-x-5 data-[state=unchecked]:translate-x-0"

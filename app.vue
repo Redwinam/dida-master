@@ -4,7 +4,7 @@ const { notifications, remove } = useToast()
 </script>
 
 <template>
-  <div class="bg-gray-50 dark:bg-gray-950 min-h-screen text-gray-900 dark:text-gray-100 font-sans antialiased selection:bg-primary-500 selection:text-white">
+  <div class="bg-gray-50 dark:bg-gray-950 min-h-screen text-gray-900 dark:text-gray-100 font-sans antialiased">
     <NuxtRouteAnnouncer />
     <NuxtLayout>
       <NuxtPage />
