@@ -13,7 +13,7 @@
   "dependencies": {
     "@nuxt/eslint": "^1.14.0",
     "@nuxt/icon": "^2.2.1",
-    "@redwinam/if9-supabase-auth": "^0.2.14",
+    "@redwinam/if9-supabase-auth": "^0.3.0",
     "@supabase/supabase-js": "^2.89.0",
     "@tailwindcss/typography": "^0.5.19",
     "@tailwindcss/vite": "^4.1.17",

@@ -3,29 +3,25 @@ import { defineEventHandler, readBody, createError } from 'h3'
 const FIXED_SERVICE_KEYS = [
   {
     service_key: 'DIDA_DAILY_NOTE',
-    label: 'DIDA_DAILY_NOTE',
-    description: '日报生成',
+    label: 'DIDA_DAILY_NOTE（日报生成）',
     is_active: true,
     service_order: 1,
   },
   {
     service_key: 'DIDA_IMAGE_TO_CALENDAR',
-    label: 'DIDA_IMAGE_TO_CALENDAR',
-    description: '图片转日程',
+    label: 'DIDA_IMAGE_TO_CALENDAR（图片转日程）',
     is_active: true,
     service_order: 2,
   },
   {
     service_key: 'DIDA_TEXT_TO_CALENDAR',
-    label: 'DIDA_TEXT_TO_CALENDAR',
-    description: '文本转日程',
+    label: 'DIDA_TEXT_TO_CALENDAR（文本转日程）',
     is_active: true,
     service_order: 3,
   },
   {
     service_key: 'DIDA_WEEKLY_REPORT',
-    label: 'DIDA_WEEKLY_REPORT',
-    description: '周报生成',
+    label: 'DIDA_WEEKLY_REPORT（周报生成）',
     is_active: true,
     service_order: 4,
   },
