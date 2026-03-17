@@ -1,4 +1,3 @@
-import { addEventToCalendar } from '../../utils/caldav'
 import { parseTextToCalendar } from '../../utils/llm'
 import { getUserConfig } from '../../utils/userConfig'
 
@@ -31,25 +30,25 @@ export default defineEventHandler(async event => {
   const token = getHeader(event, 'Authorization')?.replace('Bearer ', '') || getCookie(event, 'sb-access-token')
 
   const todayDate = new Date().toISOString().split('T')[0] || ''
-  const events = await parseTextToCalendar(text, calendars, todayDate, token)
 
-  if (!events || events.length === 0) {
-    return { events: [] }
+  // Use async callback mode to avoid timeout
+  const runtimeConfig = useRuntimeConfig()
+  if (!runtimeConfig.siteUrl) {
+    throw createError({ statusCode: 500, message: 'Server Configuration Error: siteUrl is not configured.' })
+  }
+  const callbackUrl = `${runtimeConfig.siteUrl}/api/callbacks/text-calendar`
+
+  const callbackPayload = {
+    user_id: config.user_id,
+    cal_enable: config.cal_enable,
+    cal_username: config.cal_username,
+    cal_password: config.cal_password,
+    cal_server_url: config.cal_server_url,
+    calendars,
   }
 
-  // Add events to calendar
-  // Check if calendar sync is enabled before trying to add events
-  if (config.cal_enable) {
-    for (const ev of events) {
-      // Use default calendar if not specified or not found in list (LLM might hallucinate)
-      const targetCal = ev.calendar || calendars[0]
-      await addEventToCalendar({
-        cal_username: config.cal_username,
-        cal_password: config.cal_password,
-        cal_server_url: config.cal_server_url,
-      }, ev, targetCal)
-    }
-  }
+  console.log('[TextCalendar] Sending async request...')
+  await parseTextToCalendar(text, calendars, todayDate, token, config.user_id, callbackUrl, callbackPayload)
 
-  return { events }
+  return { status: 'queued', message: '已提交，AI 正在后台解析日程...' }
 })

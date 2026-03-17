@@ -168,21 +168,20 @@ ${nextWeekCalendarContext}
   return await callAiGateway('DIDA_WEEKLY_REPORT', { type: 'text', prompt }, userToken, userId, callbackUrl, callbackPayload)
 }
 
-export const parseTextToCalendar = async (text: string, calendars: string[], todayDate: string, userToken?: string) => {
-  const prompt = `请识别文本中的日程信息，并将其转换为 JSON 格式。
-当前日期是: ${todayDate}
-允许的日历名称: ${calendars.join(', ')} (如果无法确定，默认为"${calendars[0] || '默认'}")
+export const parseTextToCalendar = async (text: string, calendars: string[], todayDate: string, userToken?: string, userId?: string, callbackUrl?: string, callbackPayload?: Record<string, any>) => {
+  const prompt = `你是一个日程助理，请根据用户输入的文本识别日程信息，生成 JSON 数组（无 markdown/解释），每个元素包含字段：title, start, end, location, calendar, allDay。
+用户输入：${text}
+今天是：${todayDate}。
+时间日期格式：start/end 使用 ISO 8601（如 2026-01-24T19:40:00+08:00）。
+允许的日历名称：${calendars.join(', ')} (不确定时用 "${calendars[0] || '默认'}")`
 
-返回格式必须是 JSON 数组，包含以下字段:
-- title: 事件标题
-- start: 开始时间 (ISO 8601 格式)
-- end: 结束时间 (ISO 8601 格式)
-- location: 地点 (可选)
-- calendar: 日历名称 (必须从允许列表中选择)
-- allDay: 是否全天 (boolean)
+  const content = await callAiGateway('DIDA_TEXT_TO_CALENDAR', { type: 'text', prompt }, userToken, userId, callbackUrl, callbackPayload)
 
-只返回 JSON，不要包含 markdown 标记。`
-  const content = await callAiGateway('DIDA_TEXT_TO_CALENDAR', { type: 'text', prompt, text }, userToken)
+  // In async mode, return the queued response directly
+  if (callbackUrl) {
+    return content
+  }
+
   // Try to strip markdown code blocks if present
   const jsonStr = content.replace(/```json\n?|\n?```/g, '').trim()
   try {
@@ -220,7 +219,7 @@ ${titleRuleLine}
     console.log('[TemplateParse] Prompt', prompt)
   }
 
-  const content = await callAiGateway('DIDA_TEXT_TO_CALENDAR', { type: 'text', prompt, text }, userToken)
+  const content = await callAiGateway('DIDA_TEXT_TO_CALENDAR', { type: 'text', prompt }, userToken)
   const jsonStr = content.replace(/```json\n?|\n?```/g, '').trim()
   try {
     const parsed = JSON.parse(jsonStr)
@@ -232,21 +231,19 @@ ${titleRuleLine}
   }
 }
 
-export const parseImageToCalendar = async (imageBase64: string, calendars: string[], todayDate: string, userToken?: string) => {
-  const prompt = `请识别图片中的日程信息，并将其转换为 JSON 格式。
-当前日期是: ${todayDate}
-允许的日历名称: ${calendars.join(', ')} (如果无法确定，默认为"${calendars[0] || '默认'}")
+export const parseImageToCalendar = async (imageBase64: string, calendars: string[], todayDate: string, userToken?: string, userId?: string, callbackUrl?: string, callbackPayload?: Record<string, any>) => {
+  const prompt = `你是一个日程助理，请识别图片中的日程信息，生成 JSON 数组（无 markdown/解释），每个元素包含字段：title, start, end, location, calendar, allDay。
+今天是：${todayDate}。
+时间日期格式：start/end 使用 ISO 8601（如 2026-01-24T19:40:00+08:00）。
+允许的日历名称：${calendars.join(', ')} (不确定时用 "${calendars[0] || '默认'}")`
 
-返回格式必须是 JSON 数组，包含以下字段:
-- title: 事件标题
-- start: 开始时间 (ISO 8601 格式)
-- end: 结束时间 (ISO 8601 格式)
-- location: 地点 (可选)
-- calendar: 日历名称 (必须从允许列表中选择)
-- allDay: 是否全天 (boolean)
+  const content = await callAiGateway('DIDA_IMAGE_TO_CALENDAR', { type: 'image', prompt, image_base64: imageBase64 }, userToken, userId, callbackUrl, callbackPayload)
 
-只返回 JSON，不要包含 markdown 标记。`
-  const content = await callAiGateway('DIDA_IMAGE_TO_CALENDAR', { type: 'image', prompt, image_base64: imageBase64 }, userToken)
+  // In async mode, return the queued response directly
+  if (callbackUrl) {
+    return content
+  }
+
   // Try to strip markdown code blocks if present
   const jsonStr = content.replace(/```json\n?|\n?```/g, '').trim()
   try {
@@ -257,3 +254,4 @@ export const parseImageToCalendar = async (imageBase64: string, calendars: strin
     return []
   }
 }
+

@@ -30,7 +30,12 @@ async function triggerTextToCalendar() {
         Authorization: session?.access_token ? `Bearer ${session.access_token}` : '',
       },
     })
-    toast.add({ title: '日历事件已添加', description: `添加了 ${res.events?.length || 0} 个事件`, color: 'success' })
+    if (res?.status === 'queued') {
+      toast.add({ title: '已提交', description: res.message || 'AI 正在后台解析日程，完成后将自动添加到日历。', color: 'success' })
+    }
+    else {
+      toast.add({ title: '日历事件已添加', description: `添加了 ${res.events?.length || 0} 个事件`, color: 'success' })
+    }
     textInput.value = ''
   }
   catch (e: any) {
