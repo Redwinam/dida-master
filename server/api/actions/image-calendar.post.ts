@@ -1,3 +1,4 @@
+import { addEventToCalendar } from '../../utils/caldav'
 import { parseImageToCalendar } from '../../utils/llm'
 import { getUserConfig } from '../../utils/userConfig'
 import { readMultipartFormData } from 'h3'
@@ -33,29 +34,26 @@ export default defineEventHandler(async event => {
   const calendars = (config.calendar_target || '').split(',').map((s: string) => s.trim()).filter(Boolean)
 
   const todayDate = new Date().toISOString().split('T')[0] || ''
-  // Ensure imageBase64 doesn't have prefix
   const cleanBase64 = imageBase64.replace(/^data:image\/\w+;base64,/, '')
 
   const token = getHeader(event, 'Authorization')?.replace('Bearer ', '') || getCookie(event, 'sb-access-token')
 
-  // Use async callback mode to avoid timeout
-  const runtimeConfig = useRuntimeConfig()
-  if (!runtimeConfig.siteUrl) {
-    throw createError({ statusCode: 500, message: 'Server Configuration Error: siteUrl is not configured.' })
-  }
-  const callbackUrl = `${runtimeConfig.siteUrl}/api/callbacks/image-calendar`
+  const events = await parseImageToCalendar(cleanBase64, calendars, todayDate, token)
 
-  const callbackPayload = {
-    user_id: config.user_id,
-    cal_enable: config.cal_enable,
-    cal_username: config.cal_username,
-    cal_password: config.cal_password,
-    cal_server_url: config.cal_server_url,
-    calendars,
+  if (!events || events.length === 0) {
+    return { events: [] }
   }
 
-  console.log('[ImageCalendar] Sending async request...')
-  await parseImageToCalendar(cleanBase64, calendars, todayDate, token, config.user_id, callbackUrl, callbackPayload)
+  if (config.cal_enable) {
+    for (const ev of events) {
+      const targetCal = ev.calendar || calendars[0]
+      await addEventToCalendar({
+        cal_username: config.cal_username,
+        cal_password: config.cal_password,
+        cal_server_url: config.cal_server_url,
+      }, ev, targetCal)
+    }
+  }
 
-  return { status: 'queued', message: '已提交，AI 正在后台识别图片中的日程...' }
+  return { events }
 })

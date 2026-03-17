@@ -51,12 +51,7 @@ async function triggerImageToCalendar() {
         Authorization: session?.access_token ? `Bearer ${session.access_token}` : '',
       },
     })
-    if (res?.status === 'queued') {
-      toast.add({ title: '已提交', description: res.message || 'AI 正在后台识别图片，完成后将自动添加到日历。', color: 'success' })
-    }
-    else {
-      toast.add({ title: '日历事件已添加', description: `添加了 ${res.events?.length || 0} 个事件`, color: 'success' })
-    }
+    toast.add({ title: '日历事件已添加', description: `添加了 ${res.events?.length || 0} 个事件`, color: 'success' })
     clearImage()
   }
   catch (e: any) {
