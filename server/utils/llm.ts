@@ -1,3 +1,17 @@
+/**
+ * 生成今天的日期描述字符串，包含年月日和星期
+ * 例如："2026年3月19日 星期四"
+ */
+export const getTodayDescription = (timezone: string = 'Asia/Shanghai') => {
+  return new Date().toLocaleDateString('zh-CN', {
+    timeZone: timezone,
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    weekday: 'long',
+  })
+}
+
 const getAiGatewayUrl = () => {
   const config = useRuntimeConfig()
   const baseUrl = (config.public.supabaseUrl as string | undefined)?.replace(/\/$/, '')
@@ -92,13 +106,7 @@ const callAiGateway = async (serviceKey: string, input: Record<string, any>, use
 }
 
 export const generateDailyPlan = async (tasksContext: string, calendarContext: string, timezone: string = 'Asia/Shanghai', userToken?: string, mbti?: string, userId?: string, callbackUrl?: string, callbackPayload?: Record<string, any>) => {
-  const todayStr = new Date().toLocaleDateString('zh-CN', {
-    timeZone: timezone,
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    weekday: 'long',
-  })
+  const todayStr = getTodayDescription(timezone)
 
   const persona = mbti ? `，专门为${mbti}人格类型设计日程安排` : ''
   const constraint = mbti ? `（但回复中无需提到${mbti}属性；返回格式中不使用表格、无需一级标题）` : '（返回格式中不使用表格、无需一级标题）'
@@ -132,6 +140,7 @@ export const generateWeeklyReport = async (
   callbackPayload?: Record<string, any>,
 ) => {
   const today = new Date()
+  const todayStr = getTodayDescription(timezone)
   const start = new Date(today)
   start.setDate(start.getDate() - 7)
   const dateStr = `${start.toLocaleDateString('zh-CN', { timeZone: timezone })} - ${today.toLocaleDateString('zh-CN', { timeZone: timezone })}`
@@ -140,7 +149,7 @@ export const generateWeeklyReport = async (
   const constraint = mbti ? `（但回复中无需提到${mbti}属性；返回格式中不使用表格、无需一级标题）` : '（返回格式中不使用表格、无需一级标题）'
 
   const prompt = `你是一个专业的项目经理${persona}。
-今天是${today.toLocaleDateString('zh-CN', { timeZone: timezone })}。
+今天是${todayStr}。
 请根据以下信息，为我撰写一份本周工作周报。
 周报周期：${dateStr}
 ${constraint}
