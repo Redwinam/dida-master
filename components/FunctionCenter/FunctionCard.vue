@@ -56,7 +56,7 @@ watch(
 </script>
 
 <template>
-  <div class="group relative bg-white dark:bg-gray-800/80 rounded-2xl shadow-sm hover:shadow-xl border border-gray-100 dark:border-gray-700/80 overflow-hidden transition-all duration-300 h-full flex flex-col hover:-translate-y-1 animate-card-enter backdrop-blur-sm">
+  <div class="group relative bg-white dark:bg-gray-800/80 rounded-2xl shadow-sm hover:shadow-lg border border-gray-100 dark:border-gray-700/80 overflow-hidden transition-all duration-300 h-full flex flex-col animate-card-enter backdrop-blur-sm">
     <!-- Top gradient accent bar -->
     <div class="h-1 w-full bg-gradient-to-r" :class="[gradientFrom, gradientTo]" />
 
@@ -68,8 +68,8 @@ watch(
     <div class="p-6 relative z-10 flex flex-col h-full">
       <div class="flex justify-between items-start mb-4">
         <h3 class="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-3">
-          <div class="p-2.5 rounded-xl shadow-sm" :class="[bgClass, colorClass]">
-            <Icon :name="icon" class="w-5 h-5" />
+          <div class="w-10 h-10 rounded-full flex items-center justify-center shrink-0" :class="[bgClass, colorClass]">
+            <Icon :name="icon" class="w-[18px] h-[18px]" />
           </div>
           {{ title }}
         </h3>
