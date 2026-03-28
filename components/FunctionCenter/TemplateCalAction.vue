@@ -364,6 +364,8 @@ onMounted(() => {
     icon="lucide:bookmark"
     color-class="text-amber-600 dark:text-amber-400"
     bg-class="bg-amber-100 dark:bg-amber-900/50"
+    gradient-from="from-amber-500"
+    gradient-to="to-amber-400"
     :api-guide="apiGuide"
     :missing-config="missingConfig"
     missing-config-text="需要配置日历。"
@@ -381,7 +383,7 @@ onMounted(() => {
         </div>
         <button
           :disabled="loadingTemplates"
-          class="px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-700 dark:text-gray-200"
+          class="px-3 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl text-sm text-gray-500 dark:text-gray-300 hover:text-amber-600 dark:hover:text-amber-400 hover:border-amber-300 dark:hover:border-amber-600 transition-all"
           @click="fetchTemplates"
         >
           <Icon v-if="loadingTemplates" name="line-md:loading-twotone-loop" class="w-4 h-4" />
@@ -389,7 +391,7 @@ onMounted(() => {
         </button>
         <button
           :disabled="!templateId"
-          class="px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-700 dark:text-gray-200 disabled:opacity-50"
+          class="px-3 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl text-sm text-gray-500 dark:text-gray-300 hover:text-amber-600 dark:hover:text-amber-400 hover:border-amber-300 dark:hover:border-amber-600 disabled:opacity-50 transition-all"
           @click="openTemplateDetail"
         >
           <Icon name="lucide:square-pen" class="w-4 h-4" />
@@ -400,21 +402,21 @@ onMounted(() => {
         v-model="inputText"
         rows="3"
         placeholder="例如：普拉提：核心床 今天19:40-20:40"
-        class="block w-full p-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-900/50 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 sm:text-sm resize-none"
+        class="block w-full p-3 border border-gray-200 dark:border-gray-600 rounded-xl bg-gray-50/50 dark:bg-gray-900/50 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-amber-500/30 focus:border-amber-400 sm:text-sm resize-none transition-all duration-200"
       ></textarea>
 
       <div class="flex gap-2 mt-2">
         <button
           :disabled="creatingEvent || !templateId || !inputText"
-          class="flex-1 py-2.5 px-4 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-sm font-medium shadow-sm transition-all flex justify-center items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          class="flex-1 py-2.5 px-4 bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-white rounded-xl text-sm font-semibold shadow-md shadow-amber-600/20 transition-all flex justify-center items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98]"
           @click="triggerTemplateCalendar"
         >
           <Icon v-if="creatingEvent" name="line-md:loading-twotone-loop" class="w-5 h-5" />
-          <Icon v-else name="lucide:sparkles" class="w-5 h-5" />
+          <Icon v-else name="lucide:sparkles" class="w-4 h-4" />
           基于模板创建
         </button>
         <button
-          class="py-2.5 px-4 bg-amber-50/50 dark:bg-amber-900/30 hover:bg-amber-100 dark:hover:bg-amber-900/50 text-amber-600 dark:text-amber-400 rounded-lg text-sm font-medium transition-all flex items-center gap-1.5 border border-amber-200 dark:border-amber-800"
+          class="py-2.5 px-4 bg-amber-50/50 dark:bg-amber-900/30 hover:bg-amber-100 dark:hover:bg-amber-900/50 text-amber-600 dark:text-amber-400 rounded-xl text-sm font-medium transition-all flex items-center gap-1.5 border border-amber-200 dark:border-amber-800 active:scale-[0.98]"
           @click="openTemplateModal"
         >
           <Icon name="lucide:plus" class="w-4 h-4" />

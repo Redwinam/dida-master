@@ -99,31 +99,62 @@ watch(() => route.query.page, newPage => {
 </script>
 
 <template>
-  <div class="min-h-screen p-4 md:p-8 bg-gray-50 dark:bg-gray-900">
-    <div class="max-w-5xl mx-auto">
-      <!-- Header -->
-      <div class="flex items-center justify-between mb-8">
-        <div class="flex items-center gap-4">
-          <NuxtLink to="/" class="p-2 hover:bg-gray-200 dark:hover:bg-gray-800 rounded-lg transition-colors">
-            <Icon name="lucide:arrow-left" class="w-6 h-6 text-gray-600 dark:text-gray-400" />
+  <div class="min-h-screen transition-colors duration-300 relative overflow-hidden">
+    <!-- Background decorative orbs -->
+    <div class="fixed inset-0 pointer-events-none overflow-hidden z-0">
+      <div class="page-orb page-orb-1" />
+      <div class="page-orb page-orb-2" />
+    </div>
+
+    <!-- Hero Header -->
+    <div class="relative z-10 bg-gradient-to-br from-primary-950 via-primary-900 to-primary-800 overflow-hidden">
+      <div class="absolute inset-0 overflow-hidden pointer-events-none">
+        <div class="absolute -top-20 -right-20 w-60 h-60 rounded-full bg-accent-400/[0.06] blur-3xl" />
+        <div class="absolute -bottom-10 -left-10 w-40 h-40 rounded-full bg-primary-400/[0.08] blur-3xl" />
+      </div>
+      <div class="absolute inset-0 opacity-[0.03] pointer-events-none" style="background-image: radial-gradient(circle at 1px 1px, white 1px, transparent 0); background-size: 40px 40px;" />
+
+      <div class="max-w-5xl mx-auto px-4 md:px-8 relative z-10 py-8 md:py-10">
+        <div class="flex items-center gap-4 animate-content-in">
+          <NuxtLink to="/" class="p-2.5 rounded-xl bg-white/[0.08] hover:bg-white/[0.14] border border-white/[0.1] text-white/70 hover:text-white transition-all">
+            <Icon name="lucide:arrow-left" class="w-5 h-5" />
           </NuxtLink>
-          <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
-            每日笔记历史
-          </h1>
+          <div>
+            <h1 class="text-xl md:text-2xl font-bold text-white tracking-tight">
+              每日笔记历史
+            </h1>
+            <p class="text-primary-300/50 text-xs mt-0.5">
+              查看和管理所有已生成的每日笔记
+            </p>
+          </div>
         </div>
       </div>
+    </div>
 
-      <!-- Table -->
-      <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
-        <div v-if="pending" class="p-8 text-center text-gray-500">
-          加载中...
+    <!-- Content -->
+    <div class="relative z-10 max-w-5xl mx-auto px-4 md:px-8 -mt-4 pb-16">
+      <div class="bg-white dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700/80 overflow-hidden animate-content-in">
+        <!-- Loading -->
+        <div v-if="pending" class="p-12 text-center">
+          <div class="w-12 h-12 mx-auto mb-4 rounded-xl bg-primary-50 dark:bg-primary-900/30 flex items-center justify-center">
+            <Icon name="line-md:loading-twotone-loop" class="w-6 h-6 text-primary-600 dark:text-primary-400" />
+          </div>
+          <p class="text-sm text-gray-500 dark:text-gray-400 font-medium">加载中...</p>
         </div>
-        <div v-else-if="!data?.data || data.data.length === 0" class="p-8 text-center text-gray-500">
-          暂无数据
+
+        <!-- Empty State -->
+        <div v-else-if="!data?.data || data.data.length === 0" class="p-12 text-center">
+          <div class="w-12 h-12 mx-auto mb-4 rounded-xl bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
+            <Icon name="lucide:inbox" class="w-6 h-6 text-gray-400" />
+          </div>
+          <p class="text-sm text-gray-500 dark:text-gray-400 font-medium">暂无数据</p>
+          <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">生成每日笔记后将显示在这里</p>
         </div>
+
+        <!-- Data Table -->
         <div v-else>
           <table class="w-full text-left">
-            <thead class="bg-gray-50 dark:bg-gray-900/50 text-gray-500 dark:text-gray-400 text-sm font-medium">
+            <thead class="bg-gray-50/80 dark:bg-gray-900/50 text-gray-500 dark:text-gray-400 text-xs font-semibold uppercase tracking-wider">
               <tr>
                 <th class="px-6 py-4">
                   日期
@@ -136,47 +167,54 @@ watch(() => route.query.page, newPage => {
                 </th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
-              <tr v-for="note in data.data" :key="note.id" class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
-                <td class="px-6 py-4 text-sm text-gray-900 dark:text-white whitespace-nowrap">
+            <tbody class="divide-y divide-gray-50 dark:divide-gray-700/50">
+              <tr v-for="note in data.data" :key="note.id" class="hover:bg-primary-50/30 dark:hover:bg-primary-900/10 transition-colors duration-150">
+                <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-300 whitespace-nowrap font-mono">
                   {{ new Date(note.note_date).toLocaleDateString() }}
                 </td>
                 <td class="px-6 py-4 text-sm text-gray-900 dark:text-white font-medium">
                   {{ note.title }}
                 </td>
-                <td class="px-6 py-4 text-right space-x-3">
-                  <button class="text-primary-600 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-300 text-sm font-medium" @click="openNote(note)">
-                    查看详情
-                  </button>
-                  <button
-                    class="text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 text-sm font-medium disabled:opacity-40"
-                    :disabled="deletingId === note.id"
-                    @click="deleteNote(note)"
-                  >
-                    {{ deletingId === note.id ? '删除中...' : '删除' }}
-                  </button>
+                <td class="px-6 py-4 text-right">
+                  <div class="flex items-center justify-end gap-2">
+                    <button
+                      class="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/30 hover:bg-primary-100 dark:hover:bg-primary-900/50 rounded-lg transition-colors"
+                      @click="openNote(note)"
+                    >
+                      <Icon name="lucide:eye" class="w-3.5 h-3.5" />
+                      查看
+                    </button>
+                    <button
+                      class="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-red-500 dark:text-red-400 bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg transition-colors disabled:opacity-40"
+                      :disabled="deletingId === note.id"
+                      @click="deleteNote(note)"
+                    >
+                      <Icon name="lucide:trash-2" class="w-3.5 h-3.5" />
+                      {{ deletingId === note.id ? '...' : '删除' }}
+                    </button>
+                  </div>
                 </td>
               </tr>
             </tbody>
           </table>
 
           <!-- Pagination -->
-          <div class="px-6 py-4 border-t border-gray-100 dark:border-gray-700 flex justify-between items-center">
-            <div class="text-sm text-gray-500 dark:text-gray-400">
-              共 {{ data.total }} 条
+          <div class="px-6 py-4 border-t border-gray-100 dark:border-gray-700/50 flex justify-between items-center bg-gray-50/50 dark:bg-gray-900/30">
+            <div class="text-xs text-gray-500 dark:text-gray-400 font-medium">
+              共 {{ data.total }} 条记录
             </div>
             <div class="flex items-center gap-1">
               <button
                 :disabled="page <= 1"
-                class="px-3 py-1.5 text-sm rounded-lg border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                class="px-3 py-1.5 text-sm rounded-lg border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-500 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
                 @click="onPageChange(page - 1)"
               >
                 <Icon name="lucide:chevron-left" class="w-4 h-4" />
               </button>
-              <span class="px-3 py-1.5 text-sm font-medium text-gray-700 dark:text-gray-300 min-w-[2rem] text-center">{{ page }}</span>
+              <span class="px-3 py-1.5 text-sm font-bold text-gray-700 dark:text-gray-300 min-w-[2rem] text-center">{{ page }}</span>
               <button
                 :disabled="page * pageSize >= data.total"
-                class="px-3 py-1.5 text-sm rounded-lg border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                class="px-3 py-1.5 text-sm rounded-lg border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-500 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
                 @click="onPageChange(page + 1)"
               >
                 <Icon name="lucide:chevron-right" class="w-4 h-4" />

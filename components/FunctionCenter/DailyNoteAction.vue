@@ -59,6 +59,8 @@ const apiGuide = {
     icon="lucide:file-text"
     color-class="text-primary-600 dark:text-primary-400"
     bg-class="bg-primary-100 dark:bg-primary-900/50"
+    gradient-from="from-primary-500"
+    gradient-to="to-primary-400"
     :api-guide="apiGuide"
     :missing-config="missingConfig"
     missing-config-text="需要配置滴答清单 Token 和 LLM API Key。"
@@ -67,24 +69,25 @@ const apiGuide = {
     <div class="flex gap-2">
       <button
         :disabled="loadingAction"
-        class="flex-1 py-2.5 px-4 bg-primary-600 hover:bg-primary-700 text-white rounded-lg text-sm font-medium shadow-sm transition-all flex justify-center items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+        class="flex-1 py-2.5 px-4 bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-500 hover:to-primary-400 text-white rounded-xl text-sm font-semibold shadow-md shadow-primary-600/20 transition-all flex justify-center items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98]"
         @click="triggerDailyNote"
       >
         <Icon v-if="loadingAction" name="line-md:loading-twotone-loop" class="w-5 h-5" />
-        <Icon v-else name="lucide:play" class="w-5 h-5" />
+        <Icon v-else name="lucide:play" class="w-4 h-4" />
         立即执行
       </button>
       <button
-        class="py-2.5 px-4 bg-primary-50 dark:bg-primary-900/30 hover:bg-primary-100 dark:hover:bg-primary-900/50 text-primary-600 dark:text-primary-400 rounded-lg text-sm font-medium transition-all flex items-center gap-1.5 border border-primary-200 dark:border-primary-800"
+        class="py-2.5 px-4 bg-primary-50 dark:bg-primary-900/30 hover:bg-primary-100 dark:hover:bg-primary-900/50 text-primary-600 dark:text-primary-400 rounded-xl text-sm font-medium transition-all flex items-center gap-1.5 border border-primary-200 dark:border-primary-800 active:scale-[0.98]"
         @click="emit('schedule')"
       >
         <Icon name="lucide:clock" class="w-4 h-4" />
-        定时执行
+        定时
       </button>
     </div>
 
     <div class="mt-3 text-center">
-      <NuxtLink to="/history/daily-notes" class="text-sm text-primary-600 dark:text-primary-400 hover:underline">
+      <NuxtLink to="/history/daily-notes" class="inline-flex items-center gap-1 text-sm text-primary-500 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-medium transition-colors">
+        <Icon name="lucide:history" class="w-3.5 h-3.5" />
         查看历史记录
       </NuxtLink>
     </div>

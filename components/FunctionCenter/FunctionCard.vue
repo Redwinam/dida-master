@@ -8,6 +8,8 @@ const props = withDefaults(defineProps<{
   icon: string
   colorClass: string // e.g. text-primary-600
   bgClass: string // e.g. bg-primary-100
+  gradientFrom?: string // e.g. from-primary-500
+  gradientTo?: string // e.g. to-primary-600
   apiGuide?: {
     endpoint: string
     method: string
@@ -23,6 +25,8 @@ const props = withDefaults(defineProps<{
 }>(), {
   missingConfig: false,
   missingConfigText: '',
+  gradientFrom: 'from-primary-500',
+  gradientTo: 'to-primary-600',
 })
 
 defineEmits<{
@@ -52,22 +56,26 @@ watch(
 </script>
 
 <template>
-  <div class="group relative bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden hover:shadow-md transition-all duration-300 h-full flex flex-col">
-    <div class="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity pointer-events-none">
-      <Icon :name="icon" class="w-48 h-48" :class="colorClass" />
+  <div class="group relative bg-white dark:bg-gray-800/80 rounded-2xl shadow-sm hover:shadow-xl border border-gray-100 dark:border-gray-700/80 overflow-hidden transition-all duration-300 h-full flex flex-col hover:-translate-y-1 animate-card-enter backdrop-blur-sm">
+    <!-- Top gradient accent bar -->
+    <div class="h-1 w-full bg-gradient-to-r" :class="[gradientFrom, gradientTo]" />
+
+    <!-- Decorative background icon -->
+    <div class="absolute -top-4 -right-4 opacity-[0.04] group-hover:opacity-[0.08] transition-opacity duration-500 pointer-events-none">
+      <Icon :name="icon" class="w-44 h-44" :class="colorClass" />
     </div>
 
     <div class="p-6 relative z-10 flex flex-col h-full">
       <div class="flex justify-between items-start mb-4">
-        <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-          <div class="p-2 rounded-lg" :class="[bgClass, colorClass]">
-            <Icon :name="icon" class="w-6 h-6" />
+        <h3 class="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-3">
+          <div class="p-2.5 rounded-xl shadow-sm" :class="[bgClass, colorClass]">
+            <Icon :name="icon" class="w-5 h-5" />
           </div>
           {{ title }}
         </h3>
         <button
           v-if="apiGuide"
-          class="text-xs text-gray-500 hover:text-primary-600 dark:text-gray-400 dark:hover:text-primary-400 flex items-center gap-1.5 px-2 py-1 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700/50 border border-transparent dark:border-gray-600 hover:border-primary-200 dark:hover:border-primary-800 transition-all"
+          class="text-xs text-gray-400 hover:text-primary-600 dark:text-gray-500 dark:hover:text-primary-400 flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 border border-transparent hover:border-gray-200 dark:hover:border-gray-600 transition-all"
           title="API 使用说明"
           @click="showApiModal = true"
         >
@@ -82,12 +90,12 @@ watch(
 
       <div class="mt-auto">
         <div v-if="missingConfig" class="flex flex-col gap-3">
-          <div class="p-3 bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 text-sm rounded-lg flex items-start gap-2">
+          <div class="p-3 bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 text-sm rounded-xl flex items-start gap-2 border border-amber-100 dark:border-amber-800/30">
             <Icon name="lucide:triangle-alert" class="w-5 h-5 shrink-0 mt-0.5" />
             <span>{{ missingConfigText || '功能未配置，请先完成配置。' }}</span>
           </div>
           <button
-            class="w-full py-2.5 px-4 bg-amber-100 hover:bg-amber-200 dark:bg-amber-900/40 dark:hover:bg-amber-900/60 text-amber-700 dark:text-amber-300 rounded-lg text-sm font-medium shadow-sm transition-all flex justify-center items-center gap-2"
+            class="w-full py-2.5 px-4 bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-white rounded-xl text-sm font-semibold shadow-md shadow-amber-500/20 transition-all flex justify-center items-center gap-2 active:scale-[0.98]"
             @click="$emit('configure')"
           >
             <Icon name="lucide:settings" class="w-5 h-5" />

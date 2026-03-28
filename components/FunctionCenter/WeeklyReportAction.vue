@@ -59,6 +59,8 @@ const apiGuide = {
     icon="lucide:presentation"
     color-class="text-teal-600 dark:text-teal-400"
     bg-class="bg-teal-100 dark:bg-teal-900/50"
+    gradient-from="from-teal-500"
+    gradient-to="to-teal-400"
     :api-guide="apiGuide"
     :missing-config="missingConfig"
     missing-config-text="需要配置滴答清单 Token 和 LLM API Key。"
@@ -67,24 +69,25 @@ const apiGuide = {
     <div class="flex gap-2">
       <button
         :disabled="loadingAction"
-        class="flex-1 py-2.5 px-4 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-sm font-medium shadow-sm transition-all flex justify-center items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+        class="flex-1 py-2.5 px-4 bg-gradient-to-r from-teal-600 to-teal-500 hover:from-teal-500 hover:to-teal-400 text-white rounded-xl text-sm font-semibold shadow-md shadow-teal-600/20 transition-all flex justify-center items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98]"
         @click="triggerWeeklyReport"
       >
         <Icon v-if="loadingAction" name="line-md:loading-twotone-loop" class="w-5 h-5" />
-        <Icon v-else name="lucide:play" class="w-5 h-5" />
+        <Icon v-else name="lucide:play" class="w-4 h-4" />
         立即生成
       </button>
       <button
-        class="py-2.5 px-4 bg-teal-50 dark:bg-teal-900/30 hover:bg-teal-100 dark:hover:bg-teal-900/50 text-teal-600 dark:text-teal-400 rounded-lg text-sm font-medium transition-all flex items-center gap-1.5 border border-teal-200 dark:border-teal-800"
+        class="py-2.5 px-4 bg-teal-50 dark:bg-teal-900/30 hover:bg-teal-100 dark:hover:bg-teal-900/50 text-teal-600 dark:text-teal-400 rounded-xl text-sm font-medium transition-all flex items-center gap-1.5 border border-teal-200 dark:border-teal-800 active:scale-[0.98]"
         @click="emit('schedule')"
       >
         <Icon name="lucide:clock" class="w-4 h-4" />
-        定时执行
+        定时
       </button>
     </div>
 
     <div class="mt-3 text-center">
-      <NuxtLink to="/history/weekly-reports" class="text-sm text-teal-600 dark:text-teal-400 hover:underline">
+      <NuxtLink to="/history/weekly-reports" class="inline-flex items-center gap-1 text-sm text-teal-500 dark:text-teal-400 hover:text-teal-700 dark:hover:text-teal-300 font-medium transition-colors">
+        <Icon name="lucide:history" class="w-3.5 h-3.5" />
         查看历史记录
       </NuxtLink>
     </div>

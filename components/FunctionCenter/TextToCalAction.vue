@@ -62,23 +62,25 @@ const apiGuide = {
     icon="lucide:message-square-text"
     color-class="text-cyan-600 dark:text-cyan-400"
     bg-class="bg-cyan-100 dark:bg-cyan-900/50"
+    gradient-from="from-cyan-500"
+    gradient-to="to-cyan-400"
     :api-guide="apiGuide"
   >
-    <div class="space-y-4">
+    <div class="space-y-3">
       <textarea
         v-model="textInput"
         rows="4"
         placeholder="请输入日程信息..."
-        class="block w-full p-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-900/50 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 sm:text-sm resize-none"
+        class="block w-full p-3 border border-gray-200 dark:border-gray-600 rounded-xl bg-gray-50/50 dark:bg-gray-900/50 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-cyan-500/30 focus:border-cyan-400 sm:text-sm resize-none transition-all duration-200"
       ></textarea>
 
       <button
         :disabled="loadingAction || !textInput"
-        class="w-full py-2.5 px-4 bg-cyan-600 hover:bg-cyan-700 text-white rounded-lg text-sm font-medium shadow-sm transition-all flex justify-center items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+        class="w-full py-2.5 px-4 bg-gradient-to-r from-cyan-600 to-cyan-500 hover:from-cyan-500 hover:to-cyan-400 text-white rounded-xl text-sm font-semibold shadow-md shadow-cyan-600/20 transition-all flex justify-center items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98]"
         @click="triggerTextToCalendar"
       >
         <Icon v-if="loadingAction" name="line-md:loading-twotone-loop" class="w-5 h-5" />
-        <Icon v-else name="lucide:sparkles" class="w-5 h-5" />
+        <Icon v-else name="lucide:sparkles" class="w-4 h-4" />
         开始解析并添加
       </button>
     </div>

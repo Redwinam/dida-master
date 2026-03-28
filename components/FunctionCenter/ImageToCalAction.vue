@@ -82,11 +82,13 @@ const apiGuide = {
     icon="lucide:image"
     color-class="text-indigo-600 dark:text-indigo-400"
     bg-class="bg-indigo-100 dark:bg-indigo-900/50"
+    gradient-from="from-indigo-500"
+    gradient-to="to-indigo-400"
     :api-guide="apiGuide"
   >
-    <div class="space-y-4">
+    <div class="space-y-3">
       <div
-        class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl p-4 text-center hover:border-indigo-500 dark:hover:border-indigo-500 transition-colors cursor-pointer bg-gray-50 dark:bg-gray-900/50"
+        class="border-2 border-dashed border-gray-200 dark:border-gray-600 rounded-xl p-4 text-center hover:border-indigo-400 dark:hover:border-indigo-500 transition-all duration-200 cursor-pointer bg-gray-50/50 dark:bg-gray-900/50 hover:bg-indigo-50/50 dark:hover:bg-indigo-900/10"
         @click="fileInput?.click()"
         @drop.prevent="onFileSelect"
         @dragover.prevent
@@ -100,15 +102,20 @@ const apiGuide = {
         />
 
         <div v-if="!imagePreview" class="py-4">
-          <Icon name="lucide:cloud-upload" class="w-10 h-10 text-gray-400 mx-auto mb-2" />
-          <p class="text-sm text-gray-500">
+          <div class="w-12 h-12 mx-auto mb-3 rounded-xl bg-indigo-100 dark:bg-indigo-900/40 flex items-center justify-center">
+            <Icon name="lucide:cloud-upload" class="w-6 h-6 text-indigo-500 dark:text-indigo-400" />
+          </div>
+          <p class="text-sm text-gray-500 font-medium">
             点击或拖拽上传图片
+          </p>
+          <p class="text-xs text-gray-400 mt-1">
+            支持 jpg、png、webp 等格式
           </p>
         </div>
         <div v-else class="relative group/preview">
           <img :src="imagePreview" class="max-h-40 mx-auto rounded-lg shadow-sm object-contain" />
           <button
-            class="absolute top-1 right-1 p-1 bg-black/50 text-white rounded-full hover:bg-red-500 transition-colors opacity-0 group-hover/preview:opacity-100"
+            class="absolute top-1 right-1 p-1.5 bg-black/60 text-white rounded-full hover:bg-red-500 transition-colors opacity-0 group-hover/preview:opacity-100"
             @click.stop="clearImage"
           >
             <Icon name="lucide:x" class="w-4 h-4" />
@@ -118,11 +125,11 @@ const apiGuide = {
 
       <button
         :disabled="loadingAction || !imageFile"
-        class="w-full py-2.5 px-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-medium shadow-sm transition-all flex justify-center items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+        class="w-full py-2.5 px-4 bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 text-white rounded-xl text-sm font-semibold shadow-md shadow-indigo-600/20 transition-all flex justify-center items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98]"
         @click="triggerImageToCalendar"
       >
         <Icon v-if="loadingAction" name="line-md:loading-twotone-loop" class="w-5 h-5" />
-        <Icon v-else name="lucide:sparkles" class="w-5 h-5" />
+        <Icon v-else name="lucide:sparkles" class="w-4 h-4" />
         开始识别并添加
       </button>
     </div>
