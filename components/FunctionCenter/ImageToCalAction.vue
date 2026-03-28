@@ -80,15 +80,13 @@ const apiGuide = {
     title="图片转日历事件"
     description="上传一张包含日程信息的图片（如海报、截图），AI 自动识别时间地点并添加到日历。"
     icon="lucide:image"
-    color-class="text-indigo-600 dark:text-indigo-400"
-    bg-class="bg-indigo-100 dark:bg-indigo-900/50"
-    gradient-from="from-indigo-500"
-    gradient-to="to-indigo-400"
+    color-class="text-primary-600 dark:text-primary-400"
+    bg-class="bg-primary-100 dark:bg-primary-900/50"
     :api-guide="apiGuide"
   >
     <div class="space-y-3">
       <div
-        class="border-2 border-dashed border-gray-200 dark:border-gray-600 rounded-xl p-4 text-center hover:border-indigo-400 dark:hover:border-indigo-500 transition-all duration-200 cursor-pointer bg-gray-50/50 dark:bg-gray-900/50 hover:bg-indigo-50/50 dark:hover:bg-indigo-900/10"
+        class="border-2 border-dashed border-gray-200 dark:border-gray-600 rounded-xl p-4 text-center hover:border-primary-400 dark:hover:border-primary-500 transition-all duration-200 cursor-pointer bg-gray-50/50 dark:bg-gray-900/50 hover:bg-primary-50/50 dark:hover:bg-primary-900/10"
         @click="fileInput?.click()"
         @drop.prevent="onFileSelect"
         @dragover.prevent
@@ -102,8 +100,8 @@ const apiGuide = {
         />
 
         <div v-if="!imagePreview" class="py-4">
-          <div class="w-12 h-12 mx-auto mb-3 rounded-xl bg-indigo-100 dark:bg-indigo-900/40 flex items-center justify-center">
-            <Icon name="lucide:cloud-upload" class="w-6 h-6 text-indigo-500 dark:text-indigo-400" />
+          <div class="w-12 h-12 mx-auto mb-3 rounded-xl bg-primary-100 dark:bg-primary-900/40 flex items-center justify-center">
+            <Icon name="lucide:cloud-upload" class="w-6 h-6 text-primary-500 dark:text-primary-400" />
           </div>
           <p class="text-sm text-gray-500 font-medium">
             点击或拖拽上传图片
@@ -125,7 +123,7 @@ const apiGuide = {
 
       <button
         :disabled="loadingAction || !imageFile"
-        class="w-full py-2.5 px-4 bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 text-white rounded-xl text-sm font-semibold shadow-md shadow-indigo-600/20 transition-all flex justify-center items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98]"
+        class="w-full py-2.5 px-4 bg-gradient-to-r from-accent-500 to-accent-400 hover:from-accent-400 hover:to-accent-300 text-white rounded-xl text-sm font-semibold shadow-md shadow-accent-500/20 transition-all flex justify-center items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98]"
         @click="triggerImageToCalendar"
       >
         <Icon v-if="loadingAction" name="line-md:loading-twotone-loop" class="w-5 h-5" />

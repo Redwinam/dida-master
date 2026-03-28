@@ -57,10 +57,8 @@ const apiGuide = {
     title="周报生成"
     description="自动获取过去一周完成的任务和日程，利用 LLM 生成周报，推送到指定项目。"
     icon="lucide:presentation"
-    color-class="text-teal-600 dark:text-teal-400"
-    bg-class="bg-teal-100 dark:bg-teal-900/50"
-    gradient-from="from-teal-500"
-    gradient-to="to-teal-400"
+    color-class="text-primary-600 dark:text-primary-400"
+    bg-class="bg-primary-100 dark:bg-primary-900/50"
     :api-guide="apiGuide"
     :missing-config="missingConfig"
     missing-config-text="需要配置滴答清单 Token 和 LLM API Key。"
@@ -69,7 +67,7 @@ const apiGuide = {
     <div class="flex gap-2">
       <button
         :disabled="loadingAction"
-        class="flex-1 py-2.5 px-4 bg-gradient-to-r from-teal-600 to-teal-500 hover:from-teal-500 hover:to-teal-400 text-white rounded-xl text-sm font-semibold shadow-md shadow-teal-600/20 transition-all flex justify-center items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98]"
+        class="flex-1 py-2.5 px-4 bg-gradient-to-r from-accent-500 to-accent-400 hover:from-accent-400 hover:to-accent-300 text-white rounded-xl text-sm font-semibold shadow-md shadow-accent-500/20 transition-all flex justify-center items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98]"
         @click="triggerWeeklyReport"
       >
         <Icon v-if="loadingAction" name="line-md:loading-twotone-loop" class="w-5 h-5" />
@@ -77,7 +75,7 @@ const apiGuide = {
         立即生成
       </button>
       <button
-        class="py-2.5 px-4 bg-teal-50 dark:bg-teal-900/30 hover:bg-teal-100 dark:hover:bg-teal-900/50 text-teal-600 dark:text-teal-400 rounded-xl text-sm font-medium transition-all flex items-center gap-1.5 border border-teal-200 dark:border-teal-800 active:scale-[0.98]"
+        class="py-2.5 px-4 bg-primary-50 dark:bg-primary-900/30 hover:bg-primary-100 dark:hover:bg-primary-900/50 text-primary-600 dark:text-primary-400 rounded-xl text-sm font-medium transition-all flex items-center gap-1.5 border border-primary-200 dark:border-primary-800 active:scale-[0.98]"
         @click="emit('schedule')"
       >
         <Icon name="lucide:clock" class="w-4 h-4" />
@@ -86,7 +84,7 @@ const apiGuide = {
     </div>
 
     <div class="mt-3 text-center">
-      <NuxtLink to="/history/weekly-reports" class="inline-flex items-center gap-1 text-sm text-teal-500 dark:text-teal-400 hover:text-teal-700 dark:hover:text-teal-300 font-medium transition-colors">
+      <NuxtLink to="/history/weekly-reports" class="inline-flex items-center gap-1 text-sm text-primary-500 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-medium transition-colors">
         <Icon name="lucide:history" class="w-3.5 h-3.5" />
         查看历史记录
       </NuxtLink>

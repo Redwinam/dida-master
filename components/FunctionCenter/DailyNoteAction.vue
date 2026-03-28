@@ -59,8 +59,6 @@ const apiGuide = {
     icon="lucide:file-text"
     color-class="text-primary-600 dark:text-primary-400"
     bg-class="bg-primary-100 dark:bg-primary-900/50"
-    gradient-from="from-primary-500"
-    gradient-to="to-primary-400"
     :api-guide="apiGuide"
     :missing-config="missingConfig"
     missing-config-text="需要配置滴答清单 Token 和 LLM API Key。"
@@ -69,7 +67,7 @@ const apiGuide = {
     <div class="flex gap-2">
       <button
         :disabled="loadingAction"
-        class="flex-1 py-2.5 px-4 bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-500 hover:to-primary-400 text-white rounded-xl text-sm font-semibold shadow-md shadow-primary-600/20 transition-all flex justify-center items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98]"
+        class="flex-1 py-2.5 px-4 bg-gradient-to-r from-accent-500 to-accent-400 hover:from-accent-400 hover:to-accent-300 text-white rounded-xl text-sm font-semibold shadow-md shadow-accent-500/20 transition-all flex justify-center items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98]"
         @click="triggerDailyNote"
       >
         <Icon v-if="loadingAction" name="line-md:loading-twotone-loop" class="w-5 h-5" />
