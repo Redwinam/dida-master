@@ -56,7 +56,7 @@ watch(
 </script>
 
 <template>
-  <div class="group relative bg-white dark:bg-gray-800/80 rounded-2xl shadow-sm hover:shadow-lg border border-gray-100 dark:border-gray-700/80 overflow-hidden transition-all duration-300 h-full flex flex-col animate-card-enter backdrop-blur-sm">
+  <div class="group relative bg-white dark:bg-gray-800/80 rounded-2xl shadow-sm hover:shadow-lg border-x border-b border-gray-100 dark:border-gray-700/80 overflow-hidden transition-all duration-300 h-full flex flex-col animate-card-enter backdrop-blur-sm">
     <!-- Top gradient accent bar -->
     <div class="h-1 w-full bg-gradient-to-r" :class="[gradientFrom, gradientTo]" />
 

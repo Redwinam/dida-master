@@ -75,7 +75,7 @@ const apiGuide = {
         立即生成
       </button>
       <button
-        class="py-2.5 px-4 bg-primary-50 dark:bg-primary-900/30 hover:bg-primary-100 dark:hover:bg-primary-900/50 text-primary-600 dark:text-primary-400 rounded-xl text-sm font-medium transition-all flex items-center gap-1.5 border border-primary-200 dark:border-primary-800 active:scale-[0.98]"
+        class="py-2.5 px-4 bg-primary-50 dark:bg-primary-900/30 hover:bg-primary-100 dark:hover:bg-primary-900/50 text-primary-600 dark:text-primary-400 rounded-xl text-sm font-medium transition-all flex items-center gap-1.5 border border-primary-200 dark:border-primary-800 active:scale-[0.98] cursor-pointer"
         @click="emit('schedule')"
       >
         <Icon name="lucide:clock" class="w-4 h-4" />
