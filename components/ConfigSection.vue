@@ -29,6 +29,13 @@ watch(() => props.initialTab, val => {
   if (val) activeTab.value = val
 })
 
+// Eagerly load config when this component mounts, if not already fetched
+onMounted(() => {
+  if (!fetched.value && !loading.value) {
+    load()
+  }
+})
+
 async function handleSave() {
   saving.value = true
   try {
@@ -59,26 +66,30 @@ const tabs = [
 </script>
 
 <template>
-  <div class="space-y-6">
+  <!-- Fixed-size container prevents height jumping between states -->
+  <div class="config-section-root">
     <!-- Loading State -->
-    <div v-if="loading && !fetched" class="flex flex-col items-center justify-center py-20 animate-content-in">
-      <div class="p-4 bg-primary-50 dark:bg-primary-900/20 rounded-full mb-4">
-        <Icon name="line-md:loading-twotone-loop" class="w-8 h-8 text-primary-600 dark:text-primary-400" />
+    <div v-if="loading && !fetched" class="config-state-placeholder animate-content-in">
+      <div class="config-loader">
+        <div class="config-loader-ring">
+          <div class="config-loader-ring-inner" />
+        </div>
+        <div class="config-loader-dot" />
       </div>
-      <p class="text-gray-500 dark:text-gray-400 font-medium">
-        正在加载配置信息...
+      <p class="text-sm text-gray-400 dark:text-gray-500 font-medium mt-5 tracking-wide">
+        加载配置中
       </p>
     </div>
 
     <!-- Error State -->
-    <div v-else-if="error" class="flex flex-col items-center justify-center py-20 animate-content-in">
+    <div v-else-if="error" class="config-state-placeholder animate-content-in">
       <div class="p-4 bg-red-50 dark:bg-red-900/20 rounded-full mb-4">
         <Icon name="lucide:triangle-alert" class="w-8 h-8 text-red-500" />
       </div>
       <p class="text-gray-900 dark:text-white font-medium text-lg">
         加载配置失败
       </p>
-      <p class="text-gray-500 dark:text-gray-400 mt-2 mb-6 max-w-md text-center">
+      <p class="text-gray-500 dark:text-gray-400 mt-2 mb-6 max-w-md text-center text-sm">
         {{ error }}
       </p>
       <button
@@ -93,7 +104,7 @@ const tabs = [
     <TabsRoot
       v-else
       v-model="activeTab"
-      class="bg-transparent rounded-none shadow-none border-0 overflow-hidden animate-content-in flex flex-col max-h-[80vh] md:flex-row"
+      class="bg-transparent rounded-none shadow-none border-0 overflow-hidden animate-content-in flex flex-col h-full md:flex-row"
     >
       <!-- Sidebar Tabs -->
       <div class="w-full md:w-56 bg-gray-50 dark:bg-gray-900/50 border-b md:border-b-0 md:border-r border-gray-100 dark:border-gray-700 flex md:flex-col shrink-0">
@@ -170,3 +181,79 @@ const tabs = [
     </TabsRoot>
   </div>
 </template>
+
+<style scoped>
+/* Fixed dimensions to prevent height jumping */
+.config-section-root {
+  height: min(80vh, 640px);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Centering container for loading & error states */
+.config-state-placeholder {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── Beautiful Orbital Loader ── */
+.config-loader {
+  position: relative;
+  width: 52px;
+  height: 52px;
+}
+
+.config-loader-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2.5px solid transparent;
+  border-top-color: var(--color-primary-500);
+  border-right-color: var(--color-primary-300);
+  animation: config-spin 1.1s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+}
+
+.config-loader-ring-inner {
+  position: absolute;
+  inset: 6px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  border-bottom-color: var(--color-accent-400);
+  border-left-color: var(--color-accent-300);
+  animation: config-spin-reverse 0.85s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+}
+
+.config-loader-dot {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 7px;
+  height: 7px;
+  margin: -3.5px 0 0 -3.5px;
+  border-radius: 50%;
+  background: var(--color-primary-500);
+  animation: config-pulse 1.1s ease-in-out infinite;
+}
+
+@keyframes config-spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes config-spin-reverse {
+  to { transform: rotate(-360deg); }
+}
+
+@keyframes config-pulse {
+  0%, 100% {
+    opacity: 0.4;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+}
+</style>

@@ -1,3 +1,6 @@
+// Shared pending promise to deduplicate concurrent load() calls
+let _loadPromise: Promise<void> | null = null
+
 export const useUserConfig = () => {
   // Use useState to share state across components and SSR/CSR
   const config = useState('user-config', () => ({
@@ -38,58 +41,65 @@ export const useUserConfig = () => {
   const client = $supabase as any
 
   const load = async (force = false) => {
-    // If already fetching or fetched, might skip?
-    // But user might want to refresh. Let's check if loading.
-    if (loading.value && !force) return
+    // Skip if already fetched (unless forced) or already loading
+    if (!force && fetched.value) return
+    // Deduplicate: if a load is already in-flight, return the same promise
+    if (_loadPromise && !force) return _loadPromise
 
-    loading.value = true
-    error.value = null
-    try {
-      const { data: { session } } = await client.auth.getSession()
-      const headers: Record<string, string> = {}
+    const doLoad = async () => {
+      loading.value = true
+      error.value = null
+      try {
+        const { data: { session } } = await client.auth.getSession()
+        const headers: Record<string, string> = {}
 
-      // On server side, pass the cookie
-      if (import.meta.server) {
-        const reqHeaders = useRequestHeaders(['cookie'])
-        if (reqHeaders.cookie) {
-          headers.cookie = reqHeaders.cookie
+        // On server side, pass the cookie
+        if (import.meta.server) {
+          const reqHeaders = useRequestHeaders(['cookie'])
+          if (reqHeaders.cookie) {
+            headers.cookie = reqHeaders.cookie
+          }
+        }
+
+        if (session?.access_token) {
+          headers.Authorization = `Bearer ${session.access_token}`
+        }
+
+        const data: any = await $fetch('/api/config', {
+          headers,
+          timeout: 15000, // 15s timeout to prevent infinite loading
+          retry: 1,
+        })
+        if (data) {
+          const flatData = { ...data, ...(data.settings || {}) }
+          delete flatData.settings
+
+          config.value = { ...config.value, ...flatData }
+        }
+        fetched.value = true
+      }
+      catch (e: any) {
+        const errorMsg = e.message || ''
+        // Check for refresh token error and force logout
+        if (errorMsg.includes('Invalid Refresh Token') || errorMsg.includes('Refresh Token Not Found')) {
+          await client.auth.signOut()
+          navigateTo('/login')
+          return
+        }
+
+        // Ignore 401 if just checking session state
+        if (e.response?.status !== 401) {
+          error.value = errorMsg || '加载配置失败'
         }
       }
-
-      if (session?.access_token) {
-        headers.Authorization = `Bearer ${session.access_token}`
-      }
-
-      const data: any = await $fetch('/api/config', {
-        headers,
-        timeout: 15000, // 15s timeout to prevent infinite loading
-        retry: 1,
-      })
-      if (data) {
-        const flatData = { ...data, ...(data.settings || {}) }
-        delete flatData.settings
-
-        config.value = { ...config.value, ...flatData }
-      }
-      fetched.value = true
-    }
-    catch (e: any) {
-      const errorMsg = e.message || ''
-      // Check for refresh token error and force logout
-      if (errorMsg.includes('Invalid Refresh Token') || errorMsg.includes('Refresh Token Not Found')) {
-        await client.auth.signOut()
-        navigateTo('/login')
-        return
-      }
-
-      // Ignore 401 if just checking session state
-      if (e.response?.status !== 401) {
-        error.value = errorMsg || '加载配置失败'
+      finally {
+        loading.value = false
+        _loadPromise = null
       }
     }
-    finally {
-      loading.value = false
-    }
+
+    _loadPromise = doLoad()
+    return _loadPromise
   }
 
   const save = async () => {
