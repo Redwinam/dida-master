@@ -4,7 +4,6 @@
   "private": true,
   "scripts": {
     "build": "nuxt build",
-    "build:edgeone": "node scripts/build-edgeone.mjs",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
@@ -13,7 +12,7 @@
   "dependencies": {
     "@nuxt/eslint": "^1.14.0",
     "@nuxt/icon": "^2.2.1",
-    "@redwinam/if9-supabase-auth": "^0.3.0",
+    "@redwinam/if9-supabase-auth": "^0.4.3",
     "@supabase/supabase-js": "^2.89.0",
     "@tailwindcss/typography": "^0.5.19",
     "@tailwindcss/vite": "^4.1.17",
@@ -32,7 +31,6 @@
   },
   "devDependencies": {
     "@types/markdown-it": "^14.1.2",
-    "buffer": "^6.0.3",
-    "@edgeone/nuxt-pages": "^1.0.14"
+    "buffer": "^6.0.3"
   }
 }

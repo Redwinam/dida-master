@@ -56,7 +56,8 @@ async function handleSubmit() {
 </script>
 
 <template>
-  <div class="login-page relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-br from-primary-950 via-primary-900 to-primary-800 p-4">
+  <!-- 使用 fixed 定位确保全屏覆盖，不受外层容器影响 -->
+  <div class="login-page fixed inset-0 z-50 flex items-center justify-center overflow-auto bg-gradient-to-br from-primary-950 via-primary-900 to-primary-800 px-4 py-8 sm:px-6">
     <!-- Decorative floating orbs -->
     <div class="absolute inset-0 overflow-hidden pointer-events-none">
       <div class="orb orb-1" />
@@ -71,16 +72,16 @@ async function handleSubmit() {
     <!-- Main card -->
     <div class="relative z-10 w-full max-w-[420px] animate-content-in">
       <!-- Logo & Title -->
-      <div class="text-center mb-8">
-        <div class="inline-flex items-center justify-center w-16 h-16 mb-5 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/10 shadow-lg shadow-primary-950/50 transition-transform duration-500 hover:scale-110 hover:rotate-3">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1389.8 1135.4" class="w-10 h-10 drop-shadow-lg">
+      <div class="text-center mb-6 sm:mb-8">
+        <div class="inline-flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 mb-4 sm:mb-5 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/10 shadow-lg shadow-primary-950/50 transition-transform duration-500 hover:scale-110 hover:rotate-3">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1389.8 1135.4" class="w-8 h-8 sm:w-10 sm:h-10 drop-shadow-lg">
             <path fill="white" d="M1363.4,653.8c-27.2,38.8-71.9,63.4-119.4,63.4h-718.6c-69.3,0-129.3-49.9-143.4-116.9-5.6-26.5-4.5-52.9,3.5-78,20.2-63.9,78.6-104.3,145.1-104.3l715.2.3c67,0,127.5,51.6,140.5,117.5,8,40.5,1.5,83.3-22.7,117.9h-.2Z" />
             <path fill="white" d="M1303.6,285.8c-18.3,8.1-38.4,13.4-58.5,13.4l-715.8.4c-53.3,0-101.8-25.9-129.4-71.7-19-31.5-25.7-68.3-18.9-106.1C392.4,58.5,449.7,1.5,517.2,1.4l732.5-.2c71.5,0,129.9,59.8,138.4,128,4.9,39-3.6,77.3-26.3,108.5-15.2,21-34,37.3-58.3,48.1h0Z" />
             <path fill="white" d="M1382.6,1033.7c-18,58.2-73.3,101.3-134.9,101.3l-723.5.4c-33.4,0-64.8-11.7-90.4-32.1-34.2-27.2-53-65.6-55.4-109.6-4.4-79.4,57.4-155.6,140.1-155.7l730.4-.9c29.9,0,57.9,11.7,81.3,28.7,51.8,37.8,71.5,106.1,52.4,167.8h0Z" />
             <circle fill="#f8867a" cx="149.8" cy="149.8" r="149.8" />
           </svg>
         </div>
-        <h1 class="text-2xl font-black tracking-tight leading-tight mb-2">
+        <h1 class="text-xl sm:text-2xl font-black tracking-tight leading-tight mb-2">
           <span class="bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-300">滴答：</span>
           <span class="text-accent-400">主人的任务</span>
         </h1>
@@ -94,7 +95,7 @@ async function handleSubmit() {
         <!-- Tab header -->
         <div class="flex border-b border-white/[0.08]">
           <button
-            class="flex-1 py-3.5 text-sm font-semibold transition-all duration-300 relative"
+            class="flex-1 py-3 sm:py-3.5 text-sm font-semibold transition-all duration-300 relative"
             :class="isLogin ? 'text-white' : 'text-primary-400/60 hover:text-primary-300'"
             @click="isLogin = true"
           >
@@ -102,7 +103,7 @@ async function handleSubmit() {
             <span v-if="isLogin" class="absolute bottom-0 left-1/2 -translate-x-1/2 w-12 h-0.5 bg-accent-400 rounded-full" />
           </button>
           <button
-            class="flex-1 py-3.5 text-sm font-semibold transition-all duration-300 relative"
+            class="flex-1 py-3 sm:py-3.5 text-sm font-semibold transition-all duration-300 relative"
             :class="!isLogin ? 'text-white' : 'text-primary-400/60 hover:text-primary-300'"
             @click="isLogin = false"
           >
@@ -112,8 +113,8 @@ async function handleSubmit() {
         </div>
 
         <!-- Form -->
-        <div class="p-7">
-          <form class="space-y-5" @submit.prevent="handleSubmit">
+        <div class="p-5 sm:p-7">
+          <form class="space-y-4 sm:space-y-5" @submit.prevent="handleSubmit">
             <!-- Email -->
             <div class="space-y-2">
               <label for="login-email" class="block text-xs font-semibold text-primary-200/80 tracking-wide uppercase">电子邮箱</label>
@@ -203,7 +204,7 @@ async function handleSubmit() {
       </div>
 
       <!-- Footer text -->
-      <p class="mt-6 text-center text-xs text-primary-400/50">
+      <p class="mt-5 sm:mt-6 text-center text-xs text-primary-400/50">
         © {{ new Date().getFullYear() }} 滴答：主人的任务
       </p>
     </div>

@@ -60,15 +60,6 @@ export default defineNuxtConfig({
     imports: {
       dirs: ['server/utils'],
     },
-    ...(process.env.EDGEONE_BUILD
-      ? {
-          output: {
-            dir: '.edgeone',
-            publicDir: '.edgeone/assets',
-            serverDir: '.edgeone/server-handler',
-          },
-        }
-      : {}),
   },
 
   vite: {
