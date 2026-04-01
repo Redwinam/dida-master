@@ -10,32 +10,67 @@ const {
 
 const { user } = useSession()
 const router = useRouter()
+const toast = useToast()
 
 const isLogin = ref(true)
 const email = ref('')
 const password = ref('')
 const showPassword = ref(false)
 
-// Map standardized error codes to messages
+// Map standardized error codes to friendly Chinese messages
 function getErrorMessage(code: string | null) {
   if (!code) return ''
   if (!code.startsWith('auth/')) return code
 
   const map: Record<string, string> = {
-    'auth/rate-limit': '请求过于频繁，请稍后再试。',
-    'auth/invalid-credentials': '邮箱或密码不正确。',
-    'auth/user-not-found': '找不到该用户。',
-    'auth/already-registered': '该邮箱已注册。',
-    'auth/email-required': '请输入邮箱地址。',
-    'auth/email-invalid': '邮箱格式不正确。',
-    'auth/password-required-for-signup': '注册时请设置密码。',
-    'auth/unknown-error': '发生未知错误，请重试。',
+    'auth/rate-limit': '请求过于频繁，请稍后再试',
+    'auth/invalid-credentials': '邮箱或密码不正确',
+    'auth/user-not-found': '找不到该用户',
+    'auth/already-registered': '该邮箱已注册',
+    'auth/email-required': '请输入邮箱地址',
+    'auth/email-invalid': '邮箱格式不正确',
+    'auth/email-not-confirmed': '邮箱尚未验证，请检查收件箱',
+    'auth/link-expired': '链接已失效，请重新操作',
+    'auth/password-required': '请输入密码',
+    'auth/password-required-for-signup': '注册时请设置密码',
+    'auth/password-too-short': '密码长度至少为 6 位',
+    'auth/password-too-weak': '密码强度不够，请使用更复杂的密码',
+    'auth/same-password': '新密码不能与旧密码相同',
+    'auth/otp-expired': '验证码已过期，请重新获取',
+    'auth/invalid-otp': '验证码不正确',
+    'auth/session-expired': '会话已过期，请重新登录',
+    'auth/not-authenticated': '身份验证失败，请重新登录',
+    'auth/not-configured': '认证服务未配置',
+    'auth/signup-disabled': '注册功能暂未开放',
+    'auth/network-error': '网络错误，请检查网络连接',
+    'auth/password-error': '密码不符合要求',
+    'auth/unknown-error': '发生未知错误，请重试',
   }
 
-  return map[code] || '发生了一个错误。'
+  return map[code] || '发生了一个错误'
+}
+
+// Map success codes to toast messages
+function getSuccessMessage(code: string): { title: string, description?: string } | null {
+  const map: Record<string, { title: string, description?: string }> = {
+    'auth/otp-sent': { title: '邮件已发送', description: '请检查收件箱完成验证' },
+    'auth/confirmation-sent': { title: '确认邮件已发送', description: '请检查收件箱完成验证' },
+    'auth/login-success': { title: '登录成功', description: '正在跳转…' },
+    'auth/signup-success': { title: '注册成功', description: '欢迎加入！' },
+  }
+  return map[code] || null
 }
 
 const displayError = computed(() => getErrorMessage(authError.value))
+
+// Watch for success and show toast
+watch(success, (code) => {
+  if (!code) return
+  const msg = getSuccessMessage(code)
+  if (msg) {
+    toast.add({ title: msg.title, description: msg.description, color: 'success' })
+  }
+})
 
 watchEffect(() => {
   if (user.value) {
@@ -175,20 +210,7 @@ async function handleSubmit() {
               </div>
             </Transition>
 
-            <!-- Success Message -->
-            <Transition
-              enter-active-class="transition duration-200 ease-out"
-              enter-from-class="opacity-0 -translate-y-1"
-              enter-to-class="opacity-100 translate-y-0"
-              leave-active-class="transition duration-150 ease-in"
-              leave-from-class="opacity-100 translate-y-0"
-              leave-to-class="opacity-0 -translate-y-1"
-            >
-              <div v-if="success" class="p-3 rounded-xl bg-green-500/15 border border-green-500/20 flex items-center gap-2.5">
-                <Icon name="lucide:circle-check" class="w-4.5 h-4.5 shrink-0 text-green-400" />
-                <span class="text-sm text-green-300">{{ success === 'auth/otp-sent' ? '确认邮件已发送，请检查收件箱。' : success }}</span>
-              </div>
-            </Transition>
+            <!-- Success messages are shown via toast notifications -->
 
             <!-- Submit Button -->
             <button
