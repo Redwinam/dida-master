@@ -102,6 +102,13 @@ const templateSelectOptions = computed(() =>
   templates.value.map(tpl => ({ label: tpl.name, value: tpl.id })),
 )
 
+const upcomingEvents = computed(() =>
+  recentEvents.value.filter((ev: any) => ev._temporal === 'upcoming'),
+)
+const pastEvents = computed(() =>
+  recentEvents.value.filter((ev: any) => ev._temporal === 'past'),
+)
+
 const resetTemplateForm = () => {
   selectedEventId.value = ''
   templateName.value = ''
@@ -436,27 +443,59 @@ onMounted(() => {
       </div>
 
       <div class="space-y-2">
-        <label class="text-sm font-medium text-gray-700 dark:text-gray-300">最近日程</label>
-        <div class="max-h-40 overflow-y-auto border border-gray-200 dark:border-gray-700 rounded-lg divide-y divide-gray-100 dark:divide-gray-700">
+        <label class="text-sm font-medium text-gray-700 dark:text-gray-300">从已有日程创建</label>
+        <div class="max-h-52 overflow-y-auto border border-gray-200 dark:border-gray-700 rounded-lg">
           <div v-if="loadingRecent" class="p-3 text-sm text-gray-500">
             加载中...
           </div>
-          <button
-            v-for="ev in recentEvents"
-            :key="ev.start + ev.title"
-            class="w-full text-left px-3 py-2 text-sm hover:bg-gray-50 dark:hover:bg-gray-700/50"
-            :class="selectedEventId === ev.start + ev.title ? 'bg-amber-50 dark:bg-amber-900/20' : ''"
-            @click="selectedEventId = ev.start + ev.title; applyEventToBase(ev)"
-          >
-            <div class="font-medium text-gray-900 dark:text-white">
-              {{ ev.title || '未命名' }}
-            </div>
-            <div class="text-xs text-gray-500">
-              {{ ev.start ? new Date(ev.start).toLocaleString('zh-CN', { hour12: false }) : '' }} {{ ev.location || '' }}
-            </div>
-          </button>
-          <div v-if="!loadingRecent && recentEvents.length === 0" class="p-3 text-sm text-gray-500">
-            暂无最近日程
+          <template v-else-if="recentEvents.length > 0">
+            <!-- 即将到来的日程 -->
+            <template v-if="upcomingEvents.length > 0">
+              <div class="sticky top-0 z-10 px-3 py-1.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50/90 dark:bg-emerald-900/30 backdrop-blur-sm border-b border-emerald-100 dark:border-emerald-800/50">
+                <Icon name="lucide:calendar-clock" class="w-3 h-3 mr-1 inline-block" />
+                即将到来
+              </div>
+              <button
+                v-for="ev in upcomingEvents"
+                :key="'upcoming-' + ev.start + ev.title"
+                class="w-full text-left px-3 py-2 text-sm hover:bg-gray-50 dark:hover:bg-gray-700/50 border-b border-gray-100 dark:border-gray-700 last:border-b-0"
+                :class="selectedEventId === ev.start + ev.title ? 'bg-amber-50 dark:bg-amber-900/20' : ''"
+                @click="selectedEventId = ev.start + ev.title; applyEventToBase(ev)"
+              >
+                <div class="font-medium text-gray-900 dark:text-white">
+                  {{ ev.title || '未命名' }}
+                </div>
+                <div class="text-xs text-gray-500">
+                  {{ ev.start ? new Date(ev.start).toLocaleString('zh-CN', { hour12: false }) : '' }} {{ ev.location || '' }}
+                </div>
+              </button>
+            </template>
+            <!-- 过去的日程 -->
+            <template v-if="pastEvents.length > 0">
+              <div class="sticky top-0 z-10 px-3 py-1.5 text-xs font-semibold text-gray-500 dark:text-gray-400 bg-gray-50/90 dark:bg-gray-800/80 backdrop-blur-sm border-b border-gray-200 dark:border-gray-600"
+                :class="{ 'border-t': upcomingEvents.length > 0 }"
+              >
+                <Icon name="lucide:history" class="w-3 h-3 mr-1 inline-block" />
+                最近完成
+              </div>
+              <button
+                v-for="ev in pastEvents"
+                :key="'past-' + ev.start + ev.title"
+                class="w-full text-left px-3 py-2 text-sm hover:bg-gray-50 dark:hover:bg-gray-700/50 border-b border-gray-100 dark:border-gray-700 last:border-b-0"
+                :class="selectedEventId === ev.start + ev.title ? 'bg-amber-50 dark:bg-amber-900/20' : ''"
+                @click="selectedEventId = ev.start + ev.title; applyEventToBase(ev)"
+              >
+                <div class="font-medium text-gray-900 dark:text-white">
+                  {{ ev.title || '未命名' }}
+                </div>
+                <div class="text-xs text-gray-500">
+                  {{ ev.start ? new Date(ev.start).toLocaleString('zh-CN', { hour12: false }) : '' }} {{ ev.location || '' }}
+                </div>
+              </button>
+            </template>
+          </template>
+          <div v-else class="p-3 text-sm text-gray-500">
+            暂无日程
           </div>
         </div>
       </div>
